@@ -248,10 +248,10 @@ class T2IAdapterAdvanced(ControlBase):
         out = {'input':[]}
 
         autocast_enabled = torch.is_autocast_enabled()
-        print(f"$$$$ t2i control_input len: {len(self.control_input)}")
+        #print(f"$$$$ t2i control_input len: {len(self.control_input)}")
         for i in range(len(self.control_input)):
             key = 'input'
-            x = self.control_input[i] * self.strength
+            x = self.control_input[i] * self.strength * self.weights[i]
             if x.dtype != output_dtype and not autocast_enabled:
                 x = x.to(output_dtype)
 
