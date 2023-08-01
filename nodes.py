@@ -14,7 +14,7 @@ class ScaledSoftControlNetWeights:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "base_multiplier": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 1.0, "step": 0.001}, ),
+                "base_multiplier": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "flip_weights": ([False, True], ),
             },
         }
@@ -36,19 +36,19 @@ class SoftControlNetWeights:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "weight_00": ("FLOAT", {"default": 0.09941396206337118, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_01": ("FLOAT", {"default": 0.12050177219802567, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_02": ("FLOAT", {"default": 0.14606275417942507, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_03": ("FLOAT", {"default": 0.17704576264172736, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_04": ("FLOAT", {"default": 0.214600924414215, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_05": ("FLOAT", {"default": 0.26012233262329093, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_06": ("FLOAT", {"default": 0.3152997971191405, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_07": ("FLOAT", {"default": 0.3821815722656249, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_08": ("FLOAT", {"default": 0.4632503906249999, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_09": ("FLOAT", {"default": 0.561515625, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_10": ("FLOAT", {"default": 0.6806249999999999, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_11": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
+                "weight_00": ("FLOAT", {"default": 0.09941396206337118, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_01": ("FLOAT", {"default": 0.12050177219802567, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_02": ("FLOAT", {"default": 0.14606275417942507, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_03": ("FLOAT", {"default": 0.17704576264172736, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_04": ("FLOAT", {"default": 0.214600924414215, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_05": ("FLOAT", {"default": 0.26012233262329093, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_06": ("FLOAT", {"default": 0.3152997971191405, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_07": ("FLOAT", {"default": 0.3821815722656249, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_08": ("FLOAT", {"default": 0.4632503906249999, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_09": ("FLOAT", {"default": 0.561515625, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_10": ("FLOAT", {"default": 0.6806249999999999, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_11": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "flip_weights": ([False, True], ),
             },
         }
@@ -72,19 +72,19 @@ class CustomControlNetWeights:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "weight_00": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_01": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_02": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_04": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_05": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_06": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_07": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_08": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_09": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_10": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_11": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
+                "weight_00": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_01": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_02": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_04": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_05": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_06": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_07": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_08": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_09": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_10": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_11": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "flip_weights": ([False, True], ),
             }
         }
@@ -108,10 +108,10 @@ class SoftT2IAdapterWeights:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "weight_00": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_01": ("FLOAT", {"default": 0.62, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_02": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
+                "weight_00": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_01": ("FLOAT", {"default": 0.62, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_02": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "flip_weights": ([False, True], ),
             },
         }
@@ -133,10 +133,10 @@ class CustomT2IAdapterWeights:
     def INPUT_TYPES(s):
         return {
             "required": {
-                "weight_00": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_01": ("FLOAT", {"default": 0.62, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_02": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
+                "weight_00": ("FLOAT", {"default": 0.25, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_01": ("FLOAT", {"default": 0.62, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_02": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
+                "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "flip_weights": ([False, True], ),
             },
         }
