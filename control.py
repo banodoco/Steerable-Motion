@@ -28,7 +28,7 @@ class ControlNetAdvanced(ControlBase):
     def __init__(self, control_model, weights: ControlNetWeightsType, global_average_pooling=False, device=None):
         super().__init__(device)
         self.control_model = control_model
-        self.weights = weights
+        self.weights = weights if weights else [1.0]*13
         self.global_average_pooling = global_average_pooling
 
     def get_control(self, x_noisy, t, cond, batched_number):
@@ -77,9 +77,7 @@ class ControlNetAdvanced(ControlBase):
             if self.global_average_pooling:
                 x = torch.mean(x, dim=(2, 3), keepdim=True).repeat(1, 1, x.shape[2], x.shape[3])
 
-            #multiplier = 1#0.825**float(12-i)
-            #print(f"$$$ multiplier: {multiplier}")
-            x *= self.strength*self.weights[i]
+            x *= self.strength * self.weights[i]  # apply layer weight
             if x.dtype != output_dtype and not autocast_enabled:
                 x = x.to(output_dtype)
 
@@ -248,10 +246,9 @@ class T2IAdapterAdvanced(ControlBase):
         out = {'input':[]}
 
         autocast_enabled = torch.is_autocast_enabled()
-        #print(f"$$$$ t2i control_input len: {len(self.control_input)}")
         for i in range(len(self.control_input)):
             key = 'input'
-            x = self.control_input[i] * self.strength * self.weights[i]
+            x = self.control_input[i] * self.strength * self.weights[i]  # apply layer weight
             if x.dtype != output_dtype and not autocast_enabled:
                 x = x.to(output_dtype)
 
