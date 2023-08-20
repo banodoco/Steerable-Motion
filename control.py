@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "co
 from comfy.cldm import cldm
 from comfy.t2i_adapter import adapter
 
-from comfy.sd import ControlBase, broadcast_image_to
+from comfy.sd import ControlBase, ModelPatcher, broadcast_image_to, ControlLora
 import comfy.utils as utils
 import comfy.model_management as model_management
 import comfy.model_detection as model_detection
@@ -28,6 +28,7 @@ class ControlNetAdvanced(ControlBase):
     def __init__(self, control_model, weights: ControlNetWeightsType, global_average_pooling=False, device=None):
         super().__init__(device)
         self.control_model = control_model
+        self.control_model_wrapped = ModelPatcher(self.control_model, load_device=model_management.get_torch_device(), offload_device=model_management.unet_offload_device())
         self.weights = weights if weights else [1.0]*13
         self.global_average_pooling = global_average_pooling
 
@@ -58,11 +59,9 @@ class ControlNetAdvanced(ControlBase):
             precision_scope = contextlib.nullcontext
 
         with precision_scope(model_management.get_autocast_device(self.device)):
-            self.control_model = model_management.load_if_low_vram(self.control_model)
             context = torch.cat(cond['c_crossattn'], 1)
             y = cond.get('c_adm', None)
             control = self.control_model(x=x_noisy, hint=self.cond_hint, timesteps=t, context=context, y=y)
-            self.control_model = model_management.unload_if_low_vram(self.control_model)
         out = {'middle':[], 'output': []}
         autocast_enabled = torch.is_autocast_enabled()
 
@@ -77,7 +76,7 @@ class ControlNetAdvanced(ControlBase):
             if self.global_average_pooling:
                 x = torch.mean(x, dim=(2, 3), keepdim=True).repeat(1, 1, x.shape[2], x.shape[3])
 
-            x *= self.strength * self.weights[i]  # apply layer weight
+            x *= self.strength * self.weights[i]
             if x.dtype != output_dtype and not autocast_enabled:
                 x = x.to(output_dtype)
 
@@ -97,17 +96,19 @@ class ControlNetAdvanced(ControlBase):
 
     def get_models(self):
         out = super().get_models()
-        out.append(self.control_model)
+        out.append(self.control_model_wrapped)
         return out
 
 
 def load_controlnet(ckpt_path, control_net_weights: ControlNetWeightsType=None, t2i_adapter_weights: T2IAdapterWeightsType=None, model=None):
     controlnet_data = utils.load_torch_file(ckpt_path, safe_load=True)
+    if "lora_controlnet" in controlnet_data:
+        return ControlLora(controlnet_data) # TODO: apply weights to ControlLora
 
     controlnet_config = None
     if "controlnet_cond_embedding.conv_in.weight" in controlnet_data: #diffusers format
         use_fp16 = model_management.should_use_fp16()
-        controlnet_config = model_detection.model_config_from_diffusers_unet(controlnet_data, use_fp16).unet_config
+        controlnet_config = model_detection.unet_config_from_diffusers_unet(controlnet_data, use_fp16)
         diffusers_keys = utils.unet_to_diffusers(controlnet_config)
         diffusers_keys["controlnet_mid_block.weight"] = "middle_block_out.0.weight"
         diffusers_keys["controlnet_mid_block.bias"] = "middle_block_out.0.bias"
@@ -146,6 +147,9 @@ def load_controlnet(ckpt_path, control_net_weights: ControlNetWeightsType=None, 
             if k in controlnet_data:
                 new_sd[diffusers_keys[k]] = controlnet_data.pop(k)
 
+        leftover_keys = controlnet_data.keys()
+        if len(leftover_keys) > 0:
+            print("leftover keys:", leftover_keys)
         controlnet_data = new_sd
 
     pth_key = 'control_model.zero_convs.0.0.weight'
@@ -158,7 +162,7 @@ def load_controlnet(ckpt_path, control_net_weights: ControlNetWeightsType=None, 
     elif key in controlnet_data:
         prefix = ""
     else:
-        net = load_t2i_adapter(controlnet_data, t2i_adapter_weights)
+        net = load_t2i_adapter(controlnet_data)
         if net is None:
             print("error checkpoint does not contain controlnet or t2i adapter data", ckpt_path)
         return net
@@ -167,14 +171,14 @@ def load_controlnet(ckpt_path, control_net_weights: ControlNetWeightsType=None, 
         use_fp16 = model_management.should_use_fp16()
         controlnet_config = model_detection.model_config_from_unet(controlnet_data, prefix, use_fp16).unet_config
     controlnet_config.pop("out_channels")
-    controlnet_config["hint_channels"] = 3
+    controlnet_config["hint_channels"] = controlnet_data["{}input_hint_block.0.weight".format(prefix)].shape[1]
     control_model = cldm.ControlNet(**controlnet_config)
 
     if pth:
         if 'difference' in controlnet_data:
             if model is not None:
-                m = model.patch_model()
-                model_sd = m.state_dict()
+                model_management.load_models_gpu([model])
+                model_sd = model.model_state_dict()
                 for x in controlnet_data:
                     c_m = "control_model."
                     if x.startswith(c_m):
@@ -182,7 +186,6 @@ def load_controlnet(ckpt_path, control_net_weights: ControlNetWeightsType=None, 
                         if sd_key in model_sd:
                             cd = controlnet_data[x]
                             cd += model_sd[sd_key].type(cd.dtype).to(cd.device)
-                model.unpatch_model()
             else:
                 print("WARNING: Loaded a diff controlnet without a model. It will very likely not work.")
 
