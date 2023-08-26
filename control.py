@@ -14,7 +14,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "co
 from comfy.cldm import cldm
 from comfy.t2i_adapter import adapter
 
-from comfy.sd import ControlBase, ModelPatcher, broadcast_image_to, ControlLora
+from comfy.sd import ModelPatcher
+from comfy.controlnet import ControlBase, broadcast_image_to, ControlLora
 import comfy.utils as utils
 import comfy.model_management as model_management
 import comfy.model_detection as model_detection
@@ -61,7 +62,7 @@ class LatentKeyframeGroup:
 
 class TimestepKeyframe:
     def __init__(self,
-                 start_percent: float,
+                 start_percent: float = 0.0,
                  control_net_weights: ControlNetWeightsType = None,
                  t2i_adapter_weights: T2IAdapterWeightsType = None,
                  latent_keyframes: LatentKeyframeGroup = None) -> None:
@@ -105,6 +106,12 @@ class TimestepKeyframeGroup:
     
     def is_empty(self) -> bool:
         return len(self.keyframes) == 0
+    
+    @classmethod
+    def default(cls, keyframe: TimestepKeyframe) -> 'TimestepKeyframeGroup':
+        group = cls()
+        group.keyframes[0] = keyframe
+        return group
 
 
 # Copied from comfy.sd, weights modified
@@ -113,7 +120,6 @@ class ControlNetAdvanced(ControlBase):
         super().__init__(device)
         self.control_model = control_model
         self.control_model_wrapped = ModelPatcher(self.control_model, load_device=model_management.get_torch_device(), offload_device=model_management.unet_offload_device())
-        
         self.timestep_keyframes = timestep_keyframes if timestep_keyframes else TimestepKeyframeGroup()
         
         self.weights = self.timestep_keyframes.keyframes[0].control_net_weights if self.timestep_keyframes.keyframes[0].control_net_weights else [1.0]*13
@@ -166,16 +172,17 @@ class ControlNetAdvanced(ControlBase):
             if self.global_average_pooling:
                 x = torch.mean(x, dim=(2, 3), keepdim=True).repeat(1, 1, x.shape[2], x.shape[3])
 
-            # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
-            indeces_to_zero = set(range(x.size()[0]//2))
-            for keyframe in current_timestep_keyframe.latent_keyframes:
-                if keyframe.batch_index in indeces_to_zero:
-                    indeces_to_zero.remove(keyframe.batch_index)
+            if current_timestep_keyframe.latent_keyframes is not None:
+                # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
+                indeces_to_zero = set(range(x.size()[0]//2))
+                for keyframe in current_timestep_keyframe.latent_keyframes:
+                    if keyframe.batch_index in indeces_to_zero:
+                        indeces_to_zero.remove(keyframe.batch_index)
 
-            # zero them out by multiplying by zero
-            for batch_index in indeces_to_zero:
-                x[batch_index] *= 0.0
-                x[(x.size()[0]//2) + batch_index] *= 0.0
+                # zero them out by multiplying by zero
+                for batch_index in indeces_to_zero:
+                    x[batch_index] *= 0.0
+                    x[(x.size()[0]//2) + batch_index] *= 0.0
 
             x *= self.strength * self.weights[i]
             if x.dtype != output_dtype and not autocast_enabled:

@@ -1,10 +1,14 @@
 import sys
 import os
 
+import torch
+
+import numpy as np
+from PIL import Image, ImageOps
+
 import folder_paths
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-from comfy.sd import ControlBase
 
 from .control import load_controlnet, ControlNetWeightsType, T2IAdapterWeightsType,\
     LatentKeyframe, LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup
@@ -20,7 +24,7 @@ class ScaledSoftControlNetWeights:
             },
         }
     
-    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", )
+    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
     CATEGORY = "adv-controlnet/weights"
@@ -29,7 +33,7 @@ class ScaledSoftControlNetWeights:
         weights = [(base_multiplier ** float(12 - i)) for i in range(13)]
         if flip_weights:
             weights.reverse()
-        return (weights, )
+        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
 
 
 class SoftControlNetWeights:
@@ -54,7 +58,7 @@ class SoftControlNetWeights:
             },
         }
     
-    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", )
+    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
     CATEGORY = "adv-controlnet/weights"
@@ -65,7 +69,7 @@ class SoftControlNetWeights:
                    weight_07, weight_08, weight_09, weight_10, weight_11, weight_12]
         if flip_weights:
             weights.reverse()
-        return (weights,)
+        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
 
 
 class CustomControlNetWeights:
@@ -90,7 +94,7 @@ class CustomControlNetWeights:
             }
         }
     
-    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", )
+    RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
     CATEGORY = "adv-controlnet/weights"
@@ -101,7 +105,7 @@ class CustomControlNetWeights:
                    weight_07, weight_08, weight_09, weight_10, weight_11, weight_12]
         if flip_weights:
             weights.reverse()
-        return (weights,)
+        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
 
 
 class SoftT2IAdapterWeights:
@@ -117,7 +121,7 @@ class SoftT2IAdapterWeights:
             },
         }
     
-    RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", )
+    RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
     CATEGORY = "adv-controlnet/weights"
@@ -126,7 +130,7 @@ class SoftT2IAdapterWeights:
         weights = [weight_00, weight_01, weight_02, weight_03]
         if flip_weights:
             weights.reverse()
-        return (weights,)
+        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
 
 
 class CustomT2IAdapterWeights:
@@ -142,7 +146,7 @@ class CustomT2IAdapterWeights:
             },
         }
     
-    RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", )
+    RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
     CATEGORY = "adv-controlnet/weights"
@@ -151,7 +155,8 @@ class CustomT2IAdapterWeights:
         weights = [weight_00, weight_01, weight_02, weight_03]
         if flip_weights:
             weights.reverse()
-        return (weights,)
+
+        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
 
 
 class TimestepKeyframeNode:
@@ -373,6 +378,55 @@ class ControlNetApplyPartialBatch: # NOT USED: was used for a different test, ha
         return (out[0], out[1])
 
 
+class LoadImagesFromDirectory:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "directory": ("STRING", {"default": ""}),
+            }
+        }
+    
+    RETURN_TYPES = ("IMAGE", "MASK")
+    FUNCTION = "load_images"
+
+    CATEGORY = "adv-controlnet/image"
+
+    def load_images(self, directory):
+        if not os.path.isdir(directory):
+            raise FileNotFoundError(f"Directory '{directory} cannot be found.'")
+        dir_files = os.listdir(directory)
+        if len(dir_files) == 0:
+            raise FileNotFoundError(f"No files in directory '{directory}'.")
+
+        dir_files = sorted(dir_files)
+        dir_files = [os.path.join(directory, x) for x in dir_files]
+
+        images = []
+        masks = []
+
+        for image_path in dir_files:
+            i = Image.open(image_path)
+            i = ImageOps.exif_transpose(i)
+            image = i.convert("RGB")
+            image = np.array(image).astype(np.float32) / 255.0
+            image = torch.from_numpy(image)[None,]
+            if 'A' in i.getbands():
+                mask = np.array(i.getchannel('A')).astype(np.float32) / 255.0
+                mask = 1. - torch.from_numpy(mask)
+            else:
+                mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
+            images.append(image)
+            masks.append(mask)
+        
+        if len(images) == 0:
+            raise FileNotFoundError(f"No images could be loaded from directory '{directory}'.")
+
+        return (torch.cat(images, dim=0), torch.cat(masks, dim=0))
+
+
+
+
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Keyframes
@@ -389,6 +443,8 @@ NODE_CLASS_MAPPINGS = {
     "CustomControlNetWeights": CustomControlNetWeights,
     "SoftT2IAdapterWeights": SoftT2IAdapterWeights,
     "CustomT2IAdapterWeights": CustomT2IAdapterWeights,
+    # Image
+    "LoadImagesFromDirectory": LoadImagesFromDirectory
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
@@ -406,4 +462,6 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "CustomControlNetWeights": "Custom ControlNet Weights",
     "SoftT2IAdapterWeights": "Soft T2IAdapter Weights",
     "CustomT2IAdapterWeights": "Custom T2IAdapter Weights",
+    # Image
+    "LoadImagesFromDirectory": "Load Images"
 }
