@@ -384,15 +384,18 @@ class LoadImagesFromDirectory:
         return {
             "required": {
                 "directory": ("STRING", {"default": ""}),
+            },
+            "optional": {
+                "image_load_cap": ("INT", {"default": 0, "min": 0, "step": 1})
             }
         }
     
-    RETURN_TYPES = ("IMAGE", "MASK")
+    RETURN_TYPES = ("IMAGE", "MASK", "INT")
     FUNCTION = "load_images"
 
     CATEGORY = "adv-controlnet/image"
 
-    def load_images(self, directory):
+    def load_images(self, directory: str, image_load_cap: int = 0):
         if not os.path.isdir(directory):
             raise FileNotFoundError(f"Directory '{directory} cannot be found.'")
         dir_files = os.listdir(directory)
@@ -405,7 +408,16 @@ class LoadImagesFromDirectory:
         images = []
         masks = []
 
+        limit_images = False
+        if image_load_cap > 0:
+            limit_images = True
+        image_count = 0
+
         for image_path in dir_files:
+            if os.path.isdir(image_path):
+                continue
+            if limit_images and image_count >= image_load_cap:
+                break
             i = Image.open(image_path)
             i = ImageOps.exif_transpose(i)
             image = i.convert("RGB")
@@ -418,11 +430,12 @@ class LoadImagesFromDirectory:
                 mask = torch.zeros((64,64), dtype=torch.float32, device="cpu")
             images.append(image)
             masks.append(mask)
+            image_count += 1
         
         if len(images) == 0:
             raise FileNotFoundError(f"No images could be loaded from directory '{directory}'.")
 
-        return (torch.cat(images, dim=0), torch.cat(masks, dim=0))
+        return (torch.cat(images, dim=0), torch.cat(masks, dim=0), image_count)
 
 
 
