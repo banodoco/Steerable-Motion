@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "co
 from comfy.cldm import cldm
 from comfy.t2i_adapter import adapter
 
-from comfy.sd import ModelPatcher
+from comfy.model_patcher import ModelPatcher
 from comfy.controlnet import ControlBase, broadcast_image_to, ControlLora
 import comfy.utils as utils
 import comfy.model_management as model_management
