@@ -130,6 +130,109 @@ class ControlNetAdvanced(ControlBase):
         if self.previous_controlnet is not None:
             control_prev = self.previous_controlnet.get_control(x_noisy, t, cond, batched_number)
 
+        # TODO: select based on progress in diffusion
+        current_timestep_keyframe = self.timestep_keyframes[0]
+
+        if self.timestep_range is not None:
+            if t[0] > self.timestep_range[0] or t[0] < self.timestep_range[1]:
+                if control_prev is not None:
+                    return control_prev
+                else:
+                    return None
+
+        output_dtype = x_noisy.dtype
+        if self.cond_hint is None or x_noisy.shape[2] * 8 != self.cond_hint.shape[2] or x_noisy.shape[3] * 8 != self.cond_hint.shape[3]:
+            if self.cond_hint is not None:
+                del self.cond_hint
+            self.cond_hint = None
+            self.cond_hint = utils.common_upscale(self.cond_hint_original, x_noisy.shape[3] * 8, x_noisy.shape[2] * 8, 'nearest-exact', "center").to(self.control_model.dtype).to(self.device)
+        if x_noisy.shape[0] != self.cond_hint.shape[0]:
+            self.cond_hint = broadcast_image_to(self.cond_hint, x_noisy.shape[0], batched_number)
+
+
+        context = cond['c_crossattn']
+        y = cond.get('c_adm', None)
+        if y is not None:
+            y = y.to(self.control_model.dtype)
+        control = self.control_model(x=x_noisy.to(self.control_model.dtype), hint=self.cond_hint, timesteps=t, context=context.to(self.control_model.dtype), y=y)
+        return self.control_merge(None, control, control_prev, output_dtype, current_timestep_keyframe)
+    
+    def control_merge(self, control_input, control_output, control_prev, output_dtype, current_timestep_keyframe):
+        out = {'input':[], 'middle':[], 'output': []}
+
+        if control_input is not None:
+            for i in range(len(control_input)):
+                key = 'input'
+                x = control_input[i]
+
+                if current_timestep_keyframe.latent_keyframes is not None:
+                    # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
+                    indeces_to_zero = set(range(x.size()[0]//2))
+                    for keyframe in current_timestep_keyframe.latent_keyframes:
+                        if keyframe.batch_index in indeces_to_zero:
+                            indeces_to_zero.remove(keyframe.batch_index)
+
+                    # zero them out by multiplying by zero
+                    for batch_index in indeces_to_zero:
+                        x[batch_index] *= 0.0
+                        x[(x.size()[0]//2) + batch_index] *= 0.0
+
+                if x is not None:
+                    x *= self.strength * self.weights[i]
+                    if x.dtype != output_dtype:
+                        x = x.to(output_dtype)
+                out[key].insert(0, x)
+
+        if control_output is not None:
+            for i in range(len(control_output)):
+                if i == (len(control_output) - 1):
+                    key = 'middle'
+                    index = 0
+                else:
+                    key = 'output'
+                    index = i
+                x = control_output[i]
+
+                if current_timestep_keyframe.latent_keyframes is not None:
+                    # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
+                    indeces_to_zero = set(range(x.size()[0]//2))
+                    for keyframe in current_timestep_keyframe.latent_keyframes:
+                        if keyframe.batch_index in indeces_to_zero:
+                            indeces_to_zero.remove(keyframe.batch_index)
+
+                    # zero them out by multiplying by zero
+                    for batch_index in indeces_to_zero:
+                        x[batch_index] *= 0.0
+                        x[(x.size()[0]//2) + batch_index] *= 0.0
+
+                if x is not None:
+                    if self.global_average_pooling:
+                        x = torch.mean(x, dim=(2, 3), keepdim=True).repeat(1, 1, x.shape[2], x.shape[3])
+
+                    x *= self.strength * self.weights[i]
+                    if x.dtype != output_dtype:
+                        x = x.to(output_dtype)
+
+                out[key].append(x)
+        if control_prev is not None:
+            for x in ['input', 'middle', 'output']:
+                o = out[x]
+                for i in range(len(control_prev[x])):
+                    prev_val = control_prev[x][i]
+                    if i >= len(o):
+                        o.append(prev_val)
+                    elif prev_val is not None:
+                        if o[i] is None:
+                            o[i] = prev_val
+                        else:
+                            o[i] += prev_val
+        return out
+
+    def get_control_old(self, x_noisy, t, cond, batched_number):
+        control_prev = None
+        if self.previous_controlnet is not None:
+            control_prev = self.previous_controlnet.get_control(x_noisy, t, cond, batched_number)
+
         if self.timestep_range is not None:
             if t[0] > self.timestep_range[0] or t[0] < self.timestep_range[1]:
                 if control_prev is not None:
