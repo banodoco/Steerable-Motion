@@ -157,7 +157,7 @@ class ControlNetAdvanced(ControlBase):
         control = self.control_model(x=x_noisy.to(self.control_model.dtype), hint=self.cond_hint, timesteps=t, context=context.to(self.control_model.dtype), y=y)
         return self.control_merge(None, control, control_prev, output_dtype, current_timestep_keyframe)
     
-    def control_merge(self, control_input, control_output, control_prev, output_dtype, current_timestep_keyframe):
+    def control_merge(self, control_input, control_output, control_prev, output_dtype, current_timestep_keyframe: TimestepKeyframe):
         out = {'input':[], 'middle':[], 'output': []}
 
         if control_input is not None:
@@ -166,11 +166,15 @@ class ControlNetAdvanced(ControlBase):
                 x = control_input[i]
 
                 if current_timestep_keyframe.latent_keyframes is not None:
-                    # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
+                    # apply strengths, and get batch indeces to zero out
+                    # AKA latents that should not be influenced by ControlNet
                     indeces_to_zero = set(range(x.size()[0]//2))
                     for keyframe in current_timestep_keyframe.latent_keyframes:
                         if keyframe.batch_index in indeces_to_zero:
                             indeces_to_zero.remove(keyframe.batch_index)
+                        # apply strength
+                        x[keyframe.batch_index] *= keyframe.strength
+                        x[(x.size()[0]//2) + keyframe.batch_index] *= keyframe.strength
 
                     # zero them out by multiplying by zero
                     for batch_index in indeces_to_zero:
@@ -194,13 +198,17 @@ class ControlNetAdvanced(ControlBase):
                 x = control_output[i]
 
                 if current_timestep_keyframe.latent_keyframes is not None:
-                    # get batch indeces to zero out, AKA latents that should not be influenced by ControlNet
+                    # apply strengths, and get batch indeces to zero out
+                    # AKA latents that should not be influenced by ControlNet
                     indeces_to_zero = set(range(x.size()[0]//2))
                     for keyframe in current_timestep_keyframe.latent_keyframes:
                         if keyframe.batch_index in indeces_to_zero:
                             indeces_to_zero.remove(keyframe.batch_index)
+                        # apply strength
+                        x[keyframe.batch_index] *= keyframe.strength
+                        x[(x.size()[0]//2) + keyframe.batch_index] *= keyframe.strength
 
-                    # zero them out by multiplying by zero
+                    # zero out indeces that should not be affected by multiplying by zero
                     for batch_index in indeces_to_zero:
                         x[batch_index] *= 0.0
                         x[(x.size()[0]//2) + batch_index] *= 0.0
