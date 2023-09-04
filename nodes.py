@@ -14,6 +14,15 @@ from .control import load_controlnet, ControlNetWeightsType, T2IAdapterWeightsTy
     LatentKeyframe, LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup
 
 
+def get_properly_arranged_t2i_weights(initial_weights: list[float]):
+    new_weights = []
+    new_weights.extend([initial_weights[0]]*3)
+    new_weights.extend([initial_weights[1]]*3)
+    new_weights.extend([initial_weights[2]]*3)
+    new_weights.extend([initial_weights[3]]*3)
+    return new_weights
+
+
 class ScaledSoftControlNetWeights:
     @classmethod
     def INPUT_TYPES(s):
@@ -130,6 +139,7 @@ class SoftT2IAdapterWeights:
         weights = [weight_00, weight_01, weight_02, weight_03]
         if flip_weights:
             weights.reverse()
+        weights = get_properly_arranged_t2i_weights(weights)
         return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
 
 
@@ -155,7 +165,7 @@ class CustomT2IAdapterWeights:
         weights = [weight_00, weight_01, weight_02, weight_03]
         if flip_weights:
             weights.reverse()
-
+        weights = get_properly_arranged_t2i_weights(weights)
         return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
 
 
