@@ -8,11 +8,9 @@ from PIL import Image, ImageOps
 
 import folder_paths
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-
-from .control import load_controlnet, ControlNetWeightsType, T2IAdapterWeightsType,\
+from .control import ControlNetAdvanced, T2IAdapterAdvanced, load_controlnet, ControlNetWeightsType, T2IAdapterWeightsType,\
     LatentKeyframe, LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup
-
+from .logger import logger
 
 def get_properly_arranged_t2i_weights(initial_weights: list[float]):
     new_weights = []
@@ -231,6 +229,106 @@ class LatentKeyframeNode:
         return (prev_latent_keyframe,)
 
 
+class LatentKeyframeGroupNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "index_strengths": ("STRING", {"multiline": True, "default": ""}),
+            },
+            "optional": {
+                "prev_latent_keyframe": ("LATENT_KEYFRAME", ),
+                "latent_image_opt": ("LATENT", ),
+            }
+        }
+    
+    RETURN_TYPES = ("LATENT_KEYFRAME", )
+    FUNCTION = "load_keyframes"
+
+    CATEGORY = "adv-controlnet/keyframes"
+
+    def validate_index(self, index: int, latent_count: int = 0, is_range: bool = False, allow_negative = False) -> int:
+        # if part of range, do nothing
+        if is_range:
+            return index
+        # otherwise, validate index
+        # validate not out of range - only when latent_count is passed in
+        if latent_count > 0 and index > latent_count-1:
+            raise IndexError(f"Index '{index}' out of range for the total {latent_count} latents.")
+        # if negative, validate not out of range
+        if index < 0:
+            if not allow_negative:
+                raise IndexError(f"Negative indeces not allowed, but was {index}.")
+            conv_index = latent_count+index
+            if conv_index < 0:
+                raise IndexError(f"Index '{index}', converted to '{conv_index}' out of range for the total {latent_count} latents.")
+            index = conv_index
+        return index
+
+    def convert_to_index_int(self, raw_index: str, latent_count: int = 0, is_range: bool = False, allow_negative = False) -> int:
+        try:
+            return self.validate_index(int(raw_index), latent_count=latent_count, is_range=is_range, allow_negative=allow_negative)
+        except ValueError as e:
+            raise ValueError(f"index '{raw_index}' must be an integer.", e)
+
+    def convert_to_latent_keyframes(self, latent_indeces: str, latent_count: int) -> set[LatentKeyframe]:
+        if not latent_indeces:
+            return set()
+        all_indeces = [i for i in range(0, latent_count)]
+        allow_negative = latent_count > 0
+        chosen_indeces = set()
+        # parse string - allow positive ints, negative ints, and ranges separated by ':'
+        groups = latent_indeces.split(",")
+        groups = [g.strip() for g in groups]
+        for g in groups:
+            # parse strengths - default to 1.0 if no strength given
+            strength = 1.0
+            if '=' in g:
+                g, strength_str = g.split("=", 1)
+                g = g.strip()
+                try:
+                    strength = float(strength_str.strip())
+                except ValueError as e:
+                    raise ValueError(f"strength '{strength_str}' must be a float.", e)
+                if strength < 0:
+                    raise ValueError(f"Strength '{strength}' cannot be negative.")
+            # parse range of indeces (e.g. 2:16)
+            if ':' in g:
+                index_range = g.split(":", 1)
+                index_range = [r.strip() for r in index_range]
+                start_index = self.convert_to_index_int(index_range[0], latent_count=latent_count, is_range=True, allow_negative=allow_negative)
+                end_index = self.convert_to_index_int(index_range[1], latent_count=latent_count, is_range=True, allow_negative=allow_negative)
+                for i in all_indeces[start_index:end_index]:
+                    chosen_indeces.add(LatentKeyframe(i, strength))
+            # parse individual indeces
+            else:
+                chosen_indeces.add(LatentKeyframe(self.convert_to_index_int(g, latent_count=latent_count, allow_negative=allow_negative), strength))
+        return chosen_indeces
+
+    def load_keyframes(self,
+                       index_strengths: str,
+                       prev_latent_keyframe: LatentKeyframeGroup=None,
+                       latent_image_opt=None):
+        if not prev_latent_keyframe:
+            prev_latent_keyframe = LatentKeyframeGroup()
+        curr_latent_keyframe = LatentKeyframeGroup()
+
+        latent_count = -1
+        if latent_image_opt:
+            latent_count = latent_image_opt['samples'].size()[0]
+        latent_keyframes = self.convert_to_latent_keyframes(index_strengths, latent_count=latent_count)
+
+        for latent_keyframe in latent_keyframes:
+            curr_latent_keyframe.add(latent_keyframe)
+        
+        for latent_keyframe in prev_latent_keyframe.keyframes:
+            curr_latent_keyframe.add(latent_keyframe)
+        
+        return (curr_latent_keyframe,)
+
+        
+
+
 class ControlNetLoaderAdvanced:
     @classmethod
     def INPUT_TYPES(s):
@@ -288,10 +386,12 @@ class ControlNetApplyAdvanced_AdvControlNet:
                 "negative": ("CONDITIONING", ),
                 "control_net": ("CONTROL_NET", ),
                 "image": ("IMAGE", ),
-                "mask_opt": ("MASK", ),
                 "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                 "start_percent": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
                 "end_percent": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})
+            },
+            "optional": {
+                "mask_opt": ("MASK", ),
             }
         }
 
@@ -301,10 +401,12 @@ class ControlNetApplyAdvanced_AdvControlNet:
 
     CATEGORY = "adv-controlnet/loaders/conditioning"
 
-    def apply_controlnet(self, positive, negative, control_net, image, mask_opt, strength, start_percent, end_percent):
+    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, mask_opt=None):
         if strength == 0:
             return (positive, negative)
 
+        if mask_opt is not None:
+            mask_hint = mask_opt.movedim(-1,1)
         control_hint = image.movedim(-1,1)
         cnets = {}
 
@@ -319,6 +421,12 @@ class ControlNetApplyAdvanced_AdvControlNet:
                     c_net = cnets[prev_cnet]
                 else:
                     c_net = control_net.copy().set_cond_hint(control_hint, strength, (1.0 - start_percent, 1.0 - end_percent))
+                    # TODO: finish mask implemention, does nothing right now
+                    if mask_opt is not None:
+                        if isinstance(c_net, ControlNetAdvanced) or isinstance(c_net, T2IAdapterAdvanced):
+                            c_net.set_cond_hint_mask(mask_hint)
+                        else:
+                            logger
                     c_net.set_previous_controlnet(prev_cnet)
                     cnets[prev_cnet] = c_net
 
@@ -326,115 +434,6 @@ class ControlNetApplyAdvanced_AdvControlNet:
                 d['control_apply_to_uncond'] = False
                 n = [t[0], d]
                 c.append(n)
-            out.append(c)
-        return (out[0], out[1])
-
-
-class ControlNetApplyPartialBatch: # NOT USED: was used for a different test, has useful index parsing code though
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "positive": ("CONDITIONING", ),
-                "negative": ("CONDITIONING", ),
-                "control_net": ("CONTROL_NET", ),
-                "image": ("IMAGE", ),
-                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
-                "start_percent": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
-                "end_percent": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})    
-            },
-            "optional": {
-                "latent_image": ("LATENT", ),
-                "latent_indeces": ("STRING", {"default": ""}),
-            }
-        }
-
-    RETURN_TYPES = ("CONDITIONING","CONDITIONING")
-    RETURN_NAMES = ("positive", "negative")
-    FUNCTION = "apply_controlnet"
-
-    CATEGORY = "adv-controlnet/conditioning"
-
-    def validate_index(self, index: int, latent_count: int, is_range: bool = False) -> int:
-        # if part of range, do nothing
-        if is_range:
-            return index
-        # otherwise, validate index
-        # validate not out of range
-        if index > latent_count-1:
-            raise IndexError(f"Index '{index}' out of range for the total {latent_count} latents.")
-        # if negative, validate not out of range
-        if index < 0:
-            conv_index = latent_count+index
-            if conv_index < 0:
-                raise IndexError(f"Index '{index}', converted to '{conv_index}' out of range for the total {latent_count} latents.")
-            index = conv_index
-        return index
-
-    def convert_to_index_int(self, raw_index: str, is_range: bool = False) -> int:
-        try:
-            return self.validate_index(int(raw_index), is_range=is_range)
-        except ValueError as e:
-            raise ValueError(f"index '{raw_index}' must be an integer.", e)
-
-    def convert_to_indeces(self, latent_indeces: str, latent_count: int) -> set[int]:
-        if not latent_indeces:
-            return set()
-        all_indeces = [i for i in range(0, latent_count)]
-        chosen_indeces = set()
-        # parse string - allow positive ints, negative ints, and ranges separated by ':'
-        groups = latent_indeces.split(",")
-        groups = [g.strip() for g in groups]
-        for g in groups:
-            # parse range of indeces (e.g. 2:16)
-            if ':' in g:
-                index_range = g.split(":", 1)
-                index_range = [r.strip() for r in index_range]
-                start_index = self.convert_to_index_int(index_range[0], is_range=True)
-                end_index = self.convert_to_index_int(index_range[1], is_range=True)
-                for i in all_indeces[start_index, end_index]:
-                    chosen_indeces.add(i)
-            # parse individual indeces
-            else:
-                chosen_indeces.add(self.convert_to_index_int(g))
-        return chosen_indeces
-
-    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, latent_image=None, latent_indeces: str=None):
-        if strength == 0:
-            return (positive, negative)
-
-        latent_count = 1
-        if latent_image:
-            latent_count = latent_image['samples'].size()[0]
-        indeces_to_apply = self.convert_to_indeces(latent_indeces, latent_count)
-
-        control_hint = image.movedim(-1,1)
-        cnets = {}
-
-        evaluating_positive = True
-        out = []
-        for conditioning in [positive, negative]:
-            c = []
-            if evaluating_positive and latent_count > 1:
-                # should copy positive conditioning to match latent_count
-                if len(conditioning) < latent_count:
-                    pass
-            for t in conditioning:
-                d = t[1].copy()
-
-                prev_cnet = d.get('control', None)
-                if prev_cnet in cnets:
-                    c_net = cnets[prev_cnet]
-                else:
-                    c_net = control_net.copy().set_cond_hint(control_hint, strength, (1.0 - start_percent, 1.0 - end_percent))
-                    c_net.set_previous_controlnet(prev_cnet)
-                    cnets[prev_cnet] = c_net
-
-                d['control'] = c_net
-                d['control_apply_to_uncond'] = False
-                n = [t[0], d]
-                c.append(n)
-                evaluating_positive = False
             out.append(c)
         return (out[0], out[1])
 
@@ -447,7 +446,8 @@ class LoadImagesFromDirectory:
                 "directory": ("STRING", {"default": ""}),
             },
             "optional": {
-                "image_load_cap": ("INT", {"default": 0, "min": 0, "step": 1})
+                "image_load_cap": ("INT", {"default": 0, "min": 0, "step": 1}),
+                "start_index": ("INT", {"default": 0, "min": 0, "step": 1}),
             }
         }
     
@@ -456,7 +456,7 @@ class LoadImagesFromDirectory:
 
     CATEGORY = "adv-controlnet/image"
 
-    def load_images(self, directory: str, image_load_cap: int = 0):
+    def load_images(self, directory: str, image_load_cap: int = 0, start_index: int = 0):
         if not os.path.isdir(directory):
             raise FileNotFoundError(f"Directory '{directory} cannot be found.'")
         dir_files = os.listdir(directory)
@@ -465,6 +465,8 @@ class LoadImagesFromDirectory:
 
         dir_files = sorted(dir_files)
         dir_files = [os.path.join(directory, x) for x in dir_files]
+        # start at start_index
+        dir_files = dir_files[start_index:]
 
         images = []
         masks = []
@@ -506,8 +508,7 @@ NODE_CLASS_MAPPINGS = {
     # Keyframes
     "TimestepKeyframe": TimestepKeyframeNode,
     "LatentKeyframe": LatentKeyframeNode,
-    # Conditioning
-    # "ControlNetApplyPartialBatch": ControlNetApplyPartialBatch,
+    "LatentKeyframeGroup": LatentKeyframeGroupNode,
     # Loaders
     "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
     "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
@@ -525,8 +526,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # Keyframes
     "TimestepKeyframe": "Timestep Keyframe",
     "LatentKeyframe": "Latent Keyframe",
-    # Conditioning
-    # "ControlNetApplyPartialBatch": "Apply ControlNet (Partial Batch)",
+    "LatentKeyframeGroup": "Latent Keyframe Group",
     # Loaders
     "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced)",
     "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced)",

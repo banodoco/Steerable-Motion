@@ -9,14 +9,12 @@ import inspect
 
 from ldm.modules.diffusionmodules.util import timestep_embedding
 
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.realpath(__file__)), "comfy"))
-
 from comfy.cldm import cldm
 
 from comfy.model_patcher import ModelPatcher
 from comfy.controlnet import ControlBase, ControlNet, T2IAdapter, broadcast_image_to, ControlLora
 import comfy.t2i_adapter as t2i_adapter
-import comfy.utils as utils
+import comfy.utils
 import comfy.model_management as model_management
 import comfy.model_detection as model_detection
 
@@ -174,15 +172,61 @@ class ControlNetAdvanced(ControlNet):
         self.weights = self.timestep_keyframes.keyframes[0].control_net_weights if self.timestep_keyframes.keyframes[0].control_net_weights else [1.0]*13
         # mask for which parts of controlnet output to keep
         self.cond_hint_mask = None
+        # actual index values
+        self.sub_idxs = None
+        self.full_latent_length = 0
+        self.context_length = 0
         # override control_merge
         self.control_merge = control_merge_inject.__get__(self, type(self))
+
+    def set_cond_hint_mask(self, mask_hint):
+        self.cond_hint_mask = mask_hint
+        return self
 
     def get_control(self, x_noisy, t, cond, batched_number):
         # need to reference t and batched_number later
         self.t = t
         self.batched_number = batched_number
         # TODO: choose TimestepKeyframe based on t
-        return super().get_control(x_noisy, t, cond, batched_number)
+        if self.sub_idxs is not None:
+            # perform special version of get_control
+            return self.sliding_get_control(x_noisy, t, cond, batched_number)
+        else:
+            return super().get_control(x_noisy, t, cond, batched_number)
+
+    def sliding_get_control(self, x_noisy, t, cond, batched_number):
+        control_prev = None
+        if self.previous_controlnet is not None:
+            control_prev = self.previous_controlnet.get_control(x_noisy, t, cond, batched_number)
+
+        if self.timestep_range is not None:
+            if t[0] > self.timestep_range[0] or t[0] < self.timestep_range[1]:
+                if control_prev is not None:
+                    return control_prev
+                else:
+                    return None
+
+        output_dtype = x_noisy.dtype
+
+        # TODO: change this to not require cond_hint upscaling every step
+        if self.sub_idxs is not None or self.self.cond_hint is None or x_noisy.shape[2] * 8 != self.cond_hint.shape[2] or x_noisy.shape[3] * 8 != self.cond_hint.shape[3]:
+            if self.cond_hint is not None:
+                del self.cond_hint
+            self.cond_hint = None
+            self.cond_hint = comfy.utils.common_upscale(self.cond_hint_original, x_noisy.shape[3] * 8, x_noisy.shape[2] * 8, 'nearest-exact', "center").to(self.control_model.dtype).to(self.device)
+            # if self.cond_hint length matches real latent count, need to subdivide it
+            if self.cond_hint.size(0) == self.full_latent_length:
+                self.cond_hint = self.cond_hint[self.sub_idxs]
+        
+        if x_noisy.shape[0] != self.cond_hint.shape[0]:
+            self.cond_hint = broadcast_image_to(self.cond_hint, x_noisy.shape[0], batched_number)
+
+        context = cond['c_crossattn']
+        y = cond.get('c_adm', None)
+        if y is not None:
+            y = y.to(self.control_model.dtype)
+        control = self.control_model(x=x_noisy.to(self.control_model.dtype), hint=self.cond_hint, timesteps=t, context=context.to(self.control_model.dtype), y=y)
+        return self.control_merge(None, control, control_prev, output_dtype)
 
     def apply_advanced_strengths_and_masks(self, x, current_timestep_keyframe: TimestepKeyframe, batched_number: int):
         if current_timestep_keyframe.latent_keyframes is not None:
@@ -191,12 +235,28 @@ class ControlNetAdvanced(ControlNet):
             latent_count = x.size(0)//batched_number
 
             indeces_to_zero = set(range(latent_count))
+            mapped_indeces = None
+            # if expecting subdivision, will need to translate between subset and actual idx values
+            if self.sub_idxs:
+                mapped_indeces = {}
+                for i, actual in enumerate(self.sub_idxs):
+                    mapped_indeces[actual] = i
             for keyframe in current_timestep_keyframe.latent_keyframes:
-                if keyframe.batch_index in indeces_to_zero:
-                    indeces_to_zero.remove(keyframe.batch_index)
+                real_index = keyframe.batch_index
+                # if not mapping indeces, what you see is what you get
+                if mapped_indeces is None:
+                    if real_index in indeces_to_zero:
+                        indeces_to_zero.remove(keyframe.batch_index)
+                # otherwise, see if batch_index is even included in this set of latents
+                else:
+                    real_index = mapped_indeces.get(keyframe.batch_index, None)
+                    if real_index is None:
+                        continue
+                    indeces_to_zero.remove(real_index)
+                
                 # apply strength for each batched cond/uncond
                 for b in range(batched_number):
-                    x[(latent_count*b)+keyframe.batch_index] *= keyframe.strength
+                    x[(latent_count*b)+real_index] *= keyframe.strength
 
             # zero them out by multiplying by zero
             for batch_index in indeces_to_zero:
@@ -213,6 +273,12 @@ class ControlNetAdvanced(ControlNet):
         out = super().get_models()
         out.append(self.control_model_wrapped)
         return out
+    
+    def cleanup(self):
+        super().cleanup()
+        self.sub_idxs = None
+        self.full_latent_length = 0
+        self.context_length = 0
 
 
 class T2IAdapterAdvanced(T2IAdapter):
@@ -224,6 +290,10 @@ class T2IAdapterAdvanced(T2IAdapter):
         self.weights = first_weight if first_weight else [1.0]*12
         # mask for which parts of controlnet output to keep
         self.cond_hint_mask = None
+        # actual index values
+        self.sub_idxs = None
+        self.full_latent_length = 0
+        self.context_length = 0
         # override control_merge
         self.control_merge = control_merge_inject.__get__(self, type(self))
     
@@ -232,7 +302,19 @@ class T2IAdapterAdvanced(T2IAdapter):
         self.t = t
         self.batched_number = batched_number
         # TODO: choose TimestepKeyframe based on t
-        return super().get_control(x_noisy, t, cond, batched_number)
+        try:
+            # if sub indexes present, replace original hint with subsection
+            if self.sub_idxs is not None:
+                full_cond_hint_original = self.cond_hint_original
+                del self.cond_hint
+                self.cond_hint = None
+                self.cond_hint_original = full_cond_hint_original[self.sub_idxs]
+            return super().get_control(x_noisy, t, cond, batched_number)
+        finally:
+            if self.sub_idxs is not None:
+                # replace original cond hint
+                self.cond_hint_original = full_cond_hint_original
+                del full_cond_hint_original
 
     def apply_advanced_strengths_and_masks(self, x, current_timestep_keyframe: TimestepKeyframe, batched_number: int):
         # For now, do nothing; need to figure out LatentKeyframe control is even possible for T2I Adapters
@@ -242,10 +324,16 @@ class T2IAdapterAdvanced(T2IAdapter):
         c = T2IAdapterAdvanced(self.t2i_model, self.timestep_keyframes, self.channels_in)
         self.copy_to(c)
         return c
+    
+    def cleanup(self):
+        super().cleanup()
+        self.sub_idxs = None
+        self.full_latent_length = 0
+        self.context_length = 0
 
 
 def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, model=None):
-    controlnet_data = utils.load_torch_file(ckpt_path, safe_load=True)
+    controlnet_data = comfy.utils.load_torch_file(ckpt_path, safe_load=True)
     if "lora_controlnet" in controlnet_data:
         return ControlLora(controlnet_data) # TODO: apply weights to ControlLora
 
@@ -253,7 +341,7 @@ def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, mo
     if "controlnet_cond_embedding.conv_in.weight" in controlnet_data: #diffusers format
         use_fp16 = model_management.should_use_fp16()
         controlnet_config = model_detection.unet_config_from_diffusers_unet(controlnet_data, use_fp16)
-        diffusers_keys = utils.unet_to_diffusers(controlnet_config)
+        diffusers_keys = comfy.utils.unet_to_diffusers(controlnet_config)
         diffusers_keys["controlnet_mid_block.weight"] = "middle_block_out.0.weight"
         diffusers_keys["controlnet_mid_block.bias"] = "middle_block_out.0.bias"
 
