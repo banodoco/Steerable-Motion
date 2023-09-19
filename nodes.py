@@ -327,6 +327,71 @@ class LatentKeyframeGroupNode:
         return (curr_latent_keyframe,)
 
         
+class LatentKeyframeTimingNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "batch_index_from": ("INT", {"default": 0, "min": -1000, "max": 1000, "step": 1}),
+                "batch_index_to": ("INT", {"default": 0, "min": -1000, "max": 1000, "step": 1}),
+                "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
+                "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
+                "timming": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
+                "flip_weights": ([False, True], ),
+            },
+            "optional": {
+                "prev_latent_keyframe": ("LATENT_KEYFRAME", ),
+            }
+        }
+
+    RETURN_TYPES = ("LATENT_KEYFRAME", )
+    FUNCTION = "load_keyframe"
+    CATEGORY = "adv-controlnet/keyframes"
+
+    def load_keyframe(self,
+                        batch_index_from: int,
+                        strength_from: float,
+                        batch_index_to: int,
+                        strength_to: float,
+                        timming: str,
+                        flip_weights: bool,
+                        prev_latent_keyframe: LatentKeyframeGroup=None):
+
+        if (batch_index_from > batch_index_to):
+            raise ValueError("batch_index_from must be less than or equal to batch_index_to.")
+
+        if (batch_index_from < 0 and batch_index_to >= 0):
+            raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
+
+        if (strength_to < strength_from):
+            raise ValueError("strength_to must be greater than or equal to strength_from.")
+
+        if not prev_latent_keyframe:
+            prev_latent_keyframe = LatentKeyframeGroup()
+
+        steps = batch_index_to - batch_index_from + 1
+        diff = strength_to - strength_from
+        if timming == "linear":
+            weights = np.linspace(strength_from, strength_to, steps)
+        elif timming == "ease-in":
+            index = np.linspace(0, 1, steps)
+            weights = diff * np.power(index, 2) + strength_from
+        elif timming == "ease-out":
+            index = np.linspace(0, 1, steps)
+            weights = diff * (1 - np.power(1 - index, 2)) + strength_from
+        elif timming == "ease-in-out":
+            index = np.linspace(0, 1, steps)
+            weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
+
+        if flip_weights:
+            weights = np.flip(weights)
+
+        for i in range(steps):
+            keyframe = LatentKeyframe(batch_index_from + i, float(weights[i]))
+            print("keyframe", batch_index_from + i, ":", weights[i])
+            prev_latent_keyframe.add(keyframe)
+
+        return (prev_latent_keyframe,)
 
 
 class ControlNetLoaderAdvanced:
@@ -509,6 +574,7 @@ NODE_CLASS_MAPPINGS = {
     "TimestepKeyframe": TimestepKeyframeNode,
     "LatentKeyframe": LatentKeyframeNode,
     "LatentKeyframeGroup": LatentKeyframeGroupNode,
+    "LatentKeyframeTiming": LatentKeyframeTimingNode,
     # Loaders
     "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
     "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
@@ -527,6 +593,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TimestepKeyframe": "Timestep Keyframe",
     "LatentKeyframe": "Latent Keyframe",
     "LatentKeyframeGroup": "Latent Keyframe Group",
+    "LatentKeyframeTiming": "Latent Keyframe Timing",
     # Loaders
     "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced)",
     "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced)",
