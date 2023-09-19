@@ -1,22 +1,8 @@
-import sys
-import os
-
-
 import torch
-import contextlib
-import copy
-import inspect
 
-from ldm.modules.diffusionmodules.util import timestep_embedding
-
-from comfy.cldm import cldm
-
-from comfy.model_patcher import ModelPatcher
-from comfy.controlnet import ControlBase, ControlNet, T2IAdapter, broadcast_image_to, ControlLora
-import comfy.t2i_adapter as t2i_adapter
 import comfy.utils
-import comfy.model_management as model_management
-import comfy.model_detection as model_detection
+import comfy.controlnet as comfy_cn
+from comfy.controlnet import  ControlNet, T2IAdapter, broadcast_image_to
 
 ControlNetWeightsType = list[float]
 T2IAdapterWeightsType = list[float]
@@ -253,7 +239,7 @@ class ControlNetAdvanced(ControlNet):
                     if real_index is None:
                         continue
                     indeces_to_zero.remove(real_index)
-                
+
                 # apply strength for each batched cond/uncond
                 for b in range(batched_number):
                     x[(latent_count*b)+real_index] *= keyframe.strength
@@ -269,11 +255,6 @@ class ControlNetAdvanced(ControlNet):
         self.copy_to(c)
         return c
 
-    def get_models(self):
-        out = super().get_models()
-        out.append(self.control_model_wrapped)
-        return out
-    
     def cleanup(self):
         super().cleanup()
         self.sub_idxs = None
@@ -333,141 +314,22 @@ class T2IAdapterAdvanced(T2IAdapter):
 
 
 def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, model=None):
-    controlnet_data = comfy.utils.load_torch_file(ckpt_path, safe_load=True)
-    if "lora_controlnet" in controlnet_data:
-        return ControlLora(controlnet_data) # TODO: apply weights to ControlLora
+    def load_t2i_adapter(t2i_data):
+        adapter = comfy_cn.load_t2i_adapter(t2i_data)
+        return T2IAdapterAdvanced(adapter.t2i_model, timestep_keyframe, adapter.channels_in)
 
-    controlnet_config = None
-    if "controlnet_cond_embedding.conv_in.weight" in controlnet_data: #diffusers format
-        use_fp16 = model_management.should_use_fp16()
-        controlnet_config = model_detection.unet_config_from_diffusers_unet(controlnet_data, use_fp16)
-        diffusers_keys = comfy.utils.unet_to_diffusers(controlnet_config)
-        diffusers_keys["controlnet_mid_block.weight"] = "middle_block_out.0.weight"
-        diffusers_keys["controlnet_mid_block.bias"] = "middle_block_out.0.bias"
+    # override load_t2i_adapter
+    original_load_t2i_adapter = comfy_cn.load_t2i_adapter
+    comfy_cn.load_t2i_adapter = load_t2i_adapter
 
-        count = 0
-        loop = True
-        while loop:
-            suffix = [".weight", ".bias"]
-            for s in suffix:
-                k_in = "controlnet_down_blocks.{}{}".format(count, s)
-                k_out = "zero_convs.{}.0{}".format(count, s)
-                if k_in not in controlnet_data:
-                    loop = False
-                    break
-                diffusers_keys[k_in] = k_out
-            count += 1
+    try:
+        control = comfy_cn.load_controlnet(ckpt_path, model=model)
+        if isinstance(control, T2IAdapterAdvanced):
+            return control
 
-        count = 0
-        loop = True
-        while loop:
-            suffix = [".weight", ".bias"]
-            for s in suffix:
-                if count == 0:
-                    k_in = "controlnet_cond_embedding.conv_in{}".format(s)
-                else:
-                    k_in = "controlnet_cond_embedding.blocks.{}{}".format(count - 1, s)
-                k_out = "input_hint_block.{}{}".format(count * 2, s)
-                if k_in not in controlnet_data:
-                    k_in = "controlnet_cond_embedding.conv_out{}".format(s)
-                    loop = False
-                diffusers_keys[k_in] = k_out
-            count += 1
-
-        new_sd = {}
-        for k in diffusers_keys:
-            if k in controlnet_data:
-                new_sd[diffusers_keys[k]] = controlnet_data.pop(k)
-
-        leftover_keys = controlnet_data.keys()
-        if len(leftover_keys) > 0:
-            print("leftover keys:", leftover_keys)
-        controlnet_data = new_sd
-
-    pth_key = 'control_model.zero_convs.0.0.weight'
-    pth = False
-    key = 'zero_convs.0.0.weight'
-    if pth_key in controlnet_data:
-        pth = True
-        key = pth_key
-        prefix = "control_model."
-    elif key in controlnet_data:
-        prefix = ""
-    else:
-        net = load_t2i_adapter(controlnet_data, timestep_keyframe)
-        if net is None:
-            print("error checkpoint does not contain controlnet or t2i adapter data", ckpt_path)
-        return net
-
-    if controlnet_config is None:
-        use_fp16 = model_management.should_use_fp16()
-        controlnet_config = model_detection.model_config_from_unet(controlnet_data, prefix, use_fp16).unet_config
-    controlnet_config.pop("out_channels")
-    controlnet_config["hint_channels"] = controlnet_data["{}input_hint_block.0.weight".format(prefix)].shape[1]
-    control_model = cldm.ControlNet(**controlnet_config)
-
-    if pth:
-        if 'difference' in controlnet_data:
-            if model is not None:
-                model_management.load_models_gpu([model])
-                model_sd = model.model_state_dict()
-                for x in controlnet_data:
-                    c_m = "control_model."
-                    if x.startswith(c_m):
-                        sd_key = "diffusion_model.{}".format(x[len(c_m):])
-                        if sd_key in model_sd:
-                            cd = controlnet_data[x]
-                            cd += model_sd[sd_key].type(cd.dtype).to(cd.device)
-            else:
-                print("WARNING: Loaded a diff controlnet without a model. It will very likely not work.")
-
-        class WeightsLoader(torch.nn.Module):
-            pass
-        w = WeightsLoader()
-        w.control_model = control_model
-        missing, unexpected = w.load_state_dict(controlnet_data, strict=False)
-    else:
-        missing, unexpected = control_model.load_state_dict(controlnet_data, strict=False)
-    print(missing, unexpected)
-
-    if use_fp16:
-        control_model = control_model.half()
-
-    global_average_pooling = False
-    if ckpt_path.endswith("_shuffle.pth") or ckpt_path.endswith("_shuffle.safetensors") or ckpt_path.endswith("_shuffle_fp16.safetensors"): #TODO: smarter way of enabling global_average_pooling
-        global_average_pooling = True
-
-    control = ControlNetAdvanced(control_model, timestep_keyframe, global_average_pooling=global_average_pooling)
-    return control
-
-
-def load_t2i_adapter(t2i_data, timestep_keyframes: TimestepKeyframeGroup=None):
-    keys = t2i_data.keys()
-    if 'adapter' in keys:
-        t2i_data = t2i_data['adapter']
-        keys = t2i_data.keys()
-    if "body.0.in_conv.weight" in keys:
-        cin = t2i_data['body.0.in_conv.weight'].shape[1]
-        model_ad = t2i_adapter.adapter.Adapter_light(cin=cin, channels=[320, 640, 1280, 1280], nums_rb=4)
-    elif 'conv_in.weight' in keys:
-        cin = t2i_data['conv_in.weight'].shape[1]
-        channel = t2i_data['conv_in.weight'].shape[0]
-        ksize = t2i_data['body.0.block2.weight'].shape[2]
-        use_conv = False
-        down_opts = list(filter(lambda a: a.endswith("down_opt.op.weight"), keys))
-        if len(down_opts) > 0:
-            use_conv = True
-        xl = False
-        if cin == 256 or cin == 768:
-            xl = True
-        model_ad = t2i_adapter.adapter.Adapter(cin=cin, channels=[channel, channel*2, channel*4, channel*4][:4], nums_rb=2, ksize=ksize, sk=True, use_conv=use_conv, xl=xl)
-    else:
-        return None
-    missing, unexpected = model_ad.load_state_dict(t2i_data)
-    if len(missing) > 0:
-        print("t2i missing", missing)
-
-    if len(unexpected) > 0:
-        print("t2i unexpected", unexpected)
-    
-    return T2IAdapterAdvanced(model_ad, timestep_keyframes, model_ad.input_channels)
+        return ControlNetAdvanced(control.control_model, timestep_keyframe, global_average_pooling=control.global_average_pooling)
+    except:
+        raise
+    finally:
+        # restore original load_t2i_adapter
+        comfy_cn.load_t2i_adapter = original_load_t2i_adapter
