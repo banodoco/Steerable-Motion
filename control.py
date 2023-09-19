@@ -229,13 +229,17 @@ class ControlNetAdvanced(ControlNet):
                     mapped_indeces[actual] = i
             for keyframe in current_timestep_keyframe.latent_keyframes:
                 real_index = keyframe.batch_index
+                # if negative, count from end
+                if real_index < 0:
+                    real_index = latent_count + real_index
+
                 # if not mapping indeces, what you see is what you get
                 if mapped_indeces is None:
                     if real_index in indeces_to_zero:
-                        indeces_to_zero.remove(keyframe.batch_index)
+                        indeces_to_zero.remove(real_index)
                 # otherwise, see if batch_index is even included in this set of latents
                 else:
-                    real_index = mapped_indeces.get(keyframe.batch_index, None)
+                    real_index = mapped_indeces.get(real_index, None)
                     if real_index is None:
                         continue
                     indeces_to_zero.remove(real_index)
