@@ -246,13 +246,13 @@ class ControlNetAdvanced(ControlNet):
 
                 # apply strength for each batched cond/uncond
                 for b in range(batched_number):
-                    x[(latent_count*b)+real_index] *= keyframe.strength
+                    x[(latent_count*b)+real_index] = x[(latent_count*b)+real_index] * keyframe.strength
 
             # zero them out by multiplying by zero
             for batch_index in indeces_to_zero:
                 # apply zero for each batched cond/uncond
                 for b in range(batched_number):
-                    x[(latent_count*b)+batch_index] *= 0.0
+                    x[(latent_count*b)+batch_index] = 0.0
 
     def copy(self):
         c = ControlNetAdvanced(self.control_model, self.timestep_keyframes, global_average_pooling=self.global_average_pooling)
