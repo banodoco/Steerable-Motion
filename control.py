@@ -319,8 +319,8 @@ class T2IAdapterAdvanced(T2IAdapter):
 
 def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, model=None):
     control = comfy_cn.load_controlnet(ckpt_path, model=model)
-    # if ControlNet returned, transform it into ControlNetAdvanced
-    if isinstance(control, ControlNet):
+    # if exactly ControlNet returned, transform it into ControlNetAdvanced
+    if type(control) == ControlNet:
         return ControlNetAdvanced(control.control_model, timestep_keyframe, global_average_pooling=control.global_average_pooling)
     # if T2IAdapter returned, transform it into T2IAdapterAdvanced
     elif isinstance(control, T2IAdapter):
