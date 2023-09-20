@@ -353,7 +353,7 @@ class LatentKeyframeTimingNode:
                         strength_from: float,
                         batch_index_to: int,
                         strength_to: float,
-                        timming: str,
+                        interpolation: str,
                         flip_weights: bool,
                         prev_latent_keyframe: LatentKeyframeGroup=None):
 
@@ -371,15 +371,15 @@ class LatentKeyframeTimingNode:
 
         steps = batch_index_to - batch_index_from + 1
         diff = strength_to - strength_from
-        if timming == "linear":
+        if interpolation == "linear":
             weights = np.linspace(strength_from, strength_to, steps)
-        elif timming == "ease-in":
+        elif interpolation == "ease-in":
             index = np.linspace(0, 1, steps)
             weights = diff * np.power(index, 2) + strength_from
-        elif timming == "ease-out":
+        elif interpolation == "ease-out":
             index = np.linspace(0, 1, steps)
             weights = diff * (1 - np.power(1 - index, 2)) + strength_from
-        elif timming == "ease-in-out":
+        elif interpolation == "ease-in-out":
             index = np.linspace(0, 1, steps)
             weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
 
