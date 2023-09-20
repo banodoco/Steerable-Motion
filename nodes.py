@@ -426,8 +426,7 @@ class DiffControlNetLoaderAdvanced:
                 "control_net_name": (folder_paths.get_filename_list("controlnet"), )
             },
             "optional": {
-                "control_net_weights": ("CONTROL_NET_WEIGHTS", ),
-                "t2i_adapter_weights": ("T2I_ADAPTER_WEIGHTS", ),
+                "timestep_keyframe": ("TIMESTEP_KEYFRAME", ),
             }
         }
     
