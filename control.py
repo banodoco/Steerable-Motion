@@ -318,22 +318,12 @@ class T2IAdapterAdvanced(T2IAdapter):
 
 
 def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, model=None):
-    def load_t2i_adapter(t2i_data):
-        adapter = comfy_cn.load_t2i_adapter(t2i_data)
-        return T2IAdapterAdvanced(adapter.t2i_model, timestep_keyframe, adapter.channels_in)
-
-    # override load_t2i_adapter
-    original_load_t2i_adapter = comfy_cn.load_t2i_adapter
-    comfy_cn.load_t2i_adapter = load_t2i_adapter
-
-    try:
-        control = comfy_cn.load_controlnet(ckpt_path, model=model)
-        if isinstance(control, T2IAdapterAdvanced):
-            return control
-
+    control = comfy_cn.load_controlnet(ckpt_path, model=model)
+    # if ControlNet returned, transform it into ControlNetAdvanced
+    if isinstance(control, ControlNet):
         return ControlNetAdvanced(control.control_model, timestep_keyframe, global_average_pooling=control.global_average_pooling)
-    except:
-        raise
-    finally:
-        # restore original load_t2i_adapter
-        comfy_cn.load_t2i_adapter = original_load_t2i_adapter
+    # if T2IAdapter returned, transform it into T2IAdapterAdvanced
+    elif isinstance(control, T2IAdapter):
+        return T2IAdapterAdvanced(control.t2i_model, timestep_keyframe, control.channels_in)
+    # otherwise, leave it be - probably a ControlLora for SDXL (no support for advanced stuff yet from here)
+    return control
