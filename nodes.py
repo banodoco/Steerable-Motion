@@ -336,7 +336,7 @@ class LatentKeyframeTimingNode:
                 "batch_index_to": ("INT", {"default": 0, "min": -1000, "max": 1000, "step": 1}),
                 "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
                 "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
-                "timming": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
+                "interpolation": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
                 "flip_weights": ([False, True], ),
             },
             "optional": {
@@ -593,7 +593,7 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     "TimestepKeyframe": "Timestep Keyframe",
     "LatentKeyframe": "Latent Keyframe",
     "LatentKeyframeGroup": "Latent Keyframe Group",
-    "LatentKeyframeTiming": "Latent Keyframe Timing",
+    "LatentKeyframeTiming": "Latent Keyframe Interpolation",
     # Loaders
     "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced)",
     "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced)",
