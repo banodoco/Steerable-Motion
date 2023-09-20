@@ -231,7 +231,7 @@ class ControlNetAdvanced(ControlNet):
                 real_index = keyframe.batch_index
                 # if negative, count from end
                 if real_index < 0:
-                    real_index = latent_count + real_index
+                    real_index += latent_count if self.sub_idxs is None else self.full_latent_length
 
                 # if not mapping indeces, what you see is what you get
                 if mapped_indeces is None:
