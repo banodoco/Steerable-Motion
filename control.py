@@ -1,3 +1,4 @@
+from typing import Union
 import torch
 
 import comfy.utils
@@ -31,7 +32,7 @@ class LatentKeyframeGroup:
             self.keyframes.append(keyframe)
         self.keyframes.sort(key=lambda k: k.batch_index)
     
-    def get_index(self, index: int) -> LatentKeyframe | None:
+    def get_index(self, index: int) -> Union[LatentKeyframe, None]:
         try:
             return self.keyframes[index]
         except IndexError:
@@ -79,7 +80,7 @@ class TimestepKeyframeGroup:
             self.keyframes.append(keyframe)
         self.keyframes.sort(key=lambda k: k.start_percent)
 
-    def get_index(self, index: int) -> TimestepKeyframe | None:
+    def get_index(self, index: int) -> Union[TimestepKeyframe, None]:
         try:
             return self.keyframes[index]
         except IndexError:
