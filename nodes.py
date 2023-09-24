@@ -562,7 +562,7 @@ class LoadImagesFromDirectory:
         if len(images) == 0:
             raise FileNotFoundError(f"No images could be loaded from directory '{directory}'.")
 
-        return (torch.cat(images, dim=0), torch.cat(masks, dim=0), image_count)
+        return (torch.cat(images, dim=0), torch.stack(masks, dim=0), image_count)
 
 
 
