@@ -34,7 +34,7 @@ class ScaledSoftControlNetWeights:
     RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
-    CATEGORY = "adv-controlnet/weights"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/weights"
 
     def load_weights(self, base_multiplier, flip_weights):
         weights = [(base_multiplier ** float(12 - i)) for i in range(13)]
@@ -68,7 +68,7 @@ class SoftControlNetWeights:
     RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
-    CATEGORY = "adv-controlnet/weights"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/weights"
 
     def load_weights(self, weight_00, weight_01, weight_02, weight_03, weight_04, weight_05, weight_06, 
                      weight_07, weight_08, weight_09, weight_10, weight_11, weight_12, flip_weights):
@@ -104,7 +104,7 @@ class CustomControlNetWeights:
     RETURN_TYPES = ("CONTROL_NET_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
-    CATEGORY = "adv-controlnet/weights"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/weights"
 
     def load_weights(self, weight_00, weight_01, weight_02, weight_03, weight_04, weight_05, weight_06, 
                      weight_07, weight_08, weight_09, weight_10, weight_11, weight_12, flip_weights):
@@ -131,7 +131,7 @@ class SoftT2IAdapterWeights:
     RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
-    CATEGORY = "adv-controlnet/weights"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/weights"
 
     def load_weights(self, weight_00, weight_01, weight_02, weight_03, flip_weights):
         weights = [weight_00, weight_01, weight_02, weight_03]
@@ -157,7 +157,7 @@ class CustomT2IAdapterWeights:
     RETURN_TYPES = ("T2I_ADAPTER_WEIGHTS", "TIMESTEP_KEYFRAME",)
     FUNCTION = "load_weights"
 
-    CATEGORY = "adv-controlnet/weights"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/weights"
 
     def load_weights(self, weight_00, weight_01, weight_02, weight_03, flip_weights):
         weights = [weight_00, weight_01, weight_02, weight_03]
@@ -185,7 +185,7 @@ class TimestepKeyframeNode:
     RETURN_TYPES = ("TIMESTEP_KEYFRAME", )
     FUNCTION = "load_keyframe"
 
-    CATEGORY = "adv-controlnet/keyframes"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
 
     def load_keyframe(self,
                       start_percent: float,
@@ -216,7 +216,7 @@ class LatentKeyframeNode:
     RETURN_TYPES = ("LATENT_KEYFRAME", )
     FUNCTION = "load_keyframe"
 
-    CATEGORY = "adv-controlnet/keyframes"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
 
     def load_keyframe(self,
                       batch_index: int,
@@ -245,7 +245,7 @@ class LatentKeyframeGroupNode:
     RETURN_TYPES = ("LATENT_KEYFRAME", )
     FUNCTION = "load_keyframes"
 
-    CATEGORY = "adv-controlnet/keyframes"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
 
     def validate_index(self, index: int, latent_count: int = 0, is_range: bool = False, allow_negative = False) -> int:
         # if part of range, do nothing
@@ -346,7 +346,7 @@ class LatentKeyframeTimingNode:
 
     RETURN_TYPES = ("LATENT_KEYFRAME", )
     FUNCTION = "load_keyframe"
-    CATEGORY = "adv-controlnet/keyframes"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
 
     def load_keyframe(self,
                         batch_index_from: int,
@@ -409,7 +409,7 @@ class ControlNetLoaderAdvanced:
     RETURN_TYPES = ("CONTROL_NET", )
     FUNCTION = "load_controlnet"
 
-    CATEGORY = "adv-controlnet/loaders"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
 
     def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroup=None):
         controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
@@ -433,7 +433,7 @@ class DiffControlNetLoaderAdvanced:
     RETURN_TYPES = ("CONTROL_NET", )
     FUNCTION = "load_controlnet"
 
-    CATEGORY = "adv-controlnet/loaders"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
 
     def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroup, model):
         controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
@@ -463,7 +463,7 @@ class ControlNetApplyAdvanced_AdvControlNet:
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "apply_controlnet"
 
-    CATEGORY = "adv-controlnet/loaders/conditioning"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders/conditioning"
 
     def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, mask_opt=None):
         if strength == 0:
@@ -518,7 +518,7 @@ class LoadImagesFromDirectory:
     RETURN_TYPES = ("IMAGE", "MASK", "INT")
     FUNCTION = "load_images"
 
-    CATEGORY = "adv-controlnet/image"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/deprecated"
 
     def load_images(self, directory: str, image_load_cap: int = 0, start_index: int = 0):
         if not os.path.isdir(directory):
@@ -589,19 +589,19 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     # Keyframes
-    "TimestepKeyframe": "Timestep Keyframe",
-    "LatentKeyframe": "Latent Keyframe",
-    "LatentKeyframeGroup": "Latent Keyframe Group",
-    "LatentKeyframeTiming": "Latent Keyframe Interpolation",
+    "TimestepKeyframe": "Timestep Keyframe 🛂🅐🅒🅝",
+    "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
+    "LatentKeyframeGroup": "Latent Keyframe Group 🛂🅐🅒🅝",
+    "LatentKeyframeTiming": "Latent Keyframe Interpolation 🛂🅐🅒🅝",
     # Loaders
-    "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced)",
-    "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced)",
+    "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
+    "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
     # Weights
-    "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights",
-    "SoftControlNetWeights": "Soft ControlNet Weights",
-    "CustomControlNetWeights": "Custom ControlNet Weights",
-    "SoftT2IAdapterWeights": "Soft T2IAdapter Weights",
-    "CustomT2IAdapterWeights": "Custom T2IAdapter Weights",
+    "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
+    "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
+    "CustomControlNetWeights": "Custom ControlNet Weights 🛂🅐🅒🅝",
+    "SoftT2IAdapterWeights": "Soft T2IAdapter Weights 🛂🅐🅒🅝",
+    "CustomT2IAdapterWeights": "Custom T2IAdapter Weights 🛂🅐🅒🅝",
     # Image
-    "LoadImagesFromDirectory": "Load Images"
+    "LoadImagesFromDirectory": "Load Images [DEPRECATED] 🛂🅐🅒🅝"
 }
