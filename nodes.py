@@ -333,9 +333,9 @@ class LatentKeyframeInterpolationNode:
         return {
             "required": {
                 "batch_index_from": ("INT", {"default": 0, "min": -10000, "max": 10000, "step": 1}),
-                "batch_index_to": ("INT", {"default": 0, "min": -10000, "max": 10000, "step": 1}),
-                "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
-                "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
+                "batch_index_to_excl": ("INT", {"default": 0, "min": -10000, "max": 10000, "step": 1}),
+                "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.0001}, ),
+                "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.0001}, ),
                 "interpolation": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
             },
             "optional": {
@@ -350,26 +350,22 @@ class LatentKeyframeInterpolationNode:
     def load_keyframe(self,
                         batch_index_from: int,
                         strength_from: float,
-                        batch_index_to: int,
+                        batch_index_to_excl: int,
                         strength_to: float,
                         interpolation: str,
                         prev_latent_keyframe: LatentKeyframeGroup=None):
 
-        if (batch_index_from > batch_index_to):
+        if (batch_index_from > batch_index_to_excl):
             raise ValueError("batch_index_from must be less than or equal to batch_index_to.")
 
-        if (batch_index_from < 0 and batch_index_to >= 0):
+        if (batch_index_from < 0 and batch_index_to_excl >= 0):
             raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
-
-        flip_weights = False
-        if (strength_to < strength_from):
-            flip_weights = True
 
         if not prev_latent_keyframe:
             prev_latent_keyframe = LatentKeyframeGroup()
         curr_latent_keyframe = LatentKeyframeGroup()
 
-        steps = batch_index_to - batch_index_from + 1
+        steps = batch_index_to_excl - batch_index_from
         diff = strength_to - strength_from
         if interpolation == "linear":
             weights = np.linspace(strength_from, strength_to, steps)
@@ -383,12 +379,9 @@ class LatentKeyframeInterpolationNode:
             index = np.linspace(0, 1, steps)
             weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
 
-        if flip_weights:
-            weights = np.flip(weights)
-
         for i in range(steps):
             keyframe = LatentKeyframe(batch_index_from + i, float(weights[i]))
-            logger.info("keyframe", batch_index_from + i, ":", weights[i])
+            logger.info(f"keyframe {batch_index_from + i}:{weights[i]}")
             curr_latent_keyframe.add(keyframe)
 
         # replace values with prev_latent_keyframes
