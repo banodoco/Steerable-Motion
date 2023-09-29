@@ -238,7 +238,7 @@ class LatentKeyframeGroupNode:
             },
             "optional": {
                 "prev_latent_keyframe": ("LATENT_KEYFRAME", ),
-                "latent_image_opt": ("LATENT", ),
+                "latent_optional": ("LATENT", ),
             }
         }
     
@@ -327,17 +327,16 @@ class LatentKeyframeGroupNode:
         return (curr_latent_keyframe,)
 
         
-class LatentKeyframeTimingNode:
+class LatentKeyframeInterpolationNode:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                "batch_index_from": ("INT", {"default": 0, "min": -1000, "max": 1000, "step": 1}),
-                "batch_index_to": ("INT", {"default": 0, "min": -1000, "max": 1000, "step": 1}),
+                "batch_index_from": ("INT", {"default": 0, "min": -10000, "max": 10000, "step": 1}),
+                "batch_index_to": ("INT", {"default": 0, "min": -10000, "max": 10000, "step": 1}),
                 "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
                 "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.00001}, ),
                 "interpolation": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
-                "flip_weights": ([False, True], ),
             },
             "optional": {
                 "prev_latent_keyframe": ("LATENT_KEYFRAME", ),
@@ -354,7 +353,6 @@ class LatentKeyframeTimingNode:
                         batch_index_to: int,
                         strength_to: float,
                         interpolation: str,
-                        flip_weights: bool,
                         prev_latent_keyframe: LatentKeyframeGroup=None):
 
         if (batch_index_from > batch_index_to):
@@ -363,11 +361,13 @@ class LatentKeyframeTimingNode:
         if (batch_index_from < 0 and batch_index_to >= 0):
             raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
 
+        flip_weights = False
         if (strength_to < strength_from):
-            raise ValueError("strength_to must be greater than or equal to strength_from.")
+            flip_weights = True
 
         if not prev_latent_keyframe:
             prev_latent_keyframe = LatentKeyframeGroup()
+        curr_latent_keyframe = LatentKeyframeGroup()
 
         steps = batch_index_to - batch_index_from + 1
         diff = strength_to - strength_from
@@ -388,8 +388,12 @@ class LatentKeyframeTimingNode:
 
         for i in range(steps):
             keyframe = LatentKeyframe(batch_index_from + i, float(weights[i]))
-            print("keyframe", batch_index_from + i, ":", weights[i])
-            prev_latent_keyframe.add(keyframe)
+            logger.info("keyframe", batch_index_from + i, ":", weights[i])
+            curr_latent_keyframe.add(keyframe)
+
+        # replace values with prev_latent_keyframes
+        for latent_keyframe in prev_latent_keyframe.keyframes:
+            curr_latent_keyframe.add(latent_keyframe)
 
         return (prev_latent_keyframe,)
 
@@ -573,7 +577,7 @@ NODE_CLASS_MAPPINGS = {
     "TimestepKeyframe": TimestepKeyframeNode,
     "LatentKeyframe": LatentKeyframeNode,
     "LatentKeyframeGroup": LatentKeyframeGroupNode,
-    "LatentKeyframeTiming": LatentKeyframeTimingNode,
+    "LatentKeyframeTiming": LatentKeyframeInterpolationNode,
     # Loaders
     "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
     "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
