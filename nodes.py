@@ -319,11 +319,12 @@ class LatentKeyframeGroupNode:
         latent_keyframes = self.convert_to_latent_keyframes(index_strengths, latent_count=latent_count)
 
         for latent_keyframe in latent_keyframes:
+            logger.info(f"keyframe {latent_keyframe.batch_index}:{latent_keyframe.strength}")
             curr_latent_keyframe.add(latent_keyframe)
         
         for latent_keyframe in prev_latent_keyframe.keyframes:
             curr_latent_keyframe.add(latent_keyframe)
-        
+
         return (curr_latent_keyframe,)
 
         
@@ -388,7 +389,7 @@ class LatentKeyframeInterpolationNode:
         for latent_keyframe in prev_latent_keyframe.keyframes:
             curr_latent_keyframe.add(latent_keyframe)
 
-        return (prev_latent_keyframe,)
+        return (curr_latent_keyframe,)
 
 
 class ControlNetLoaderAdvanced:
