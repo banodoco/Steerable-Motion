@@ -17,7 +17,7 @@ class ScaledSoftControlNetWeights:
         return {
             "required": {
                 "base_multiplier": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
-                "flip_weights": ([False, True], ),
+                "flip_weights": ("BOOLEAN", {"default": False}),
             },
         }
     
@@ -51,7 +51,7 @@ class SoftControlNetWeights:
                 "weight_10": ("FLOAT", {"default": 0.6806249999999999, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_11": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
-                "flip_weights": ([False, True], ),
+                "flip_weights": ("BOOLEAN", {"default": False}),
             },
         }
     
@@ -87,7 +87,7 @@ class CustomControlNetWeights:
                 "weight_10": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_11": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_12": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
-                "flip_weights": ([False, True], ),
+                "flip_weights": ("BOOLEAN", {"default": False}),
             }
         }
     
@@ -114,7 +114,7 @@ class SoftT2IAdapterWeights:
                 "weight_01": ("FLOAT", {"default": 0.62, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_02": ("FLOAT", {"default": 0.825, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
-                "flip_weights": ([False, True], ),
+                "flip_weights": ("BOOLEAN", {"default": False}),
             },
         }
     
@@ -140,7 +140,7 @@ class CustomT2IAdapterWeights:
                 "weight_01": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_02": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
                 "weight_03": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}, ),
-                "flip_weights": ([False, True], ),
+                "flip_weights": ("BOOLEAN", {"default": False}),
             },
         }
     
