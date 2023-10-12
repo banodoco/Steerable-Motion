@@ -4,7 +4,6 @@ These custom nodes allow for scheduling ControlNet strength across latents in th
 Custom weights can also be applied to ControlNets and T2IAdapters to mimic the "My prompt is more important" functionality in AUTOMATIC1111's ControlNet extension.
 
 TODO:
-- Add combined Latent Timestep Keyframe nodes to allow faster setup for easier workflows and to use a single ControlNet for a batch of images; too inefficient and redundant right now for common workflows
 - Other handy nodes
 - Finish and update this README for other workflows
 
