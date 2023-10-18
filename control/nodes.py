@@ -3,7 +3,7 @@ import numpy as np
 import folder_paths
 
 from .control import ControlNetAdvanced, T2IAdapterAdvanced, load_controlnet, ControlNetWeightsType, T2IAdapterWeightsType,\
-    LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup
+    LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup, is_advanced_controlnet
 from .weight_nodes import ScaledSoftControlNetWeights, SoftControlNetWeights, CustomControlNetWeights, \
     SoftT2IAdapterWeights, CustomT2IAdapterWeights
 from .latent_keyframe_nodes import LatentKeyframeGroupNode, LatentKeyframeInterpolationNode, LatentKeyframeBatchedGroupNode, LatentKeyframeNode
@@ -91,7 +91,7 @@ class DiffControlNetLoaderAdvanced:
         return (controlnet,)
 
 
-class ControlNetApplyAdvanced_AdvControlNet:
+class AdvancedControlNetApply:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -105,7 +105,7 @@ class ControlNetApplyAdvanced_AdvControlNet:
                 "end_percent": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})
             },
             "optional": {
-                "mask_opt": ("MASK", ),
+                "mask_optional": ("MASK", ),
             }
         }
 
@@ -113,14 +113,12 @@ class ControlNetApplyAdvanced_AdvControlNet:
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "apply_controlnet"
 
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders/conditioning"
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/conditioning"
 
-    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, mask_opt=None):
+    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, mask_optional=None):
         if strength == 0:
             return (positive, negative)
 
-        if mask_opt is not None:
-            mask_hint = mask_opt.movedim(-1,1)
         control_hint = image.movedim(-1,1)
         cnets = {}
 
@@ -135,12 +133,13 @@ class ControlNetApplyAdvanced_AdvControlNet:
                     c_net = cnets[prev_cnet]
                 else:
                     c_net = control_net.copy().set_cond_hint(control_hint, strength, (1.0 - start_percent, 1.0 - end_percent))
-                    # TODO: finish mask implemention, does nothing right now
-                    if mask_opt is not None:
-                        if isinstance(c_net, ControlNetAdvanced) or isinstance(c_net, T2IAdapterAdvanced):
-                            c_net.set_cond_hint_mask(mask_hint)
-                        else:
-                            logger
+                    # set cond hint mask
+                    if mask_optional is not None:
+                        if is_advanced_controlnet(c_net):
+                            # if not in the form of a batch, make it so
+                            if len(mask_optional.shape) < 3:
+                                mask_optional = mask_optional.unsqueeze(0)
+                            c_net.set_cond_hint_mask(mask_optional)
                     c_net.set_previous_controlnet(prev_cnet)
                     cnets[prev_cnet] = c_net
 
@@ -163,6 +162,8 @@ NODE_CLASS_MAPPINGS = {
     # Loaders
     "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
     "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
+    # Conditioning
+    "ACN_AdvancedControlNetApply": AdvancedControlNetApply,
     # Weights
     "ScaledSoftControlNetWeights": ScaledSoftControlNetWeights,
     "SoftControlNetWeights": SoftControlNetWeights,
@@ -183,6 +184,8 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # Loaders
     "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
     "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
+    # Conditioning
+    "ACN_AdvancedControlNetApply": "Apply Advanced ControlNet 🛂🅐🅒🅝",
     # Weights
     "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
     "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
