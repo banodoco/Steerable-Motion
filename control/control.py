@@ -5,7 +5,7 @@ import torch
 import comfy.utils
 import comfy.controlnet as comfy_cn
 from comfy.controlnet import  ControlNet, T2IAdapter, broadcast_image_to
-from sample import prepare_mask
+
 
 ControlNetWeightsType = list[float]
 T2IAdapterWeightsType = list[float]
@@ -181,12 +181,8 @@ class ControlNetAdvanced(ControlNet):
         self.t = t
         self.batched_number = batched_number
         # TODO: choose TimestepKeyframe based on t
+        # perform special version of get_control that supports sliding context and masks
         return self.sliding_get_control(x_noisy, t, cond, batched_number)
-        if self.sub_idxs is not None:
-            # perform special version of get_control
-            return self.sliding_get_control(x_noisy, t, cond, batched_number)
-        else:
-            return super().get_control(x_noisy, t, cond, batched_number)
 
     def sliding_get_control(self, x_noisy: Tensor, t, cond, batched_number):
         control_prev = None
@@ -203,7 +199,7 @@ class ControlNetAdvanced(ControlNet):
         output_dtype = x_noisy.dtype
 
         # make cond_hint appropriate dimensions
-        # TODO: change this to not require cond_hint upscaling every step
+        # TODO: change this to not require cond_hint upscaling every step when self.sub_idxs are present
         if self.sub_idxs is not None or self.cond_hint is None or x_noisy.shape[2] * 8 != self.cond_hint.shape[2] or x_noisy.shape[3] * 8 != self.cond_hint.shape[3]:
             if self.cond_hint is not None:
                 del self.cond_hint
@@ -231,7 +227,6 @@ class ControlNetAdvanced(ControlNet):
             if x_noisy.shape[0] != self.mask_cond_hint.shape[0]:
                 self.mask_cond_hint = broadcast_image_to(self.mask_cond_hint, x_noisy.shape[0], batched_number)
             self.mask_cond_hint = self.mask_cond_hint.to(self.control_model.dtype).to(self.device)
-            #self.cond_hint = self.cond_hint * self.mask_cond_hint
 
         context = cond['c_crossattn']
         y = cond.get('c_adm', None)
@@ -284,8 +279,6 @@ class ControlNetAdvanced(ControlNet):
             masks = prepare_mask_batch(self.mask_cond_hint, x.shape)
             x[:] = x[:] * masks
 
-
-
     def copy(self):
         c = ControlNetAdvanced(self.control_model, self.timestep_keyframes, global_average_pooling=self.global_average_pooling)
         self.copy_to(c)
@@ -335,6 +328,7 @@ class T2IAdapterAdvanced(T2IAdapter):
 
     def apply_advanced_strengths_and_masks(self, x, current_timestep_keyframe: TimestepKeyframe, batched_number: int):
         # For now, do nothing; need to figure out LatentKeyframe control is even possible for T2I Adapters
+        # TODO: support masks
         return
 
     def copy(self):
@@ -358,6 +352,7 @@ def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, mo
     elif isinstance(control, T2IAdapter):
         return T2IAdapterAdvanced(control.t2i_model, timestep_keyframe, control.channels_in)
     # otherwise, leave it be - probably a ControlLora for SDXL (no support for advanced stuff yet from here)
+    # TODO add ControlLoraAdvanced
     return control
 
 
@@ -369,17 +364,6 @@ def is_advanced_controlnet(input_object):
 def prepare_mask_batch(mask: Tensor, shape: Tensor, multiplier: int=1, match_dim1=False):
     mask = mask.clone()
     mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(shape[2]*multiplier, shape[3]*multiplier), mode="bilinear")
-    #mask = comfy.utils.repeat_to_batch_size(mask, shape[0])
-    #noise_mask = noise_mask.round()
     if match_dim1:
         mask = torch.cat([mask] * shape[1], dim=1)
-    #noise_mask = torch.cat([noise_mask] * shape[1], dim=1)
-    #noise_mask = noise_mask.to(device)
-    return mask
-
-def prepare_mask_batch_old(mask, shape, device):
-    mask = torch.nn.functional.interpolate(mask.reshape((-1, 1, mask.shape[-2], mask.shape[-1])), size=(shape[2], shape[3]), mode="bilinear")
-    mask = mask.round()
-    mask = torch.cat([mask] * shape[1], dim=1)
-    mask = mask.to(device)
     return mask
