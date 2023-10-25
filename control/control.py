@@ -229,7 +229,10 @@ class ControlNetAdvanced(ControlNet):
             self.mask_cond_hint = self.mask_cond_hint.to(self.control_model.dtype).to(self.device)
 
         context = cond['c_crossattn']
-        y = cond.get('c_adm', None)
+        # uses 'y' in new ComfyUI update
+        y = cond.get('y', None)
+        if y is None: # TODO: remove this in the future since no longer used by newest ComfyUI
+            y = cond.get('c_adm', None)
         if y is not None:
             y = y.to(self.control_model.dtype)
         control = self.control_model(x=x_noisy.to(self.control_model.dtype), hint=self.cond_hint, timesteps=t, context=context.to(self.control_model.dtype), y=y)
