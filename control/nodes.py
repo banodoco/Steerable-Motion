@@ -11,6 +11,9 @@ from .deprecated_nodes import LoadImagesFromDirectory
 from .logger import logger
 
 
+
+
+
 class TimestepKeyframeNode:
     @classmethod
     def INPUT_TYPES(s):
@@ -22,7 +25,7 @@ class TimestepKeyframeNode:
                 "control_net_weights": ("CONTROL_NET_WEIGHTS", ),
                 "t2i_adapter_weights": ("T2I_ADAPTER_WEIGHTS", ),
                 "latent_keyframe": ("LATENT_KEYFRAME", ),
-                "prev_timestep_keyframe": ("TIMESTEP_KEYFRAME", ),
+                "prev_timestep_keyframe": ("TIMESTEP_KEYFRAME", ),                
             }
         }
     
@@ -125,12 +128,14 @@ class AdvancedControlNetApply:
         out = []
         for conditioning in [positive, negative]:
             c = []
+                        
             for t in conditioning:
                 d = t[1].copy()
 
                 prev_cnet = d.get('control', None)
                 if prev_cnet in cnets:
                     c_net = cnets[prev_cnet]
+                    
                 else:
                     c_net = control_net.copy().set_cond_hint(control_hint, strength, (1.0 - start_percent, 1.0 - end_percent))
                     # set cond hint mask
@@ -150,9 +155,124 @@ class AdvancedControlNetApply:
             out.append(c)
         return (out[0], out[1])
 
+class CombinedNode:
+    
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "positive": ("CONDITIONING", ),
+                "negative": ("CONDITIONING", ),
+                "control_net_name": (folder_paths.get_filename_list("controlnet"), ),
+                "images": ("IMAGE", ),
+                "length_of_key_frame_influence": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.001}),
+                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "frames_per_keyframe": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),
+                "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
+            },
+            "optional": {
+            }
+        }
+
+    RETURN_TYPES = ("CONDITIONING","CONDITIONING")
+    RETURN_NAMES = ("positive", "negative")
+    FUNCTION = "combined_function"
+
+    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/combined"
+
+    def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,interpolation):
+        
+        def calculate_keyframe_peaks_and_influence(frames_per_keyframe, number_of_keyframes, length_of_influence):
+
+            number_of_frames = frames_per_keyframe * number_of_keyframes
+            # Calculate the interval between keyframes
+            interval = (number_of_frames - 1) // (number_of_keyframes - 1)
+            # Determine if we need to adjust the interval because of a remainder
+            adjustment = (number_of_frames - 1) % (number_of_keyframes - 1)
+
+            # Calculate the peak frames for each keyframe
+            peaks = [0]  # The first keyframe is always at the first frame
+            for i in range(1, number_of_keyframes - 1):  # We already know the first and last keyframe peaks
+                peak = peaks[-1] + interval
+                # If we have a remainder, we distribute it among the first keyframes
+                if i <= adjustment:
+                    peak += 1
+                peaks.append(peak)
+            peaks.append(number_of_frames)  # The last keyframe is always at the last frame
+
+            # Calculate the full interval between keyframes
+            full_interval = (number_of_frames - 1) / (number_of_keyframes - 1)
+            # Calculate the scaled interval based on the length_of_influence
+            scaled_interval = full_interval * length_of_influence
+
+            # Initialize the list to store the influence range for each keyframe
+            influence_ranges = []
+
+            # Loop through each keyframe to calculate its influence range
+            for i, peak in enumerate(peaks):
+                # Calculate the start and end influence around the peak
+                start_influence = max(0, int(peak - scaled_interval / 2.0))
+                end_influence = min(number_of_frames, int(peak + scaled_interval / 2.0))
+                # Add the influence range as a tuple (start, end) to the list
+                influence_ranges.append((start_influence, end_influence))
+
+            return influence_ranges
+                        
+        influence_ranges = calculate_keyframe_peaks_and_influence(frames_per_keyframe, len(images), length_of_key_frame_influence)
+
+        for i, image in enumerate(images):
+            
+            batch_index_from, batch_index_to_excl = influence_ranges[i]
+                                                                                                
+            if i == 0:  # First image
+                strength_from = 1.0
+                strength_to = 0.0                
+                return_at_midpoint = False                
+                
+            elif i == len(images) - 1:  # Last image
+                strength_from = 0.0
+                strength_to = 1.0
+                return_at_midpoint = False                
+                
+            else:  # Middle images
+                strength_from = 0.0
+                strength_to = 1.0
+                return_at_midpoint = True
+                                                                                                              
+            latent_keyframe_interpolation_node = LatentKeyframeInterpolationNode()
+            latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation,return_at_midpoint)                        
+                
+            if i == len(images) - 1:
+                for i in range(10):
+                    keyframe = TimestepKeyframe(batch_index_to_excl + i, 1.0)
+                    timestep_keyframe.add(keyframe)
+
+            scaled_soft_control_net_weights = ScaledSoftControlNetWeights()
+            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(0.85, False)
+
+            timestep_keyframe_node = TimestepKeyframeNode()
+            timestep_keyframe, = timestep_keyframe_node.load_keyframe(
+                start_percent=0.0,
+                control_net_weights=control_net_weights,
+                t2i_adapter_weights=None,
+                latent_keyframe=latent_keyframe,
+                prev_timestep_keyframe=None
+            )
+
+            control_net_loader = ControlNetLoaderAdvanced()
+            control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
+            
+            
+            apply_advanced_control_net = AdvancedControlNetApply()            
+                        
+            positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), cn_strength, 0.0, 1.0)
+
+        return (positive, negative)
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
+    # Combined
+    "CombinedNode": CombinedNode,
     # Keyframes
     "TimestepKeyframe": TimestepKeyframeNode,
     "LatentKeyframe": LatentKeyframeNode,
@@ -175,6 +295,8 @@ NODE_CLASS_MAPPINGS = {
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
+    # Combined
+    "CombinedNode": "Combined 🛂🅐🅒🅝",
     # Keyframes
     "TimestepKeyframe": "Timestep Keyframe 🛂🅐🅒🅝",
     "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
