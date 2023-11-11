@@ -155,7 +155,7 @@ class AdvancedControlNetApply:
             out.append(c)
         return (out[0], out[1])
 
-class CombinedNode:
+class BatchCreativeInterpolationNode:
     
     @classmethod
     def INPUT_TYPES(s):
@@ -272,48 +272,48 @@ class CombinedNode:
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Combined
-    "CombinedNode": CombinedNode,
+    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
     # Keyframes
-    "TimestepKeyframe": TimestepKeyframeNode,
-    "LatentKeyframe": LatentKeyframeNode,
-    "LatentKeyframeGroup": LatentKeyframeGroupNode,
-    "LatentKeyframeBatchedGroup": LatentKeyframeBatchedGroupNode,
-    "LatentKeyframeTiming": LatentKeyframeInterpolationNode,
+    # "TimestepKeyframe": TimestepKeyframeNode,
+    # "LatentKeyframe": LatentKeyframeNode,
+    # "LatentKeyframeGroup": LatentKeyframeGroupNode,
+    # "LatentKeyframeBatchedGroup": LatentKeyframeBatchedGroupNode,
+    # "LatentKeyframeTiming": LatentKeyframeInterpolationNode,
     # Loaders
-    "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
-    "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
+    # "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
+    # "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
     # Conditioning
-    "ACN_AdvancedControlNetApply": AdvancedControlNetApply,
+    # "ACN_AdvancedControlNetApply": AdvancedControlNetApply,
     # Weights
-    "ScaledSoftControlNetWeights": ScaledSoftControlNetWeights,
-    "SoftControlNetWeights": SoftControlNetWeights,
-    "CustomControlNetWeights": CustomControlNetWeights,
-    "SoftT2IAdapterWeights": SoftT2IAdapterWeights,
-    "CustomT2IAdapterWeights": CustomT2IAdapterWeights,
+    # "ScaledSoftControlNetWeights": ScaledSoftControlNetWeights,
+    # "SoftControlNetWeights": SoftControlNetWeights,
+    # "CustomControlNetWeights": CustomControlNetWeights,
+    # "SoftT2IAdapterWeights": SoftT2IAdapterWeights,
+    # "CustomT2IAdapterWeights": CustomT2IAdapterWeights,
     # Image
-    "LoadImagesFromDirectory": LoadImagesFromDirectory
+    # "LoadImagesFromDirectory": LoadImagesFromDirectory
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     # Combined
-    "CombinedNode": "Combined 🛂🅐🅒🅝",
+    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜"
     # Keyframes
-    "TimestepKeyframe": "Timestep Keyframe 🛂🅐🅒🅝",
-    "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
-    "LatentKeyframeGroup": "Latent Keyframe Group 🛂🅐🅒🅝",
-    "LatentKeyframeBatchedGroup": "Latent Keyframe Batched Group 🛂🅐🅒🅝",
-    "LatentKeyframeTiming": "Latent Keyframe Interpolation 🛂🅐🅒🅝",
+    # "TimestepKeyframe": "Timestep Keyframe 🎞️🅟🅞🅜",
+    # "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
+    # "LatentKeyframeGroup": "Latent Keyframe Group 🛂🅐🅒🅝",
+    # "LatentKeyframeBatchedGroup": "Latent Keyframe Batched Group 🛂🅐🅒🅝",
+    # "LatentKeyframeTiming": "Latent Keyframe Interpolation 🛂🅐🅒🅝",
     # Loaders
-    "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
-    "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
+    # "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
+    # "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
     # Conditioning
-    "ACN_AdvancedControlNetApply": "Apply Advanced ControlNet 🛂🅐🅒🅝",
+    # "ACN_AdvancedControlNetApply": "Apply Advanced ControlNet 🛂🅐🅒🅝",
     # Weights
-    "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
-    "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
-    "CustomControlNetWeights": "Custom ControlNet Weights 🛂🅐🅒🅝",
-    "SoftT2IAdapterWeights": "Soft T2IAdapter Weights 🛂🅐🅒🅝",
-    "CustomT2IAdapterWeights": "Custom T2IAdapter Weights 🛂🅐🅒🅝",
+    # "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
+    # "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
+    # "CustomControlNetWeights": "Custom ControlNet Weights 🛂🅐🅒🅝",
+    # "SoftT2IAdapterWeights": "Soft T2IAdapter Weights 🛂🅐🅒🅝",
+    # "CustomT2IAdapterWeights": "Custom T2IAdapter Weights 🛂🅐🅒🅝",
     # Image
-    "LoadImagesFromDirectory": "Load Images [DEPRECATED] 🛂🅐🅒🅝"
+    # "LoadImagesFromDirectory": "Load Images [DEPRECATED] 🛂🅐🅒🅝"
 }
