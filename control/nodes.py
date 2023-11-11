@@ -178,7 +178,7 @@ class BatchCreativeInterpolationNode:
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "combined_function"
 
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/combined"
+    CATEGORY = "ComfyUI-AnimateDiff-Creative-Interpolation 🎞️🅟🅞🅜/Batch"
 
     def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,interpolation):
         
