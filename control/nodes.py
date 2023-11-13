@@ -164,7 +164,8 @@ class BatchCreativeInterpolationNode:
                 "images": ("IMAGE", ),
                 "frames_per_keyframe": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),
                 "length_of_key_frame_influence": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.001}),
-                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),                
+                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),      
+                "soft_scaled_cn_weights_multipler": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
             },
             "optional": {
@@ -177,7 +178,7 @@ class BatchCreativeInterpolationNode:
 
     CATEGORY = "ComfyUI-AnimateDiff-Creative-Interpolation 🎞️🅟🅞🅜/Batch"
 
-    def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,interpolation):
+    def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,soft_scaled_cn_weights_multipler,interpolation):
         
         def calculate_keyframe_peaks_and_influence(frames_per_keyframe, number_of_keyframes, length_of_influence, new_influence_range=(0,4)):
             number_of_frames = frames_per_keyframe * number_of_keyframes
@@ -248,7 +249,7 @@ class BatchCreativeInterpolationNode:
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation,return_at_midpoint)                        
                 
             scaled_soft_control_net_weights = ScaledSoftControlNetWeights()
-            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(0.85, False)
+            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multipler, False)
 
             timestep_keyframe_node = TimestepKeyframeNode()
             timestep_keyframe, = timestep_keyframe_node.load_keyframe(

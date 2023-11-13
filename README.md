@@ -12,7 +12,7 @@ This a ComfyUI node for batch creative interpolation. The goal is to allow you t
 
 Here's a workflow to get started with: https://banodoco.s3.amazonaws.com/creative_interpolation_example.json
 
-You'll need to drop the input images into the 'creative_interpolation_input' folder.
+You'll need to drop the input images into the 'creative_interpolation_input' folder in numerical order - 0.png, 1.png, etc.
 
 The main settings are:
 
