@@ -220,7 +220,7 @@ class BatchCreativeInterpolationNode:
                         
         influence_ranges = calculate_keyframe_peaks_and_influence(frames_per_keyframe, len(images), length_of_key_frame_influence)
 
-        for i in enumerate(influence_ranges):
+        for i, (start, end) in enumerate(influence_ranges):
             
             batch_index_from, batch_index_to_excl = influence_ranges[i]
                                                                                                 
