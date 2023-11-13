@@ -152,7 +152,7 @@ class AdvancedControlNetApply:
             out.append(c)
         return (out[0], out[1])
 
-class BatchCreativeInterpolationNode:
+class LinearBatchCreativeInterpolationNode:
     
     @classmethod
     def INPUT_TYPES(s):
@@ -176,7 +176,7 @@ class BatchCreativeInterpolationNode:
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "combined_function"
 
-    CATEGORY = "ComfyUI-AnimateDiff-Creative-Interpolation 🎞️🅟🅞🅜/Batch"
+    CATEGORY = "ComfyUI-Creative-Interpolation 🎞️🅟🅞🅜/Batch"
 
     def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,soft_scaled_cn_weights_multiplier,interpolation):
         
@@ -272,7 +272,7 @@ class BatchCreativeInterpolationNode:
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Combined
-    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
+    "LinearBatchCreativeInterpolation": LinearBatchCreativeInterpolationNode
     # Keyframes
     # "TimestepKeyframe": TimestepKeyframeNode,
     # "LatentKeyframe": LatentKeyframeNode,
