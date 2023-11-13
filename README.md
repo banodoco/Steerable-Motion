@@ -30,11 +30,13 @@ As an example, here's a batch of input images:
 
 And here's what it looks like when the length_of_key_frame_influence is set to 1.1:
 
-![1.1 Interpolation](https://banodoco.s3.amazonaws.com/1.1-small.gif)
+
+![1.1 Interpolation](https://github.com/peteromallet/ComfyUI-Creative-Interpolation/blob/main/demo/1.1.gif)
+
 
 While here's while that looks like at 0.8:
 
-![0.8 Interpolation](https://banodoco.s3.amazonaws.com/0.8-small.gif)
+![0.8 Interpolation](https://github.com/peteromallet/ComfyUI-Creative-Interpolation/blob/main/demo/0.8.gif)
 
 These settings can be so powerful I believe - please share what works for you and your results!
 
