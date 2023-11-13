@@ -11,9 +11,6 @@ from .deprecated_nodes import LoadImagesFromDirectory
 from .logger import logger
 
 
-
-
-
 class TimestepKeyframeNode:
     @classmethod
     def INPUT_TYPES(s):
@@ -165,9 +162,9 @@ class BatchCreativeInterpolationNode:
                 "negative": ("CONDITIONING", ),
                 "control_net_name": (folder_paths.get_filename_list("controlnet"), ),
                 "images": ("IMAGE", ),
-                "length_of_key_frame_influence": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.001}),
-                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "frames_per_keyframe": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),
+                "length_of_key_frame_influence": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.001}),
+                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),                
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
             },
             "optional": {
@@ -182,8 +179,7 @@ class BatchCreativeInterpolationNode:
 
     def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,interpolation):
         
-        def calculate_keyframe_peaks_and_influence(frames_per_keyframe, number_of_keyframes, length_of_influence):
-
+        def calculate_keyframe_peaks_and_influence(frames_per_keyframe, number_of_keyframes, length_of_influence, new_influence_range=(0,4)):
             number_of_frames = frames_per_keyframe * number_of_keyframes
             # Calculate the interval between keyframes
             interval = (number_of_frames - 1) // (number_of_keyframes - 1)
@@ -198,7 +194,7 @@ class BatchCreativeInterpolationNode:
                 if i <= adjustment:
                     peak += 1
                 peaks.append(peak)
-            peaks.append(number_of_frames)  # The last keyframe is always at the last frame
+            peaks.append(number_of_frames - 1)  # The last keyframe is always at the last frame
 
             # Calculate the full interval between keyframes
             full_interval = (number_of_frames - 1) / (number_of_keyframes - 1)
@@ -206,13 +202,16 @@ class BatchCreativeInterpolationNode:
             scaled_interval = full_interval * length_of_influence
 
             # Initialize the list to store the influence range for each keyframe
-            influence_ranges = []
+            influence_ranges = [new_influence_range]
 
-            # Loop through each keyframe to calculate its influence range
+            # Shift the subsequent influence ranges
+            shift = new_influence_range[1]
+
+            # Loop through each keyframe to calculate its shifted influence range
             for i, peak in enumerate(peaks):
-                # Calculate the start and end influence around the peak
-                start_influence = max(0, int(peak - scaled_interval / 2.0))
-                end_influence = min(number_of_frames, int(peak + scaled_interval / 2.0))
+                # Calculate the start and end influence around the peak, shifted by the new range's end
+                start_influence = max(shift, int(peak - scaled_interval / 2.0) + shift)
+                end_influence = min(number_of_frames + shift, int(peak + scaled_interval / 2.0) + shift)
                 # Add the influence range as a tuple (start, end) to the list
                 influence_ranges.append((start_influence, end_influence))
 
@@ -220,21 +219,27 @@ class BatchCreativeInterpolationNode:
                         
         influence_ranges = calculate_keyframe_peaks_and_influence(frames_per_keyframe, len(images), length_of_key_frame_influence)
 
-        for i, image in enumerate(images):
+        for i, (start, end) in enumerate(influence_ranges):
             
             batch_index_from, batch_index_to_excl = influence_ranges[i]
                                                                                                 
-            if i == 0:  # First image
+            if i == 0:  # buffer image
+                image = images[0]
                 strength_from = 1.0
-                strength_to = 0.0                
-                return_at_midpoint = False                
-                
+                strength_to = 1.0            
+                return_at_midpoint = False 
+            elif i == 1: # First image
+                image = images[0]
+                strength_from = 1.0
+                strength_to = 0.0
+                return_at_midpoint = False                            
             elif i == len(images) - 1:  # Last image
+                image = images[i-1]
                 strength_from = 0.0
                 strength_to = 1.0
-                return_at_midpoint = False                
-                
+                return_at_midpoint = False                                
             else:  # Middle images
+                image = images[i-1]
                 strength_from = 0.0
                 strength_to = 1.0
                 return_at_midpoint = True
@@ -242,11 +247,6 @@ class BatchCreativeInterpolationNode:
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNode()
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation,return_at_midpoint)                        
                 
-            if i == len(images) - 1:
-                for i in range(10):
-                    keyframe = TimestepKeyframe(batch_index_to_excl + i, 1.0)
-                    timestep_keyframe.add(keyframe)
-
             scaled_soft_control_net_weights = ScaledSoftControlNetWeights()
             control_net_weights, _ = scaled_soft_control_net_weights.load_weights(0.85, False)
 
@@ -261,8 +261,7 @@ class BatchCreativeInterpolationNode:
 
             control_net_loader = ControlNetLoaderAdvanced()
             control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
-            
-            
+                        
             apply_advanced_control_net = AdvancedControlNetApply()            
                         
             positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), cn_strength, 0.0, 1.0)

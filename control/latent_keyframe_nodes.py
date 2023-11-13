@@ -144,7 +144,7 @@ class LatentKeyframeInterpolationNode:
                 "strength_from": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.0001}, ),
                 "strength_to": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.0001}, ),
                 "interpolation": (["linear", "ease-in", "ease-out", "ease-in-out"], ),
-                "return_at_midpoint": ("BOOLEAN", {"default": False}),
+                "revert_direction_at_midpoint": ("BOOLEAN", {"default": False}),
             },
             "optional": {
                 "prev_latent_keyframe": ("LATENT_KEYFRAME", ),
