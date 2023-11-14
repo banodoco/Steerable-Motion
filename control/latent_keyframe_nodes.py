@@ -162,7 +162,7 @@ class LatentKeyframeInterpolationNodeImport:
                         strength_to: float,
                         interpolation: str,
                         revert_direction_at_midpoint: bool=False,
-                        prev_latent_keyframe: LatentKeyframeGroup=None
+                        prev_latent_keyframe: LatentKeyframeGroupImport=None
                         ):
 
 
