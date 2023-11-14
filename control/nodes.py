@@ -275,9 +275,9 @@ NODE_CLASS_MAPPINGS = {
     "LinearBatchCreativeInterpolation": LinearBatchCreativeInterpolationNode
     # Keyframes
     # "TimestepKeyframe": TimestepKeyframeNodeImport,
-    # "LatentKeyframe": LatentKeyframeNode,
+    # "LatentKeyframeImport": LatentKeyframeNodeImport,
     # "LatentKeyframeGroupImport": LatentKeyframeGroupImportNode,
-    # "LatentKeyframeBatchedGroup": LatentKeyframeBatchedGroupNode,
+    # "LatentKeyframeBatchedGroupImport": LatentKeyframeBatchedGroupNodeImport,
     # "LatentKeyframeTiming": LatentKeyframeInterpolationNodeImport,
     # Loaders
     # "ControlNetLoaderAdvancedImport": ControlNetLoaderAdvancedImport,
