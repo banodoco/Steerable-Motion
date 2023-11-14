@@ -2,16 +2,16 @@ import numpy as np
 
 import folder_paths
 
-from .control import ControlNetAdvanced, T2IAdapterAdvanced, load_controlnet, ControlNetWeightsType, T2IAdapterWeightsType,\
-    LatentKeyframeGroup, TimestepKeyframe, TimestepKeyframeGroup, is_advanced_controlnet
-from .weight_nodes import ScaledSoftControlNetWeights, SoftControlNetWeights, CustomControlNetWeights, \
-    SoftT2IAdapterWeights, CustomT2IAdapterWeights
-from .latent_keyframe_nodes import LatentKeyframeGroupNode, LatentKeyframeInterpolationNode, LatentKeyframeBatchedGroupNode, LatentKeyframeNode
+from .control import ControlNetAdvancedImport, T2IAdapterAdvancedImport, load_controlnet, ControlNetWeightsTypeImport, T2IAdapterWeightsTypeImport,\
+    LatentKeyframeGroupImport, TimestepKeyframeImport, TimestepKeyframeGroupImport, is_advanced_controlnet
+from .weight_nodes import ScaledSoftControlNetWeightsImport, SoftControlNetWeightsImport, CustomControlNetWeightsImport, \
+    SoftT2IAdapterWeightsImport, CustomT2IAdapterWeightsImport
+from .latent_keyframe_nodes import LatentKeyframeGroupNodeImport, LatentKeyframeInterpolationNodeImport, LatentKeyframeBatchedGroupNodeImport, LatentKeyframeNodeImport
 from .deprecated_nodes import LoadImagesFromDirectory
 from .logger import logger
 
 
-class TimestepKeyframeNode:
+class TimestepKeyframeNodeImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -33,18 +33,18 @@ class TimestepKeyframeNode:
 
     def load_keyframe(self,
                       start_percent: float,
-                      control_net_weights: ControlNetWeightsType=None,
-                      t2i_adapter_weights: T2IAdapterWeightsType=None,
-                      latent_keyframe: LatentKeyframeGroup=None,
-                      prev_timestep_keyframe: TimestepKeyframeGroup=None):
+                      control_net_weights: ControlNetWeightsTypeImport=None,
+                      t2i_adapter_weights: T2IAdapterWeightsTypeImport=None,
+                      latent_keyframe: LatentKeyframeGroupImport=None,
+                      prev_timestep_keyframe: TimestepKeyframeGroupImport=None):
         if not prev_timestep_keyframe:
-            prev_timestep_keyframe = TimestepKeyframeGroup()
-        keyframe = TimestepKeyframe(start_percent, control_net_weights, t2i_adapter_weights, latent_keyframe)
+            prev_timestep_keyframe = TimestepKeyframeGroupImport()
+        keyframe = TimestepKeyframeImport(start_percent, control_net_weights, t2i_adapter_weights, latent_keyframe)
         prev_timestep_keyframe.add(keyframe)
         return (prev_timestep_keyframe,)
 
 
-class ControlNetLoaderAdvanced:
+class ControlNetLoaderAdvancedImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -61,13 +61,13 @@ class ControlNetLoaderAdvanced:
 
     CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
 
-    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroup=None):
+    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroupImport=None):
         controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
         controlnet = load_controlnet(controlnet_path, timestep_keyframe)
         return (controlnet,)
     
 
-class DiffControlNetLoaderAdvanced:
+class DiffControlNetLoaderAdvancedImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -85,13 +85,13 @@ class DiffControlNetLoaderAdvanced:
 
     CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
 
-    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroup, model):
+    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroupImport, model):
         controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
         controlnet = load_controlnet(controlnet_path, timestep_keyframe, model)
         return (controlnet,)
 
 
-class AdvancedControlNetApply:
+class AdvancedControlNetApplyImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -245,13 +245,13 @@ class LinearBatchCreativeInterpolationNode:
                 strength_to = 1.0
                 return_at_midpoint = True
                                                                                                               
-            latent_keyframe_interpolation_node = LatentKeyframeInterpolationNode()
+            latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation,return_at_midpoint)                        
                 
-            scaled_soft_control_net_weights = ScaledSoftControlNetWeights()
+            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
             control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
 
-            timestep_keyframe_node = TimestepKeyframeNode()
+            timestep_keyframe_node = TimestepKeyframeNodeImport()
             timestep_keyframe, = timestep_keyframe_node.load_keyframe(
                 start_percent=0.0,
                 control_net_weights=control_net_weights,
@@ -260,10 +260,10 @@ class LinearBatchCreativeInterpolationNode:
                 prev_timestep_keyframe=None
             )
 
-            control_net_loader = ControlNetLoaderAdvanced()
+            control_net_loader = ControlNetLoaderAdvancedImport()
             control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
                         
-            apply_advanced_control_net = AdvancedControlNetApply()            
+            apply_advanced_control_net = AdvancedControlNetApplyImport()            
                         
             positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), cn_strength, 0.0, 1.0)
 
@@ -274,18 +274,18 @@ NODE_CLASS_MAPPINGS = {
     # Combined
     "LinearBatchCreativeInterpolation": LinearBatchCreativeInterpolationNode
     # Keyframes
-    # "TimestepKeyframe": TimestepKeyframeNode,
+    # "TimestepKeyframe": TimestepKeyframeNodeImport,
     # "LatentKeyframe": LatentKeyframeNode,
-    # "LatentKeyframeGroup": LatentKeyframeGroupNode,
+    # "LatentKeyframeGroupImport": LatentKeyframeGroupImportNode,
     # "LatentKeyframeBatchedGroup": LatentKeyframeBatchedGroupNode,
-    # "LatentKeyframeTiming": LatentKeyframeInterpolationNode,
+    # "LatentKeyframeTiming": LatentKeyframeInterpolationNodeImport,
     # Loaders
-    # "ControlNetLoaderAdvanced": ControlNetLoaderAdvanced,
-    # "DiffControlNetLoaderAdvanced": DiffControlNetLoaderAdvanced,
+    # "ControlNetLoaderAdvancedImport": ControlNetLoaderAdvancedImport,
+    # "DiffControlNetLoaderAdvancedImport": DiffControlNetLoaderAdvancedImport,
     # Conditioning
-    # "ACN_AdvancedControlNetApply": AdvancedControlNetApply,
+    # "ACN_AdvancedControlNetApplyImport": AdvancedControlNetApplyImport,
     # Weights
-    # "ScaledSoftControlNetWeights": ScaledSoftControlNetWeights,
+    # "ScaledSoftControlNetWeightsImport": ScaledSoftControlNetWeightsImport,
     # "SoftControlNetWeights": SoftControlNetWeights,
     # "CustomControlNetWeights": CustomControlNetWeights,
     # "SoftT2IAdapterWeights": SoftT2IAdapterWeights,
@@ -300,16 +300,16 @@ NODE_DISPLAY_NAME_MAPPINGS = {
     # Keyframes
     # "TimestepKeyframe": "Timestep Keyframe 🎞️🅟🅞🅜",
     # "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
-    # "LatentKeyframeGroup": "Latent Keyframe Group 🛂🅐🅒🅝",
+    # "LatentKeyframeGroupImport": "Latent Keyframe Group 🛂🅐🅒🅝",
     # "LatentKeyframeBatchedGroup": "Latent Keyframe Batched Group 🛂🅐🅒🅝",
     # "LatentKeyframeTiming": "Latent Keyframe Interpolation 🛂🅐🅒🅝",
     # Loaders
-    # "ControlNetLoaderAdvanced": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
-    # "DiffControlNetLoaderAdvanced": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
+    # "ControlNetLoaderAdvancedImport": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
+    # "DiffControlNetLoaderAdvancedImport": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
     # Conditioning
-    # "ACN_AdvancedControlNetApply": "Apply Advanced ControlNet 🛂🅐🅒🅝",
+    # "ACN_AdvancedControlNetApplyImport": "Apply Advanced ControlNet 🛂🅐🅒🅝",
     # Weights
-    # "ScaledSoftControlNetWeights": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
+    # "ScaledSoftControlNetWeightsImport": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
     # "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
     # "CustomControlNetWeights": "Custom ControlNet Weights 🛂🅐🅒🅝",
     # "SoftT2IAdapterWeights": "Soft T2IAdapter Weights 🛂🅐🅒🅝",

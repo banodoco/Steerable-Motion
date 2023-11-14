@@ -2,11 +2,11 @@ from typing import Union
 import numpy as np
 from collections.abc import Iterable
 
-from .control import LatentKeyframe, LatentKeyframeGroup
+from .control import LatentKeyframeImport, LatentKeyframeGroupImport
 from .logger import logger
 
 
-class LatentKeyframeNode:
+class LatentKeyframeNodeImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -27,15 +27,15 @@ class LatentKeyframeNode:
     def load_keyframe(self,
                       batch_index: int,
                       strength: float,
-                      prev_latent_keyframe: LatentKeyframeGroup=None):
+                      prev_latent_keyframe: LatentKeyframeGroupImport=None):
         if not prev_latent_keyframe:
-            prev_latent_keyframe = LatentKeyframeGroup()
-        keyframe = LatentKeyframe(batch_index, strength)
+            prev_latent_keyframe = LatentKeyframeGroupImport()
+        keyframe = LatentKeyframeImport(batch_index, strength)
         prev_latent_keyframe.add(keyframe)
         return (prev_latent_keyframe,)
 
 
-class LatentKeyframeGroupNode:
+class LatentKeyframeGroupNodeImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -77,7 +77,7 @@ class LatentKeyframeGroupNode:
         except ValueError as e:
             raise ValueError(f"index '{raw_index}' must be an integer.", e)
 
-    def convert_to_latent_keyframes(self, latent_indeces: str, latent_count: int) -> set[LatentKeyframe]:
+    def convert_to_latent_keyframes(self, latent_indeces: str, latent_count: int) -> set[LatentKeyframeImport]:
         if not latent_indeces:
             return set()
         all_indeces = [i for i in range(0, latent_count)]
@@ -105,19 +105,19 @@ class LatentKeyframeGroupNode:
                 start_index = self.convert_to_index_int(index_range[0], latent_count=latent_count, is_range=True, allow_negative=allow_negative)
                 end_index = self.convert_to_index_int(index_range[1], latent_count=latent_count, is_range=True, allow_negative=allow_negative)
                 for i in all_indeces[start_index:end_index]:
-                    chosen_indeces.add(LatentKeyframe(i, strength))
+                    chosen_indeces.add(LatentKeyframImport(i, strength))
             # parse individual indeces
             else:
-                chosen_indeces.add(LatentKeyframe(self.convert_to_index_int(g, latent_count=latent_count, allow_negative=allow_negative), strength))
+                chosen_indeces.add(LatentKeyframeImport(self.convert_to_index_int(g, latent_count=latent_count, allow_negative=allow_negative), strength))
         return chosen_indeces
 
     def load_keyframes(self,
                        index_strengths: str,
-                       prev_latent_keyframe: LatentKeyframeGroup=None,
+                       prev_latent_keyframe: LatentKeyframeGroupImport=None,
                        latent_image_opt=None):
         if not prev_latent_keyframe:
-            prev_latent_keyframe = LatentKeyframeGroup()
-        curr_latent_keyframe = LatentKeyframeGroup()
+            prev_latent_keyframe = LatentKeyframeGroupImport()
+        curr_latent_keyframe = LatentKeyframeGroupImport()
 
         latent_count = -1
         if latent_image_opt:
@@ -134,7 +134,7 @@ class LatentKeyframeGroupNode:
         return (curr_latent_keyframe,)
 
         
-class LatentKeyframeInterpolationNode:
+class LatentKeyframeInterpolationNodeImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -173,8 +173,8 @@ class LatentKeyframeInterpolationNode:
             raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
 
         if not prev_latent_keyframe:
-            prev_latent_keyframe = LatentKeyframeGroup()
-        curr_latent_keyframe = LatentKeyframeGroup()
+            prev_latent_keyframe = LatentKeyframeGroupImport()
+        curr_latent_keyframe = LatentKeyframeGroupImport()
 
         steps = batch_index_to_excl - batch_index_from
         diff = strength_to - strength_from
@@ -197,7 +197,7 @@ class LatentKeyframeInterpolationNode:
             weights = np.concatenate([weights, weights[-2::-1]])
 
         for i in range(steps):
-            keyframe = LatentKeyframe(batch_index_from + i, float(weights[i]))
+            keyframe = LatentKeyframeImport(batch_index_from + i, float(weights[i]))
             logger.info(f"keyframe {batch_index_from + i}:{weights[i]}")
             curr_latent_keyframe.add(keyframe)
 
@@ -208,7 +208,7 @@ class LatentKeyframeInterpolationNode:
         return (curr_latent_keyframe,)
 
 
-class LatentKeyframeBatchedGroupNode:
+class LatentKeyframeBatchedGroupNodeImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -224,10 +224,10 @@ class LatentKeyframeBatchedGroupNode:
     FUNCTION = "load_keyframe"
     CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
 
-    def load_keyframe(self, strengths: Union[float, list[float]], prev_latent_keyframe: LatentKeyframeGroup=None):
+    def load_keyframe(self, strengths: Union[float, list[float]], prev_latent_keyframe: LatentKeyframeGroupImport=None):
         if not prev_latent_keyframe:
-            prev_latent_keyframe = LatentKeyframeGroup()
-        curr_latent_keyframe = LatentKeyframeGroup()
+            prev_latent_keyframe = LatentKeyframeGroupImport()
+        curr_latent_keyframe = LatentKeyframeGroupImport()
 
         # if received a normal float input, do nothing
         if type(strengths) in (float, int):
@@ -235,7 +235,7 @@ class LatentKeyframeBatchedGroupNode:
         # if iterable, attempt to create LatentKeyframes with chosen strengths
         elif isinstance(strengths, Iterable):
             for idx, strength in enumerate(strengths):
-                keyframe = LatentKeyframe(idx, strength)
+                keyframe = LatentKeyframeImport(idx, strength)
                 curr_latent_keyframe.add(keyframe)
                 logger.info(f"keyframe {keyframe.batch_index}:{keyframe.strength}")
         else:

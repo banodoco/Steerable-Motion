@@ -1,4 +1,4 @@
-from .control import TimestepKeyframe, TimestepKeyframeGroup
+from .control import TimestepKeyframeImport, TimestepKeyframeGroupImport
 from .logger import logger
 
 
@@ -11,7 +11,7 @@ def get_properly_arranged_t2i_weights(initial_weights: list[float]):
     return new_weights
 
 
-class ScaledSoftControlNetWeights:
+class ScaledSoftControlNetWeightsImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -30,10 +30,10 @@ class ScaledSoftControlNetWeights:
         weights = [(base_multiplier ** float(12 - i)) for i in range(13)]
         if flip_weights:
             weights.reverse()
-        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
+        return (weights, TimestepKeyframeGroupImport.default(TimestepKeyframeImport(control_net_weights=weights)))
 
 
-class SoftControlNetWeights:
+class SoftControlNetWeightsImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -66,10 +66,10 @@ class SoftControlNetWeights:
                    weight_07, weight_08, weight_09, weight_10, weight_11, weight_12]
         if flip_weights:
             weights.reverse()
-        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
+        return (weights, TimestepKeyframeGroupImport.default(TimestepKeyframeImport(control_net_weights=weights)))
 
 
-class CustomControlNetWeights:
+class CustomControlNetWeightsImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -102,10 +102,10 @@ class CustomControlNetWeights:
                    weight_07, weight_08, weight_09, weight_10, weight_11, weight_12]
         if flip_weights:
             weights.reverse()
-        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(control_net_weights=weights)))
+        return (weights, TimestepKeyframeGroupImport.default(TimestepKeyframeImport(control_net_weights=weights)))
 
 
-class SoftT2IAdapterWeights:
+class SoftT2IAdapterWeightsImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -128,10 +128,10 @@ class SoftT2IAdapterWeights:
         if flip_weights:
             weights.reverse()
         weights = get_properly_arranged_t2i_weights(weights)
-        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
+        return (weights, TimestepKeyframeGroupImport.default(TimestepKeyframeImport(t2i_adapter_weights=weights)))
 
 
-class CustomT2IAdapterWeights:
+class CustomT2IAdapterWeightsImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -154,4 +154,4 @@ class CustomT2IAdapterWeights:
         if flip_weights:
             weights.reverse()
         weights = get_properly_arranged_t2i_weights(weights)
-        return (weights, TimestepKeyframeGroup.default(TimestepKeyframe(t2i_adapter_weights=weights)))
+        return (weights, TimestepKeyframeGroupImport.default(TimestepKeyframeImport(t2i_adapter_weights=weights)))

@@ -7,22 +7,22 @@ import comfy.controlnet as comfy_cn
 from comfy.controlnet import  ControlNet, T2IAdapter, broadcast_image_to
 
 
-ControlNetWeightsType = list[float]
-T2IAdapterWeightsType = list[float]
+ControlNetWeightsTypeImport = list[float]
+T2IAdapterWeightsTypeImport = list[float]
 
 
-class LatentKeyframe:
+class LatentKeyframeImport:
     def __init__(self, batch_index: int, strength: float) -> None:
         self.batch_index = batch_index
         self.strength = strength
 
 
 # always maintain sorted state (by batch_index of LatentKeyframe)
-class LatentKeyframeGroup:
+class LatentKeyframeGroupImport:
     def __init__(self) -> None:
-        self.keyframes: list[LatentKeyframe] = []
+        self.keyframes: list[LatentKeyframeImport] = []
 
-    def add(self, keyframe: LatentKeyframe) -> None:
+    def add(self, keyframe: LatentKeyframeImport) -> None:
         added = False
         # replace existing keyframe if same batch_index
         for i in range(len(self.keyframes)):
@@ -34,25 +34,25 @@ class LatentKeyframeGroup:
             self.keyframes.append(keyframe)
         self.keyframes.sort(key=lambda k: k.batch_index)
     
-    def get_index(self, index: int) -> Union[LatentKeyframe, None]:
+    def get_index(self, index: int) -> Union[LatentKeyframeImport, None]:
         try:
             return self.keyframes[index]
         except IndexError:
             return None
     
-    def __getitem__(self, index) -> LatentKeyframe:
+    def __getitem__(self, index) -> LatentKeyframeImport:
         return self.keyframes[index]
     
     def is_empty(self) -> bool:
         return len(self.keyframes) == 0
 
 
-class TimestepKeyframe:
+class TimestepKeyframeImport:
     def __init__(self,
                  start_percent: float = 0.0,
-                 control_net_weights: ControlNetWeightsType = None,
-                 t2i_adapter_weights: T2IAdapterWeightsType = None,
-                 latent_keyframes: LatentKeyframeGroup = None,
+                 control_net_weights: ControlNetWeightsTypeImport = None,
+                 t2i_adapter_weights: T2IAdapterWeightsTypeImport = None,
+                 latent_keyframes: LatentKeyframeGroupImport = None,
                  default_latent_strength: float = 0.0) -> None:
         self.start_percent = start_percent
         self.control_net_weights = control_net_weights
@@ -62,17 +62,17 @@ class TimestepKeyframe:
     
     
     @classmethod
-    def default(cls) -> 'TimestepKeyframe':
+    def default(cls) -> 'TimestepKeyframeImport':
         return cls(0.0)
 
 
 # always maintain sorted state (by start_percent of TimestepKeyFrame)
-class TimestepKeyframeGroup:
+class TimestepKeyframeGroupImport:
     def __init__(self) -> None:
-        self.keyframes: list[TimestepKeyframe] = []
-        self.keyframes.append(TimestepKeyframe.default())
+        self.keyframes: list[TimestepKeyframeImport] = []
+        self.keyframes.append(TimestepKeyframeImport.default())
 
-    def add(self, keyframe: TimestepKeyframe) -> None:
+    def add(self, keyframe: TimestepKeyframeImport) -> None:
         added = False
         # replace existing keyframe if same start_percent
         for i in range(len(self.keyframes)):
@@ -84,20 +84,20 @@ class TimestepKeyframeGroup:
             self.keyframes.append(keyframe)
         self.keyframes.sort(key=lambda k: k.start_percent)
 
-    def get_index(self, index: int) -> Union[TimestepKeyframe, None]:
+    def get_index(self, index: int) -> Union[TimestepKeyframeImport, None]:
         try:
             return self.keyframes[index]
         except IndexError:
             return None
     
-    def __getitem__(self, index) -> TimestepKeyframe:
+    def __getitem__(self, index) -> TimestepKeyframeImport:
         return self.keyframes[index]
     
     def is_empty(self) -> bool:
         return len(self.keyframes) == 0
     
     @classmethod
-    def default(cls, keyframe: TimestepKeyframe) -> 'TimestepKeyframeGroup':
+    def default(cls, keyframe: TimestepKeyframeImport) -> 'TimestepKeyframeGroupImport':
         group = cls()
         group.keyframes[0] = keyframe
         return group
@@ -154,11 +154,11 @@ def control_merge_inject(self, control_input, control_output, control_prev, outp
     return out
 
 
-class ControlNetAdvanced(ControlNet):
-    def __init__(self, control_model, timestep_keyframes: TimestepKeyframeGroup, global_average_pooling=False, device=None):
+class ControlNetAdvancedImport(ControlNet):
+    def __init__(self, control_model, timestep_keyframes: TimestepKeyframeGroupImport, global_average_pooling=False, device=None):
         super().__init__(control_model=control_model, global_average_pooling=global_average_pooling, device=device)
         # initialize timestep_keyframes
-        self.timestep_keyframes = timestep_keyframes if timestep_keyframes else TimestepKeyframeGroup()
+        self.timestep_keyframes = timestep_keyframes if timestep_keyframes else TimestepKeyframeGroupImport()
         self.current_timestep_keyframe = self.timestep_keyframes.keyframes[0]
         # initialize weights
         self.weights = self.timestep_keyframes.keyframes[0].control_net_weights if self.timestep_keyframes.keyframes[0].control_net_weights else [1.0]*13
@@ -243,7 +243,7 @@ class ControlNetAdvanced(ControlNet):
         control = self.control_model(x=x_noisy.to(self.control_model.dtype), hint=self.cond_hint, timesteps=timestep.float(), context=context.to(self.control_model.dtype), y=y)
         return self.control_merge(None, control, control_prev, output_dtype)
 
-    def apply_advanced_strengths_and_masks(self, x: Tensor, current_timestep_keyframe: TimestepKeyframe, batched_number: int):
+    def apply_advanced_strengths_and_masks(self, x: Tensor, current_timestep_keyframe: TimestepKeyframeImport, batched_number: int):
         # apply strengths, and get batch indeces to default out
         # AKA latents that should not be influenced by ControlNet
         if current_timestep_keyframe.latent_keyframes is not None:
@@ -288,7 +288,7 @@ class ControlNetAdvanced(ControlNet):
             x[:] = x[:] * masks
 
     def copy(self):
-        c = ControlNetAdvanced(self.control_model, self.timestep_keyframes, global_average_pooling=self.global_average_pooling)
+        c = ControlNetAdvancedImport(self.control_model, self.timestep_keyframes, global_average_pooling=self.global_average_pooling)
         self.copy_to(c)
         return c
 
@@ -299,10 +299,10 @@ class ControlNetAdvanced(ControlNet):
         self.context_length = 0
 
 
-class T2IAdapterAdvanced(T2IAdapter):
-    def __init__(self, t2i_model, timestep_keyframes: TimestepKeyframeGroup, channels_in, device=None):
+class T2IAdapterAdvancedImport(T2IAdapter):
+    def __init__(self, t2i_model, timestep_keyframes: TimestepKeyframeGroupImport, channels_in, device=None):
         super().__init__(t2i_model=t2i_model, channels_in=channels_in, device=device)
-        self.timestep_keyframes = timestep_keyframes if timestep_keyframes else TimestepKeyframeGroup()
+        self.timestep_keyframes = timestep_keyframes if timestep_keyframes else TimestepKeyframeGroupImport()
         self.current_timestep_keyframe = self.timestep_keyframes.keyframes[0]
         first_weight = self.timestep_keyframes.keyframes[0].t2i_adapter_weights if self.timestep_keyframes.get_index(0) else None
         self.weights = first_weight if first_weight else [1.0]*12
@@ -334,13 +334,13 @@ class T2IAdapterAdvanced(T2IAdapter):
                 self.cond_hint_original = full_cond_hint_original
                 del full_cond_hint_original
 
-    def apply_advanced_strengths_and_masks(self, x, current_timestep_keyframe: TimestepKeyframe, batched_number: int):
+    def apply_advanced_strengths_and_masks(self, x, current_timestep_keyframe: TimestepKeyframeImport, batched_number: int):
         # For now, do nothing; need to figure out LatentKeyframe control is even possible for T2I Adapters
         # TODO: support masks
         return
 
     def copy(self):
-        c = T2IAdapterAdvanced(self.t2i_model, self.timestep_keyframes, self.channels_in)
+        c = T2IAdapterAdvancedImport(self.t2i_model, self.timestep_keyframes, self.channels_in)
         self.copy_to(c)
         return c
     
@@ -351,21 +351,21 @@ class T2IAdapterAdvanced(T2IAdapter):
         self.context_length = 0
 
 
-def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroup=None, model=None):
+def load_controlnet(ckpt_path, timestep_keyframe: TimestepKeyframeGroupImport=None, model=None):
     control = comfy_cn.load_controlnet(ckpt_path, model=model)
     # if exactly ControlNet returned, transform it into ControlNetAdvanced
     if type(control) == ControlNet:
-        return ControlNetAdvanced(control.control_model, timestep_keyframe, global_average_pooling=control.global_average_pooling)
+        return ControlNetAdvancedImport(control.control_model, timestep_keyframe, global_average_pooling=control.global_average_pooling)
     # if T2IAdapter returned, transform it into T2IAdapterAdvanced
     elif isinstance(control, T2IAdapter):
-        return T2IAdapterAdvanced(control.t2i_model, timestep_keyframe, control.channels_in)
+        return T2IAdapterAdvancedImport(control.t2i_model, timestep_keyframe, control.channels_in)
     # otherwise, leave it be - probably a ControlLora for SDXL (no support for advanced stuff yet from here)
     # TODO add ControlLoraAdvanced
     return control
 
 
 def is_advanced_controlnet(input_object):
-    return isinstance(input_object, ControlNetAdvanced) or isinstance(input_object, T2IAdapterAdvanced)
+    return isinstance(input_object, ControlNetAdvancedImport) or isinstance(input_object, T2IAdapterAdvancedImport)
 
 
 # adapted from comfy/sample.py
