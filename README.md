@@ -10,7 +10,7 @@ This a ComfyUI node for batch creative interpolation. The goal is to allow you t
 
 ## Usage
 
-Here's a workflow to get started with: https://banodoco.s3.amazonaws.com/creative_interpolation_example.json
+Here's a workflow to get started with: https://github.com/peteromallet/ComfyUI-Creative-Interpolation/blob/main/demo/creative_interpolation_example.json
 
 You'll need to drop the input images into the 'creative_interpolation_input' folder in numerical order - 0.png, 1.png, etc.
 
@@ -26,7 +26,7 @@ Also, **there's currently a bug where it needs to be restarted after each batch*
 
 As an example, here's a batch of input images:
 
-![Batch of input images](https://banodoco.s3.amazonaws.com/interpolation_input.png)
+![Batch of input images](https://github.com/peteromallet/ComfyUI-Creative-Interpolation/blob/main/demo/input_example.png)
 
 And here's what it looks like when the length_of_key_frame_influence is set to 1.1:
 
