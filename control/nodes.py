@@ -249,7 +249,7 @@ class BatchCreativeInterpolationNode:
                 strength_from = 1.0
                 strength_to = 0.0
                 return_at_midpoint = False                            
-            elif i == len(images) - 1:  # Last image
+            elif i == len(images):  # Last image
                 image = images[i-1]
                 strength_from = 0.0
                 strength_to = 1.0
