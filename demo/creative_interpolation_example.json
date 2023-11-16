@@ -169,7 +169,7 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "AD__00041.mp4",
+            "filename": "AD__00047.mp4",
             "subfolder": "creative_interpolation_results",
             "type": "output",
             "format": "video/h264-mp4"
@@ -424,231 +424,6 @@
       "bgcolor": "#653"
     },
     {
-      "id": 207,
-      "type": "KSampler Adv. (Efficient)",
-      "pos": [
-        1510,
-        -1040
-      ],
-      "size": {
-        "0": 325,
-        "1": 658
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 543
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 666
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 667
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 633
-        },
-        {
-          "name": "optional_vae",
-          "type": "VAE",
-          "link": 632
-        },
-        {
-          "name": "script",
-          "type": "SCRIPT",
-          "link": null,
-          "slot_index": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CONDITIONING+",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "CONDITIONING-",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            653
-          ],
-          "shape": 3,
-          "slot_index": 5
-        }
-      ],
-      "title": "KSampler Adv. (Efficient), CN sampler",
-      "properties": {
-        "Node name for S&R": "KSampler Adv. (Efficient)"
-      },
-      "widgets_values": [
-        "enable",
-        6,
-        null,
-        20,
-        10,
-        "ddpm",
-        "karras",
-        5,
-        20,
-        "disable",
-        "auto",
-        "true"
-      ],
-      "color": "#222233",
-      "bgcolor": "#333355",
-      "shape": 1
-    },
-    {
-      "id": 352,
-      "type": "CLIPTextEncode",
-      "pos": [
-        95,
-        -962
-      ],
-      "size": {
-        "0": 483.6921691894531,
-        "1": 182.32534790039062
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 644
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            664
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "hands, hand, (worst quality, low quality:1.2)"
-      ],
-      "color": "#322",
-      "bgcolor": "#533"
-    },
-    {
-      "id": 365,
-      "type": "BatchCreativeInterpolation",
-      "pos": [
-        636,
-        -1269
-      ],
-      "size": [
-        488.56990545482176,
-        347.0449828807655
-      ],
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 663
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 664
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 665
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            666
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            667
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchCreativeInterpolation"
-      },
-      "widgets_values": [
-        "control_v11f1e_sd15_tile_fp16.safetensors",
-        "linear",
-        16,
-        "0,10,26,40,46",
-        1.1,
-        0.5,
-        0.85,
-        "ease-in-out",
-        4
-      ]
-    },
-    {
       "id": 189,
       "type": "Efficient Loader",
       "pos": [
@@ -759,58 +534,6 @@
       "shape": 1
     },
     {
-      "id": 323,
-      "type": "VHS_LoadImagesPath",
-      "pos": [
-        -1775,
-        -829
-      ],
-      "size": {
-        "0": 315,
-        "1": 170
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            619,
-            657,
-            665
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_LoadImagesPath"
-      },
-      "widgets_values": {
-        "directory": "creative_interpolation_input",
-        "image_load_cap": 0,
-        "skip_first_images": 0,
-        "select_every_nth": 1
-      },
-      "color": "#332922",
-      "bgcolor": "#593930"
-    },
-    {
       "id": 359,
       "type": "Note",
       "pos": [
@@ -822,36 +545,13 @@
         "1": 118.72222137451172
       },
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "properties": {
         "text": ""
       },
       "widgets_values": [
         "## You'll need to create this folder in ComfyUI/inputs and place your images inside it in numerical order - 1.png, 2.png, etc."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 360,
-      "type": "Note",
-      "pos": [
-        614,
-        -1687
-      ],
-      "size": [
-        506.9915747996947,
-        319.2813254950913
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frames_per_keyframe to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -868,7 +568,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "outputs": [
         {
@@ -1013,7 +713,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "outputs": [
         {
@@ -1030,6 +730,308 @@
       },
       "widgets_values": [
         "SD1.5/pytorch_model.bin"
+      ]
+    },
+    {
+      "id": 323,
+      "type": "VHS_LoadImagesPath",
+      "pos": [
+        -1775,
+        -829
+      ],
+      "size": {
+        "0": 315,
+        "1": 170
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            619,
+            657,
+            665
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_LoadImagesPath"
+      },
+      "widgets_values": {
+        "directory": "input",
+        "image_load_cap": 0,
+        "skip_first_images": 0,
+        "select_every_nth": 1
+      },
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 207,
+      "type": "KSampler Adv. (Efficient)",
+      "pos": [
+        1510,
+        -1040
+      ],
+      "size": {
+        "0": 325,
+        "1": 658
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 543
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 666
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 667
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 633
+        },
+        {
+          "name": "optional_vae",
+          "type": "VAE",
+          "link": 632
+        },
+        {
+          "name": "script",
+          "type": "SCRIPT",
+          "link": null,
+          "slot_index": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CONDITIONING+",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "CONDITIONING-",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            653
+          ],
+          "shape": 3,
+          "slot_index": 5
+        }
+      ],
+      "title": "KSampler Adv. (Efficient), CN sampler",
+      "properties": {
+        "Node name for S&R": "KSampler Adv. (Efficient)"
+      },
+      "widgets_values": [
+        "enable",
+        6,
+        null,
+        20,
+        10,
+        "ddpm",
+        "karras",
+        5,
+        20,
+        "disable",
+        "auto",
+        "true"
+      ],
+      "color": "#222233",
+      "bgcolor": "#333355",
+      "shape": 1
+    },
+    {
+      "id": 360,
+      "type": "Note",
+      "pos": [
+        631,
+        -1677
+      ],
+      "size": [
+        508.23260699815955,
+        385.82280031314554
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frame_distribution_value to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nSimilarly, type_of_key_frame_influence determines how the frames influence the next ones. If you set it to linear, linear_key_frame_influence_value will determine how long every frame influences - 1.0 will make it normal, higher values will make it longer. If you set type_of_key_frame_influence to dynamic, you can input distinct values in linear_key_frame_influence_value for each frame.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 352,
+      "type": "CLIPTextEncode",
+      "pos": [
+        10,
+        -962
+      ],
+      "size": {
+        "0": 483.6921691894531,
+        "1": 182.32534790039062
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 644
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            664
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "hands, hand, (worst quality, low quality:1.2)"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
+      "id": 365,
+      "type": "BatchCreativeInterpolation",
+      "pos": [
+        609,
+        -1179
+      ],
+      "size": {
+        "0": 488.5699157714844,
+        "1": 382
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 663
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 664
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 665
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            666
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            667
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchCreativeInterpolation"
+      },
+      "widgets_values": [
+        "control_v11f1e_sd15_tile_fp16.safetensors",
+        "linear",
+        16,
+        "0,10,26,40,46",
+        "dynamic",
+        1.1,
+        "0.5,0.5,2.0,0.5",
+        0.5,
+        0.85,
+        "ease-in-out",
+        4
       ]
     }
   ],
