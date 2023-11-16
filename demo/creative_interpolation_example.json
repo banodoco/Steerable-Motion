@@ -255,182 +255,6 @@
       "bgcolor": "#653"
     },
     {
-      "id": 297,
-      "type": "CLIPVisionLoader",
-      "pos": [
-        -466.51702740272987,
-        -54.232417075972286
-      ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "CLIP_VISION",
-          "type": "CLIP_VISION",
-          "links": [
-            566
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPVisionLoader"
-      },
-      "widgets_values": [
-        "SD1.5/pytorch_model.bin"
-      ]
-    },
-    {
-      "id": 300,
-      "type": "IPAdapterEncoder",
-      "pos": [
-        -163.5170274027301,
-        -399.2324170759726
-      ],
-      "size": {
-        "0": 315,
-        "1": 258
-      },
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_vision",
-          "type": "CLIP_VISION",
-          "link": 566,
-          "slot_index": 0
-        },
-        {
-          "name": "image_1",
-          "type": "IMAGE",
-          "link": 657
-        },
-        {
-          "name": "image_2",
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "name": "image_3",
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "name": "image_4",
-          "type": "IMAGE",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "EMBEDS",
-          "type": "EMBEDS",
-          "links": [
-            563
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterEncoder"
-      },
-      "widgets_values": [
-        false,
-        0,
-        1,
-        1,
-        1,
-        1
-      ]
-    },
-    {
-      "id": 301,
-      "type": "IPAdapterApplyEncoded",
-      "pos": [
-        300.48297259727,
-        -388.2324170759726
-      ],
-      "size": {
-        "0": 315,
-        "1": 98
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "ipadapter",
-          "type": "IPADAPTER",
-          "link": 564,
-          "slot_index": 0
-        },
-        {
-          "name": "embeds",
-          "type": "EMBEDS",
-          "link": 563,
-          "slot_index": 1
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 571
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            570
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterApplyEncoded"
-      },
-      "widgets_values": [
-        0.6900000000000001
-      ]
-    },
-    {
-      "id": 294,
-      "type": "IPAdapterModelLoader",
-      "pos": [
-        167.48297259726994,
-        -76.23241707597224
-      ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
-      "flags": {},
-      "order": 2,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IPADAPTER",
-          "type": "IPADAPTER",
-          "links": [
-            564
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterModelLoader"
-      },
-      "widgets_values": [
-        "ip-adapter_sd15.bin"
-      ]
-    },
-    {
       "id": 361,
       "type": "Note",
       "pos": [
@@ -442,7 +266,7 @@
         "1": 245.289306640625
       },
       "flags": {},
-      "order": 3,
+      "order": 1,
       "mode": 0,
       "properties": {
         "text": ""
@@ -465,7 +289,7 @@
         "1": 154
       },
       "flags": {},
-      "order": 4,
+      "order": 2,
       "mode": 0,
       "outputs": [
         {
@@ -501,7 +325,7 @@
         "1": 245.289306640625
       },
       "flags": {},
-      "order": 5,
+      "order": 3,
       "mode": 0,
       "properties": {
         "text": ""
@@ -588,7 +412,7 @@
         "1": 245.289306640625
       },
       "flags": {},
-      "order": 6,
+      "order": 4,
       "mode": 0,
       "properties": {
         "text": ""
@@ -825,29 +649,6 @@
       ]
     },
     {
-      "id": 360,
-      "type": "Note",
-      "pos": [
-        616,
-        -1638
-      ],
-      "size": [
-        504.15610301351353,
-        275.19243832578627
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frames_per_keyframe to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
       "id": 189,
       "type": "Efficient Loader",
       "pos": [
@@ -861,7 +662,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 8,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -969,7 +770,7 @@
         "1": 170
       },
       "flags": {},
-      "order": 9,
+      "order": 6,
       "mode": 0,
       "outputs": [
         {
@@ -1021,7 +822,7 @@
         "1": 118.72222137451172
       },
       "flags": {},
-      "order": 10,
+      "order": 7,
       "mode": 0,
       "properties": {
         "text": ""
@@ -1031,6 +832,205 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 360,
+      "type": "Note",
+      "pos": [
+        614,
+        -1687
+      ],
+      "size": [
+        506.9915747996947,
+        319.2813254950913
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frames_per_keyframe to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 294,
+      "type": "IPAdapterModelLoader",
+      "pos": [
+        170,
+        -61
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IPADAPTER",
+          "type": "IPADAPTER",
+          "links": [
+            564
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterModelLoader"
+      },
+      "widgets_values": [
+        "ip-adapter_sd15.bin"
+      ]
+    },
+    {
+      "id": 301,
+      "type": "IPAdapterApplyEncoded",
+      "pos": [
+        288,
+        -337
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ipadapter",
+          "type": "IPADAPTER",
+          "link": 564,
+          "slot_index": 0
+        },
+        {
+          "name": "embeds",
+          "type": "EMBEDS",
+          "link": 563,
+          "slot_index": 1
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 571
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            570
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterApplyEncoded"
+      },
+      "widgets_values": [
+        0.6900000000000001
+      ]
+    },
+    {
+      "id": 300,
+      "type": "IPAdapterEncoder",
+      "pos": [
+        -168,
+        -384
+      ],
+      "size": {
+        "0": 315,
+        "1": 258
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_vision",
+          "type": "CLIP_VISION",
+          "link": 566,
+          "slot_index": 0
+        },
+        {
+          "name": "image_1",
+          "type": "IMAGE",
+          "link": 657
+        },
+        {
+          "name": "image_2",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image_3",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image_4",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "EMBEDS",
+          "type": "EMBEDS",
+          "links": [
+            563
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterEncoder"
+      },
+      "widgets_values": [
+        false,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": 297,
+      "type": "CLIPVisionLoader",
+      "pos": [
+        -505,
+        -29
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP_VISION",
+          "type": "CLIP_VISION",
+          "links": [
+            566
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPVisionLoader"
+      },
+      "widgets_values": [
+        "SD1.5/pytorch_model.bin"
+      ]
     }
   ],
   "links": [
