@@ -291,7 +291,7 @@ class BatchCreativeInterpolationNode:
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Combined
-    "LinearBatchCreativeInterpolation": LinearBatchCreativeInterpolationNode
+    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
     # Keyframes
     # "TimestepKeyframe": TimestepKeyframeNodeImport,
     # "LatentKeyframeImport": LatentKeyframeNodeImport,
