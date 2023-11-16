@@ -1,80 +1,13 @@
 {
-  "last_node_id": 364,
-  "last_link_id": 662,
+  "last_node_id": 365,
+  "last_link_id": 667,
   "nodes": [
-    {
-      "id": 294,
-      "type": "IPAdapterModelLoader",
-      "pos": [
-        433.73271339338095,
-        -9.957814472915118
-      ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IPADAPTER",
-          "type": "IPADAPTER",
-          "links": [
-            564
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterModelLoader"
-      },
-      "widgets_values": [
-        "ip-adapter_sd15.bin"
-      ]
-    },
-    {
-      "id": 342,
-      "type": "ADE_AnimateDiffUniformContextOptions",
-      "pos": [
-        1487,
-        -1400
-      ],
-      "size": {
-        "0": 315,
-        "1": 154
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "CONTEXT_OPTIONS",
-          "type": "CONTEXT_OPTIONS",
-          "links": [
-            627
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
-      },
-      "widgets_values": [
-        16,
-        2,
-        2,
-        "uniform",
-        false
-      ]
-    },
     {
       "id": 354,
       "type": "VHS_SplitImages",
       "pos": [
-        2439,
-        -913
+        2529.475905889869,
+        -1142.7707149068153
       ],
       "size": {
         "0": 315,
@@ -128,11 +61,667 @@
       }
     },
     {
+      "id": 292,
+      "type": "STMFNet VFI",
+      "pos": [
+        2568.475905889869,
+        -932.7707149068144
+      ],
+      "size": {
+        "0": 443.4000244140625,
+        "1": 150
+      },
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 654
+        },
+        {
+          "name": "optional_interpolation_states",
+          "type": "INTERPOLATION_STATES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            656
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "STMFNet VFI"
+      },
+      "widgets_values": [
+        "stmfnet.pth",
+        14,
+        2,
+        true
+      ]
+    },
+    {
+      "id": 332,
+      "type": "PreviewImage",
+      "pos": [
+        -1460,
+        -1290
+      ],
+      "size": {
+        "0": 380,
+        "1": 250
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 619
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3351.7515134107794,
+        -1039.9403187565451
+      ],
+      "size": [
+        320,
+        496
+      ],
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 656
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 14,
+        "loop_count": 0,
+        "filename_prefix": "creative_interpolation_results/AD_",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_image": true,
+        "crf": 20,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00041.mp4",
+            "subfolder": "creative_interpolation_results",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
+      "id": 347,
+      "type": "BatchPromptSchedule",
+      "pos": [
+        95,
+        -1565
+      ],
+      "size": {
+        "0": 418.2182922363281,
+        "1": 459.75811767578125
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 634
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [
+            663
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchPromptSchedule"
+      },
+      "widgets_values": [
+        "\"0\" :\"\",\n\"16\" :\"\",\n\"32\" :\"\",\n\"48\" :\"\",\n\"64\" :\"\",\n\"80\" :\"\",\n\"96\" :\"\"\n",
+        324,
+        false,
+        "PRE",
+        "APP",
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 364,
+      "type": "Note",
+      "pos": [
+        -416,
+        -964
+      ],
+      "size": {
+        "0": 312.1289367675781,
+        "1": 245.289306640625
+      },
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Please set batch_size at frames_per_key_frame * number_of_key_frames + 4 - the 4 is to give additional buffer to solve issues with the uniform context scheduling. A hacky solution for now."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 297,
+      "type": "CLIPVisionLoader",
+      "pos": [
+        -466.51702740272987,
+        -54.232417075972286
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP_VISION",
+          "type": "CLIP_VISION",
+          "links": [
+            566
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPVisionLoader"
+      },
+      "widgets_values": [
+        "SD1.5/pytorch_model.bin"
+      ]
+    },
+    {
+      "id": 300,
+      "type": "IPAdapterEncoder",
+      "pos": [
+        -163.5170274027301,
+        -399.2324170759726
+      ],
+      "size": {
+        "0": 315,
+        "1": 258
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip_vision",
+          "type": "CLIP_VISION",
+          "link": 566,
+          "slot_index": 0
+        },
+        {
+          "name": "image_1",
+          "type": "IMAGE",
+          "link": 657
+        },
+        {
+          "name": "image_2",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image_3",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "image_4",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "EMBEDS",
+          "type": "EMBEDS",
+          "links": [
+            563
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterEncoder"
+      },
+      "widgets_values": [
+        false,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "id": 301,
+      "type": "IPAdapterApplyEncoded",
+      "pos": [
+        300.48297259727,
+        -388.2324170759726
+      ],
+      "size": {
+        "0": 315,
+        "1": 98
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "ipadapter",
+          "type": "IPADAPTER",
+          "link": 564,
+          "slot_index": 0
+        },
+        {
+          "name": "embeds",
+          "type": "EMBEDS",
+          "link": 563,
+          "slot_index": 1
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 571
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            570
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterApplyEncoded"
+      },
+      "widgets_values": [
+        0.6900000000000001
+      ]
+    },
+    {
+      "id": 294,
+      "type": "IPAdapterModelLoader",
+      "pos": [
+        167.48297259726994,
+        -76.23241707597224
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
+      },
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IPADAPTER",
+          "type": "IPADAPTER",
+          "links": [
+            564
+          ],
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IPAdapterModelLoader"
+      },
+      "widgets_values": [
+        "ip-adapter_sd15.bin"
+      ]
+    },
+    {
+      "id": 361,
+      "type": "Note",
+      "pos": [
+        682.4829725972701,
+        -283.2324170759726
+      ],
+      "size": {
+        "0": 312.1289367675781,
+        "1": 245.289306640625
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Ipadapter weight also has a huge impact on the outcome - more = more adherence to the original images. Sometimes this can be too much control."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 342,
+      "type": "ADE_AnimateDiffUniformContextOptions",
+      "pos": [
+        1465,
+        -1439
+      ],
+      "size": {
+        "0": 315,
+        "1": 154
+      },
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "CONTEXT_OPTIONS",
+          "type": "CONTEXT_OPTIONS",
+          "links": [
+            627
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
+      },
+      "widgets_values": [
+        16,
+        2,
+        2,
+        "uniform",
+        false
+      ]
+    },
+    {
+      "id": 362,
+      "type": "Note",
+      "pos": [
+        1884,
+        -1504
+      ],
+      "size": {
+        "0": 312.1289367675781,
+        "1": 245.289306640625
+      },
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "motion_scale can also be really useful - tuning it down can remove jolty motion."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
+      "pos": [
+        1910,
+        -1122
+      ],
+      "size": {
+        "0": 315,
+        "1": 190
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 570,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 627,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            543
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+      },
+      "widgets_values": [
+        "mm_sd_v15_v2.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        0.8,
+        false
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 363,
+      "type": "Note",
+      "pos": [
+        2651.475905889869,
+        -676.7707149068145
+      ],
+      "size": {
+        "0": 312.1289367675781,
+        "1": 245.289306640625
+      },
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Increasing the multipler makes the video longer by creating new frames - it can result in some weird effects >2 but worth experimenting with for additional motion/fluidity."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 207,
+      "type": "KSampler Adv. (Efficient)",
+      "pos": [
+        1510,
+        -1040
+      ],
+      "size": {
+        "0": 325,
+        "1": 658
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 543
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 666
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 667
+        },
+        {
+          "name": "latent_image",
+          "type": "LATENT",
+          "link": 633
+        },
+        {
+          "name": "optional_vae",
+          "type": "VAE",
+          "link": 632
+        },
+        {
+          "name": "script",
+          "type": "SCRIPT",
+          "link": null,
+          "slot_index": 5
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CONDITIONING+",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "CONDITIONING-",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            653
+          ],
+          "shape": 3,
+          "slot_index": 5
+        }
+      ],
+      "title": "KSampler Adv. (Efficient), CN sampler",
+      "properties": {
+        "Node name for S&R": "KSampler Adv. (Efficient)"
+      },
+      "widgets_values": [
+        "enable",
+        6,
+        null,
+        20,
+        10,
+        "ddpm",
+        "karras",
+        5,
+        20,
+        "disable",
+        "auto",
+        "true"
+      ],
+      "color": "#222233",
+      "bgcolor": "#333355",
+      "shape": 1
+    },
+    {
       "id": 352,
       "type": "CLIPTextEncode",
       "pos": [
-        203,
-        -1012
+        95,
+        -962
       ],
       "size": {
         "0": 483.6921691894531,
@@ -155,7 +744,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            660
+            664
           ],
           "slot_index": 0
         }
@@ -170,11 +759,100 @@
       "bgcolor": "#533"
     },
     {
+      "id": 365,
+      "type": "BatchCreativeInterpolation",
+      "pos": [
+        636,
+        -1269
+      ],
+      "size": [
+        488.56990545482176,
+        347.0449828807655
+      ],
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 663
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 664
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 665
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            666
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            667
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchCreativeInterpolation"
+      },
+      "widgets_values": [
+        "control_v11f1e_sd15_tile_fp16.safetensors",
+        "linear",
+        16,
+        "0,10,26,40,46",
+        1.1,
+        0.5,
+        0.85,
+        "ease-in-out",
+        4
+      ]
+    },
+    {
+      "id": 360,
+      "type": "Note",
+      "pos": [
+        616,
+        -1638
+      ],
+      "size": [
+        504.15610301351353,
+        275.19243832578627
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frames_per_keyframe to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
       "id": 189,
       "type": "Efficient Loader",
       "pos": [
-        -410,
-        -1497
+        -510,
+        -1656
       ],
       "size": {
         "0": 448.8115539550781,
@@ -183,7 +861,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 2,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -273,468 +951,25 @@
         "comfy",
         512,
         512,
-        100
+        52
       ],
       "color": "#223333",
       "bgcolor": "#335555",
       "shape": 1
     },
     {
-      "id": 292,
-      "type": "STMFNet VFI",
-      "pos": [
-        2478,
-        -703
-      ],
-      "size": {
-        "0": 443.4000244140625,
-        "1": 150
-      },
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "frames",
-          "type": "IMAGE",
-          "link": 654
-        },
-        {
-          "name": "optional_interpolation_states",
-          "type": "INTERPOLATION_STATES",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            656
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "STMFNet VFI"
-      },
-      "widgets_values": [
-        "stmfnet.pth",
-        14,
-        2,
-        true
-      ]
-    },
-    {
-      "id": 332,
-      "type": "PreviewImage",
-      "pos": [
-        -1460,
-        -1290
-      ],
-      "size": {
-        "0": 380,
-        "1": 250
-      },
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 619
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 297,
-      "type": "CLIPVisionLoader",
-      "pos": [
-        -511,
-        -11
-      ],
-      "size": {
-        "0": 315,
-        "1": 58
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "CLIP_VISION",
-          "type": "CLIP_VISION",
-          "links": [
-            566
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPVisionLoader"
-      },
-      "widgets_values": [
-        "SD1.5/pytorch_model.bin"
-      ]
-    },
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        3351.7515134107794,
-        -1039.9403187565451
-      ],
-      "size": [
-        320,
-        496
-      ],
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 656
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 14,
-        "loop_count": 0,
-        "filename_prefix": "creative_interpolation_results/AD_",
-        "format": "video/h264-mp4",
-        "pingpong": false,
-        "save_image": true,
-        "crf": 20,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00016.mp4",
-            "subfolder": "creative_interpolation_results",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
-    },
-    {
-      "id": 300,
-      "type": "IPAdapterEncoder",
-      "pos": [
-        -0.7293116041451541,
-        -239.86153266843684
-      ],
-      "size": {
-        "0": 315,
-        "1": 258
-      },
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip_vision",
-          "type": "CLIP_VISION",
-          "link": 566,
-          "slot_index": 0
-        },
-        {
-          "name": "image_1",
-          "type": "IMAGE",
-          "link": 657
-        },
-        {
-          "name": "image_2",
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "name": "image_3",
-          "type": "IMAGE",
-          "link": null
-        },
-        {
-          "name": "image_4",
-          "type": "IMAGE",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "EMBEDS",
-          "type": "EMBEDS",
-          "links": [
-            563
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterEncoder"
-      },
-      "widgets_values": [
-        false,
-        0,
-        1,
-        1,
-        1,
-        1
-      ]
-    },
-    {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
-      "pos": [
-        1911,
-        -1414
-      ],
-      "size": {
-        "0": 315,
-        "1": 190
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 570,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
-          "link": null
-        },
-        {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
-          "link": null,
-          "slot_index": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            543
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
-      },
-      "widgets_values": [
-        "mm_sd_v15_v2.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        0.8,
-        false
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 301,
-      "type": "IPAdapterApplyEncoded",
-      "pos": [
-        483.27068839585485,
-        -251.86153266843684
-      ],
-      "size": {
-        "0": 315,
-        "1": 98
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "ipadapter",
-          "type": "IPADAPTER",
-          "link": 564,
-          "slot_index": 0
-        },
-        {
-          "name": "embeds",
-          "type": "EMBEDS",
-          "link": 563,
-          "slot_index": 1
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 571
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            570
-          ],
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterApplyEncoded"
-      },
-      "widgets_values": [
-        0.6900000000000001
-      ]
-    },
-    {
-      "id": 207,
-      "type": "KSampler Adv. (Efficient)",
-      "pos": [
-        1780,
-        -1040
-      ],
-      "size": {
-        "0": 325,
-        "1": 658
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 543
-        },
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 661
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 662
-        },
-        {
-          "name": "latent_image",
-          "type": "LATENT",
-          "link": 633
-        },
-        {
-          "name": "optional_vae",
-          "type": "VAE",
-          "link": 632
-        },
-        {
-          "name": "script",
-          "type": "SCRIPT",
-          "link": null,
-          "slot_index": 5
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CONDITIONING+",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "CONDITIONING-",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            653
-          ],
-          "shape": 3,
-          "slot_index": 5
-        }
-      ],
-      "title": "KSampler Adv. (Efficient), CN sampler",
-      "properties": {
-        "Node name for S&R": "KSampler Adv. (Efficient)"
-      },
-      "widgets_values": [
-        "enable",
-        6,
-        null,
-        20,
-        10,
-        "ddpm",
-        "karras",
-        5,
-        20,
-        "disable",
-        "auto",
-        "true"
-      ],
-      "color": "#222233",
-      "bgcolor": "#333355",
-      "shape": 1
-    },
-    {
       "id": 323,
       "type": "VHS_LoadImagesPath",
       "pos": [
-        -1792,
-        -811
+        -1775,
+        -829
       ],
       "size": {
         "0": 315,
         "1": 170
       },
       "flags": {},
-      "order": 4,
+      "order": 9,
       "mode": 0,
       "outputs": [
         {
@@ -743,7 +978,7 @@
           "links": [
             619,
             657,
-            658
+            665
           ],
           "shape": 3,
           "slot_index": 0
@@ -766,7 +1001,7 @@
         "Node name for S&R": "VHS_LoadImagesPath"
       },
       "widgets_values": {
-        "directory": "creative_interpolation",
+        "directory": "creative_interpolation_input",
         "image_load_cap": 0,
         "skip_first_images": 0,
         "select_every_nth": 1
@@ -778,244 +1013,12 @@
       "id": 359,
       "type": "Note",
       "pos": [
-        -2088,
-        -675
-      ],
-      "size": [
-        261.6278922750405,
-        118.72221974820172
-      ],
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "## You'll need to create this folder in ComfyUI/inputs and place your images inside it in numerical order - 1.png, 2.png, etc."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 347,
-      "type": "BatchPromptSchedule",
-      "pos": [
-        232,
-        -1553
+        -1737,
+        -576
       ],
       "size": {
-        "0": 418.2182922363281,
-        "1": 459.75811767578125
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 634
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [
-            659
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchPromptSchedule"
-      },
-      "widgets_values": [
-        "\"0\" :\"\",\n\"16\" :\"\",\n\"32\" :\"\",\n\"48\" :\"\",\n\"64\" :\"\",\n\"80\" :\"\",\n\"96\" :\"\"\n",
-        120,
-        false,
-        "PRE",
-        "APP",
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "id": 358,
-      "type": "LinearBatchCreativeInterpolation",
-      "pos": [
-        770,
-        -1421
-      ],
-      "size": {
-        "0": 315,
-        "1": 218
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 659
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 660
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 658
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            661
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            662
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LinearBatchCreativeInterpolation"
-      },
-      "widgets_values": [
-        "control_v11f1e_sd15_tile_fp16.safetensors",
-        16,
-        1.1,
-        0.5,
-        0.87,
-        "ease-in-out"
-      ]
-    },
-    {
-      "id": 361,
-      "type": "Note",
-      "pos": [
-        824,
-        -185
-      ],
-      "size": {
-        "0": 312.1289367675781,
-        "1": 245.289306640625
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Ipadapter weight also has a huge impact on the outcome - more = more adherence to the original images. Sometimes this can be too much control."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 362,
-      "type": "Note",
-      "pos": [
-        1946,
-        -1729
-      ],
-      "size": {
-        "0": 312.1289367675781,
-        "1": 245.289306640625
-      },
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "motion_scale can also be really useful - tuning it down can remove jolty motion."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 363,
-      "type": "Note",
-      "pos": [
-        2672,
-        -423
-      ],
-      "size": {
-        "0": 312.1289367675781,
-        "1": 245.289306640625
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Increasing the multipler makes the video longer by creating new frames - it can result in some weird effects >2 but worth experimenting with for additional motion/fluidity."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 360,
-      "type": "Note",
-      "pos": [
-        810,
-        -1753
-      ],
-      "size": [
-        312.1289306640617,
-        245.28931274414026
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 364,
-      "type": "Note",
-      "pos": [
-        -389,
-        -837
-      ],
-      "size": {
-        "0": 312.1289367675781,
-        "1": 245.289306640625
+        "0": 261.6278991699219,
+        "1": 118.72222137451172
       },
       "flags": {},
       "order": 10,
@@ -1024,7 +1027,7 @@
         "text": ""
       },
       "widgets_values": [
-        "Please set batch_size at frames_per_key_frame * number_of_key_frames + 4 - the 4 is to give additional buffer to solve issues with the uniform context scheduling. A hacky solution for now."
+        "## You'll need to create this folder in ComfyUI/inputs and place your images inside it in numerical order - 1.png, 2.png, etc."
       ],
       "color": "#432",
       "bgcolor": "#653"
@@ -1160,40 +1163,40 @@
       "IMAGE"
     ],
     [
-      658,
-      323,
-      0,
-      358,
-      2,
-      "IMAGE"
-    ],
-    [
-      659,
+      663,
       347,
       0,
-      358,
+      365,
       0,
       "CONDITIONING"
     ],
     [
-      660,
+      664,
       352,
       0,
-      358,
+      365,
       1,
       "CONDITIONING"
     ],
     [
-      661,
-      358,
+      665,
+      323,
+      0,
+      365,
+      2,
+      "IMAGE"
+    ],
+    [
+      666,
+      365,
       0,
       207,
       1,
       "CONDITIONING"
     ],
     [
-      662,
-      358,
+      667,
+      365,
       1,
       207,
       2,
@@ -1204,10 +1207,10 @@
     {
       "title": "IPAdapter",
       "bounding": [
-        -663,
-        -400,
-        1688,
-        543
+        -570,
+        -485,
+        1674,
+        582
       ],
       "color": "#3f789e",
       "font_size": 24
@@ -1226,10 +1229,10 @@
     {
       "title": "Increase Framerate",
       "bounding": [
-        2368,
-        -1029,
-        624,
-        518
+        2458,
+        -1259,
+        657,
+        898
       ],
       "color": "#8A8",
       "font_size": 24

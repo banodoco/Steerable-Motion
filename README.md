@@ -10,15 +10,24 @@ This a ComfyUI node for batch creative interpolation. The goal is to allow you t
 
 ## Usage
 
-Here's a workflow to get started with: https://github.com/peteromallet/ComfyUI-Creative-Interpolation/blob/main/demo/creative_interpolation_example.json
+Here's a workflow to get started with: https://raw.githubusercontent.com/peteromallet/ComfyUI-Creative-Interpolation/main/demo/creative_interpolation_example.json
 
 You'll need to drop the input images into the 'creative_interpolation_input' folder in numerical order - 0.png, 1.png, etc.
+
+Key frames are **distributed either linearly of dynamically**. 
+
+If you set type_of_frame_distribution to linear, you need to set linear_frames_per_keyframe to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.
+
+Alternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.
+
+Other than this, please experiment with the different settings to achieve your desired effect:
 
 The main settings are:
 
 - frames_per_key_frame: How many frames to generate between each main key frame you provide.
 - length_of_key_frame_influence: How many frames to apply the ControlNet for after each key frame - the larger the number, the the wider range the input images will influence.
 - cn_strength: How strong the control of the ControlNet should overall.
+- buffer: the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works.
 
 The **batch_size should be equal to the frames_per_key_frame * number_of_key_frames + 4** - the additional 4 is to accommodate for buffer frames that improve consistency. 
 
