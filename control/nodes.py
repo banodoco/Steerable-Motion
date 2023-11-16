@@ -152,7 +152,7 @@ class AdvancedControlNetApplyImport:
             out.append(c)
         return (out[0], out[1])
 
-class LinearBatchCreativeInterpolationNode:
+class BatchCreativeInterpolationNode:
     
     @classmethod
     def INPUT_TYPES(s):
@@ -162,11 +162,14 @@ class LinearBatchCreativeInterpolationNode:
                 "negative": ("CONDITIONING", ),
                 "control_net_name": (folder_paths.get_filename_list("controlnet"), ),
                 "images": ("IMAGE", ),
-                "frames_per_keyframe": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),
-                "length_of_key_frame_influence": ("FLOAT", {"default": 1.1, "min": 0.0, "max": 2.0, "step": 0.001}),
+                "type_of_frame_distribution": (["linear", "dynamic"],),
+                "linear_frames_per_keyframe": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),                
+                "dynamic_frames_per_keyframe": ("STRING", {"multiline": True, "default": "0,10,26,40"}),
+                "length_of_key_frame_influence": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.001}),
                 "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),      
                 "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
+                "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}),
             },
             "optional": {
             }
@@ -176,49 +179,48 @@ class LinearBatchCreativeInterpolationNode:
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "combined_function"
 
-    CATEGORY = "ComfyUI-Creative-Interpolation 🎞️🅟🅞🅜/Batch"
+    CATEGORY = "ComfyUI-Creative-Interpolation 🎞️🅟🅞🅜/Interpolation"
 
-    def combined_function(self, positive, negative, control_net_name, images, length_of_key_frame_influence,cn_strength,frames_per_keyframe,soft_scaled_cn_weights_multiplier,interpolation):
+    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frames_per_keyframe,dynamic_frames_per_keyframe,length_of_key_frame_influence,cn_strength,soft_scaled_cn_weights_multiplier,interpolation,buffer):
         
-        def calculate_keyframe_peaks_and_influence(frames_per_keyframe, number_of_keyframes, length_of_influence, new_influence_range=(0,4)):
-            number_of_frames = frames_per_keyframe * number_of_keyframes
-            # Calculate the interval between keyframes
-            interval = (number_of_frames - 1) // (number_of_keyframes - 1)
-            # Determine if we need to adjust the interval because of a remainder
-            adjustment = (number_of_frames - 1) % (number_of_keyframes - 1)
+        def calculate_dynamic_influence_ranges(keyframe_positions, length_of_influence):
+            if len(keyframe_positions) < 2:
+                return []
 
-            # Calculate the peak frames for each keyframe
-            peaks = [0]  # The first keyframe is always at the first frame
-            for i in range(1, number_of_keyframes - 1):  # We already know the first and last keyframe peaks
-                peak = peaks[-1] + interval
-                # If we have a remainder, we distribute it among the first keyframes
-                if i <= adjustment:
-                    peak += 1
-                peaks.append(peak)
-            peaks.append(number_of_frames - 1)  # The last keyframe is always at the last frame
+            influence_ranges = []
+            for i, position in enumerate(keyframe_positions):
+                prev_position = keyframe_positions[i - 1] if i > 0 else position
+                next_position = keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else position
 
-            # Calculate the full interval between keyframes
-            full_interval = (number_of_frames - 1) / (number_of_keyframes - 1)
-            # Calculate the scaled interval based on the length_of_influence
-            scaled_interval = full_interval * length_of_influence
+                half_prev_distance = (position - prev_position) * length_of_influence / 2
+                half_next_distance = (next_position - position) * length_of_influence / 2
 
-            # Initialize the list to store the influence range for each keyframe
-            influence_ranges = [new_influence_range]
+                start_influence = max(0, int(position - half_prev_distance))
+                end_influence = min(keyframe_positions[-1], int(position + half_next_distance))
 
-            # Shift the subsequent influence ranges
-            shift = new_influence_range[1]
-
-            # Loop through each keyframe to calculate its shifted influence range
-            for i, peak in enumerate(peaks):
-                # Calculate the start and end influence around the peak, shifted by the new range's end
-                start_influence = max(shift, int(peak - scaled_interval / 2.0) + shift)
-                end_influence = min(number_of_frames + shift, int(peak + scaled_interval / 2.0) + shift)
-                # Add the influence range as a tuple (start, end) to the list
                 influence_ranges.append((start_influence, end_influence))
 
             return influence_ranges
-                        
-        influence_ranges = calculate_keyframe_peaks_and_influence(frames_per_keyframe, len(images), length_of_key_frame_influence)
+
+        def add_starting_buffer(influence_ranges, buffer=4):
+            shifted_ranges = [(0, buffer)]
+            for start, end in influence_ranges:
+                shifted_ranges.append((start + buffer, end + buffer))
+            return shifted_ranges
+        
+        def get_keyframe_positions(type_of_frame_distribution, dynamic_frames_per_keyframe, images, linear_frames_per_keyframe):
+            if type_of_frame_distribution == "dynamic":
+                # Sort the keyframe positions in numerical order
+                return sorted([int(kf.strip()) for kf in dynamic_frames_per_keyframe.split(',')])
+            else:
+                # Calculate the number of keyframes based on the total duration and linear_frames_per_keyframe
+                return [i * linear_frames_per_keyframe for i in range(len(images))]
+ 
+        keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frames_per_keyframe, images, linear_frames_per_keyframe)
+                
+        inluence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,length_of_key_frame_influence)
+
+        influence_ranges = add_starting_buffer(inluence_ranges, buffer)
 
         for i, (start, end) in enumerate(influence_ranges):
             
@@ -246,10 +248,19 @@ class LinearBatchCreativeInterpolationNode:
                 return_at_midpoint = True
                                                                                                               
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
-            latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation,return_at_midpoint)                        
+            latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(
+                batch_index_from,
+                strength_from,
+                batch_index_to_excl,
+                strength_to,
+                interpolation,
+                return_at_midpoint)                        
                 
             scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
-            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
+            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(
+                soft_scaled_cn_weights_multiplier,
+                False)
+
 
             timestep_keyframe_node = TimestepKeyframeNodeImport()
             timestep_keyframe, = timestep_keyframe_node.load_keyframe(
@@ -261,11 +272,19 @@ class LinearBatchCreativeInterpolationNode:
             )
 
             control_net_loader = ControlNetLoaderAdvancedImport()
-            control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
-                        
-            apply_advanced_control_net = AdvancedControlNetApplyImport()            
-                        
-            positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), cn_strength, 0.0, 1.0)
+            control_net, = control_net_loader.load_controlnet(
+                control_net_name, 
+                timestep_keyframe)
+
+            apply_advanced_control_net = AdvancedControlNetApplyImport()                                    
+            positive, negative = apply_advanced_control_net.apply_controlnet(
+                positive,
+                negative,
+                control_net,
+                image.unsqueeze(0),
+                cn_strength,
+                0.0,
+                1.0)
 
         return (positive, negative)
 
