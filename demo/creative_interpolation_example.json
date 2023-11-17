@@ -1,5 +1,5 @@
 {
-  "last_node_id": 365,
+  "last_node_id": 366,
   "last_link_id": 667,
   "nodes": [
     {
@@ -169,13 +169,67 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "AD__00049.mp4",
+            "filename": "AD__00055.mp4",
             "subfolder": "creative_interpolation_results",
             "type": "output",
             "format": "video/h264-mp4"
           }
         }
       }
+    },
+    {
+      "id": 347,
+      "type": "BatchPromptSchedule",
+      "pos": [
+        95,
+        -1565
+      ],
+      "size": {
+        "0": 418.2182922363281,
+        "1": 459.75811767578125
+      },
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 634
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [
+            663
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchPromptSchedule"
+      },
+      "widgets_values": [
+        "\"0\" :\"\",\n\"16\" :\"\",\n\"32\" :\"\",\n\"48\" :\"\",\n\"64\" :\"\",\n\"80\" :\"\",\n\"96\" :\"\"\n",
+        324,
+        false,
+        "PRE",
+        "APP",
+        0,
+        0,
+        0,
+        0
+      ]
     },
     {
       "id": 364,
@@ -201,11 +255,11 @@
       "bgcolor": "#653"
     },
     {
-      "id": 362,
+      "id": 361,
       "type": "Note",
       "pos": [
-        1884,
-        -1504
+        682.4829725972701,
+        -283.2324170759726
       ],
       "size": {
         "0": 312.1289367675781,
@@ -218,74 +272,69 @@
         "text": ""
       },
       "widgets_values": [
-        "motion_scale can also be really useful - tuning it down can remove jolty motion."
+        "Ipadapter weight also has a huge impact on the outcome - more = more adherence to the original images. Sometimes this can be too much control."
       ],
       "color": "#432",
       "bgcolor": "#653"
     },
     {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
+      "id": 342,
+      "type": "ADE_AnimateDiffUniformContextOptions",
       "pos": [
-        1910,
-        -1122
+        1465,
+        -1439
       ],
       "size": {
         "0": 315,
-        "1": 190
+        "1": 154
       },
-      "flags": {
-        "pinned": false
-      },
-      "order": 17,
+      "flags": {},
+      "order": 2,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 570,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
-          "link": null
-        },
-        {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
-          "link": null,
-          "slot_index": 3
-        }
-      ],
       "outputs": [
         {
-          "name": "MODEL",
-          "type": "MODEL",
+          "name": "CONTEXT_OPTIONS",
+          "type": "CONTEXT_OPTIONS",
           "links": [
-            543
+            627
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
       },
       "widgets_values": [
-        "mm_sd_v15_v2.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        0.8,
+        16,
+        2,
+        2,
+        "uniform",
         false
+      ]
+    },
+    {
+      "id": 362,
+      "type": "Note",
+      "pos": [
+        1884,
+        -1504
       ],
-      "color": "#232",
-      "bgcolor": "#353"
+      "size": {
+        "0": 312.1289367675781,
+        "1": 245.289306640625
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "motion_scale can also be really useful - tuning it down can remove jolty motion."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     },
     {
       "id": 363,
@@ -299,7 +348,7 @@
         "1": 245.289306640625
       },
       "flags": {},
-      "order": 2,
+      "order": 4,
       "mode": 0,
       "properties": {
         "text": ""
@@ -309,6 +358,116 @@
       ],
       "color": "#432",
       "bgcolor": "#653"
+    },
+    {
+      "id": 189,
+      "type": "Efficient Loader",
+      "pos": [
+        -510,
+        -1656
+      ],
+      "size": {
+        "0": 448.8115539550781,
+        "1": 605.9432983398438
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "lora_stack",
+          "type": "LORA_STACK",
+          "link": null
+        },
+        {
+          "name": "cnet_stack",
+          "type": "CONTROL_NET_STACK",
+          "link": null,
+          "slot_index": 1
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            571
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CONDITIONING+",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "CONDITIONING-",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            633
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            632
+          ],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            634,
+            644
+          ],
+          "shape": 3,
+          "slot_index": 5
+        },
+        {
+          "name": "DEPENDENCIES",
+          "type": "DEPENDENCIES",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "Efficient Loader"
+      },
+      "widgets_values": [
+        "Realistic_Vision_V5.0.safetensors",
+        "vae-ft-mse-840000-ema-pruned.safetensors",
+        -2,
+        "None",
+        1,
+        1,
+        "",
+        "",
+        "none",
+        "comfy",
+        512,
+        512,
+        52
+      ],
+      "color": "#223333",
+      "bgcolor": "#335555",
+      "shape": 1
     },
     {
       "id": 359,
@@ -322,7 +481,7 @@
         "1": 118.72222137451172
       },
       "flags": {},
-      "order": 3,
+      "order": 6,
       "mode": 0,
       "properties": {
         "text": ""
@@ -337,15 +496,15 @@
       "id": 294,
       "type": "IPAdapterModelLoader",
       "pos": [
-        -171.81098593750033,
-        11.26162191162112
+        170,
+        -61
       ],
       "size": {
         "0": 315,
         "1": 58
       },
       "flags": {},
-      "order": 4,
+      "order": 7,
       "mode": 0,
       "outputs": [
         {
@@ -368,12 +527,12 @@
       "id": 301,
       "type": "IPAdapterApplyEncoded",
       "pos": [
-        -53.81098593749994,
-        -264.7383780883789
+        288,
+        -337
       ],
       "size": {
         "0": 315,
-        "1": 98
+        "1": 142
       },
       "flags": {},
       "order": 16,
@@ -395,6 +554,11 @@
           "name": "model",
           "type": "MODEL",
           "link": 571
+        },
+        {
+          "name": "attn_mask",
+          "type": "MASK",
+          "link": null
         }
       ],
       "outputs": [
@@ -418,8 +582,8 @@
       "id": 300,
       "type": "IPAdapterEncoder",
       "pos": [
-        -509.8109859375002,
-        -311.73837808837897
+        -168,
+        -384
       ],
       "size": {
         "0": 315,
@@ -479,18 +643,135 @@
       ]
     },
     {
+      "id": 323,
+      "type": "VHS_LoadImagesPath",
+      "pos": [
+        -1775,
+        -829
+      ],
+      "size": {
+        "0": 315,
+        "1": 170
+      },
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            619,
+            657,
+            665
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_LoadImagesPath"
+      },
+      "widgets_values": {
+        "directory": "input",
+        "image_load_cap": 0,
+        "skip_first_images": 0,
+        "select_every_nth": 1
+      },
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 360,
+      "type": "Note",
+      "pos": [
+        631,
+        -1677
+      ],
+      "size": {
+        "0": 508.23260498046875,
+        "1": 385.82281494140625
+      },
+      "flags": {},
+      "order": 9,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frame_distribution_value to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nSimilarly, type_of_key_frame_influence determines how the frames influence the next ones. If you set it to linear, linear_key_frame_influence_value will determine how long every frame influences - 1.0 will make it normal, higher values will make it longer. If you set type_of_key_frame_influence to dynamic, you can input distinct values in linear_key_frame_influence_value for each frame.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 352,
+      "type": "CLIPTextEncode",
+      "pos": [
+        10,
+        -962
+      ],
+      "size": {
+        "0": 483.6921691894531,
+        "1": 182.32534790039062
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 644
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            664
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
+      "widgets_values": [
+        "hands, hand, (worst quality, low quality:1.2)"
+      ],
+      "color": "#322",
+      "bgcolor": "#533"
+    },
+    {
       "id": 297,
       "type": "CLIPVisionLoader",
       "pos": [
-        -846.8109859375003,
-        43.26162191162103
+        -505,
+        -29
       ],
       "size": {
         "0": 315,
         "1": 58
       },
       "flags": {},
-      "order": 5,
+      "order": 10,
       "mode": 0,
       "outputs": [
         {
@@ -627,355 +908,15 @@
       "shape": 1
     },
     {
-      "id": 360,
-      "type": "Note",
-      "pos": [
-        631,
-        -1677
-      ],
-      "size": {
-        "0": 508.23260498046875,
-        "1": 385.82281494140625
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Key frames are **distributed either linearly of dynamically**. \n\nIf you set type_of_frame_distribution to linear, you need to set linear_frame_distribution_value to the gap you wish to have between each key frame - e.g. 16 would mean the frames are at 0, 16, 32, 48, etc.\n\nAlternatively, if you set it to dynamic, you can input the positions of the key frames in the text box below this.\n\nSimilarly, type_of_key_frame_influence determines how the frames influence the next ones. If you set it to linear, linear_key_frame_influence_value will determine how long every frame influences - 1.0 will make it normal, higher values will make it longer. If you set type_of_key_frame_influence to dynamic, you can input distinct values in linear_key_frame_influence_value for each frame.\n\nOther than this, please experiment with the different settings to achieve your desired effect:\n\n- frames_per_key_frame: How many frames to generate between each main key frame you provide.\n- cn_strength: How strong the control of the ControlNet should overall.\n- soft_scaled_cn_weights_multiplier: kinda similar to cn_strength but also different - please experiment!\n- interpolation: the type of interpolation from one image to the next.\n- buffer is the number of buffer frames places before your video - this is to prevent the end of the generation influencing the beginning due to how the context scheduler works."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 352,
-      "type": "CLIPTextEncode",
-      "pos": [
-        10,
-        -962
-      ],
-      "size": {
-        "0": 483.6921691894531,
-        "1": 182.32534790039062
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 12,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 644
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            664
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "hands, hand, (worst quality, low quality:1.2)"
-      ],
-      "color": "#322",
-      "bgcolor": "#533"
-    },
-    {
-      "id": 189,
-      "type": "Efficient Loader",
-      "pos": [
-        -510,
-        -1656
-      ],
-      "size": {
-        "0": 448.8115539550781,
-        "1": 605.9432983398438
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "lora_stack",
-          "type": "LORA_STACK",
-          "link": null
-        },
-        {
-          "name": "cnet_stack",
-          "type": "CONTROL_NET_STACK",
-          "link": null,
-          "slot_index": 1
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            571
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CONDITIONING+",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "CONDITIONING-",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            633
-          ],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            632
-          ],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            634,
-            644
-          ],
-          "shape": 3,
-          "slot_index": 5
-        },
-        {
-          "name": "DEPENDENCIES",
-          "type": "DEPENDENCIES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Efficient Loader"
-      },
-      "widgets_values": [
-        "Realistic_Vision_V5.0.safetensors",
-        "vae-ft-mse-840000-ema-pruned.safetensors",
-        -2,
-        "None",
-        1,
-        1,
-        "",
-        "",
-        "none",
-        "comfy",
-        512,
-        512,
-        100
-      ],
-      "color": "#223333",
-      "bgcolor": "#335555",
-      "shape": 1
-    },
-    {
-      "id": 347,
-      "type": "BatchPromptSchedule",
-      "pos": [
-        100,
-        -1600
-      ],
-      "size": {
-        "0": 418.2182922363281,
-        "1": 459.75811767578125
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 634
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [
-            663
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchPromptSchedule"
-      },
-      "widgets_values": [
-        "\"0\" :\"\",\n\"16\" :\"\",\n\"32\" :\"\",\n\"48\" :\"\",\n\"64\" :\"\",\n\"80\" :\"\",\n\"96\" :\"\"\n",
-        324,
-        false,
-        "PRE",
-        "APP",
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
-      "id": 361,
-      "type": "Note",
-      "pos": [
-        1620,
-        -177
-      ],
-      "size": {
-        "0": 312.1289367675781,
-        "1": 245.289306640625
-      },
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Ipadapter weight also has a huge impact on the outcome - more = more adherence to the original images. Sometimes this can be too much control."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
-    },
-    {
-      "id": 323,
-      "type": "VHS_LoadImagesPath",
-      "pos": [
-        -1775,
-        -829
-      ],
-      "size": {
-        "0": 315,
-        "1": 170
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            619,
-            657,
-            665
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_LoadImagesPath"
-      },
-      "widgets_values": {
-        "directory": "creative_interpolation_input",
-        "image_load_cap": 0,
-        "skip_first_images": 0,
-        "select_every_nth": 1
-      },
-      "color": "#332922",
-      "bgcolor": "#593930"
-    },
-    {
-      "id": 342,
-      "type": "ADE_AnimateDiffUniformContextOptions",
-      "pos": [
-        1465,
-        -1439
-      ],
-      "size": {
-        "0": 315,
-        "1": 154
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "CONTEXT_OPTIONS",
-          "type": "CONTEXT_OPTIONS",
-          "links": [
-            627
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
-      },
-      "widgets_values": [
-        16,
-        2,
-        2,
-        "uniform",
-        false
-      ]
-    },
-    {
       "id": 365,
       "type": "BatchCreativeInterpolation",
       "pos": [
-        600,
-        -1160
+        624,
+        -1205
       ],
       "size": {
         "0": 488.5699157714844,
-        "1": 382
+        "1": 456
       },
       "flags": {},
       "order": 15,
@@ -1024,15 +965,81 @@
         "control_v11f1e_sd15_tile_fp16.safetensors",
         "linear",
         16,
-        "0,40,26,40,46,90",
-        "linear",
+        "0,10,26,40,46",
+        "dynamic",
         1.1,
-        "2.0,0.5,2.0,0.5,0.5,0.5",
+        "0.5,0.5,2.0,0.5",
+        "linear",
         0.5,
+        "0.5,0.8,0.5,0.1",
         0.85,
         "ease-in-out",
         4
       ]
+    },
+    {
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
+      "pos": [
+        1916,
+        -840
+      ],
+      "size": {
+        "0": 315,
+        "1": 190
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 570,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 627,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            543
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+      },
+      "widgets_values": [
+        "mm_sd_v15_v2.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        0.8,
+        false
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
     }
   ],
   "links": [
@@ -1209,8 +1216,8 @@
     {
       "title": "IPAdapter",
       "bounding": [
-        -912,
-        -413,
+        -570,
+        -485,
         1674,
         582
       ],
