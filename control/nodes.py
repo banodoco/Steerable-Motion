@@ -166,9 +166,11 @@ class BatchCreativeInterpolationNode:
                 "linear_frame_distribution_value": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),                
                 "dynamic_frame_distribution_values": ("STRING", {"multiline": True, "default": "0,10,26,40"}),
                 "type_of_key_frame_influence": (["linear", "dynamic"],),
-                "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.001}),
+                "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}),
                 "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "1.0,1.0,1.0,0.5"}),
-                "cn_strength": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),      
+                "type_of_cn_strength_distribution": (["linear", "dynamic"],),
+                "linear_cn_strength_value": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),      
+                "dynamic_cn_strength_values": ("STRING", {"multiline": True, "default": "0.9,0.9,0.9,0.5"}),
                 "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
                 "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}),
@@ -183,28 +185,31 @@ class BatchCreativeInterpolationNode:
 
     CATEGORY = "ComfyUI-Creative-Interpolation 🎞️🅟🅞🅜/Interpolation"
 
-    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,cn_strength,soft_scaled_cn_weights_multiplier,interpolation,buffer):
+    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,type_of_cn_strength_distribution,linear_cn_strength_value,dynamic_cn_strength_values,soft_scaled_cn_weights_multiplier,interpolation,buffer):
         
-        def calculate_dynamic_influence_ranges(keyframe_positions, lengths_of_influence):
-            if len(keyframe_positions) < 2 or len(keyframe_positions) != len(lengths_of_influence):
+        def calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values):
+            if len(keyframe_positions) < 2 or len(keyframe_positions) != len(key_frame_influence_values):
                 return []
 
             influence_ranges = []
             for i, position in enumerate(keyframe_positions):
-                length_of_influence = lengths_of_influence[i]
-                prev_position = keyframe_positions[i - 1] if i > 0 else position
-                next_position = keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else position
+                influence_factor = key_frame_influence_values[i]
 
-                half_prev_distance = (position - prev_position) * length_of_influence / 2
-                half_next_distance = (next_position - position) * length_of_influence / 2
+                # Calculate the base range size
+                range_size = influence_factor * (keyframe_positions[-1] - keyframe_positions[0]) / (len(keyframe_positions) - 1) / 2
 
-                start_influence = max(0, int(position - half_prev_distance))
-                end_influence = min(keyframe_positions[-1], int(position + half_next_distance))
+                # Calculate symmetric start and end influence
+                start_influence = position - range_size
+                end_influence = position + range_size
 
-                influence_ranges.append((start_influence, end_influence))
+                # Adjust start and end influence to not exceed previous and next keyframes
+                start_influence = max(start_influence, keyframe_positions[i - 1] if i > 0 else 0)
+                end_influence = min(end_influence, keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else keyframe_positions[-1])
+
+                influence_ranges.append((round(start_influence), round(end_influence)))
 
             return influence_ranges
-
+            
         def add_starting_buffer(influence_ranges, buffer=4):
             shifted_ranges = [(0, buffer)]
             for start, end in influence_ranges:
@@ -213,27 +218,37 @@ class BatchCreativeInterpolationNode:
         
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
-                # Sort the keyframe positions in numerical order
-                return sorted([int(kf.strip()) for kf in dynamic_frame_distribution_values.split(',')])
+                # Check if the input is a string or a list
+                if isinstance(dynamic_frame_distribution_values, str):
+                    # Sort the keyframe positions in numerical order
+                    return sorted([int(kf.strip()) for kf in dynamic_frame_distribution_values.split(',')])
+                elif isinstance(dynamic_frame_distribution_values, list):
+                    return sorted(dynamic_frame_distribution_values)
             else:
                 # Calculate the number of keyframes based on the total duration and linear_frames_per_keyframe
                 return [i * linear_frame_distribution_value for i in range(len(images))]
-           
-        def get_keyframe_influence_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
+
+        def extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
             if type_of_key_frame_influence == "dynamic":
-                # Parse the dynamic key frame influence values without sorting
-                return [float(influence.strip()) for influence in dynamic_key_frame_influence_values.split(',')]
+                # Check if the input is a string or a list
+                if isinstance(dynamic_key_frame_influence_values, str):
+                    # Parse the dynamic key frame influence values without sorting
+                    return [float(influence.strip()) for influence in dynamic_key_frame_influence_values.split(',')]
+                elif isinstance(dynamic_key_frame_influence_values, list):
+                    return dynamic_key_frame_influence_values
             else:
                 # Create a list with the linear_key_frame_influence_value for each keyframe
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
  
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)
 
-        key_frame_influence_values = get_keyframe_influence_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)
-                
-        inluence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)
+        cn_strength_values = extract_keyframe_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)
 
-        influence_ranges = add_starting_buffer(inluence_ranges, buffer)
+        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)
+                        
+        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)
+
+        influence_ranges = add_starting_buffer(influence_ranges, buffer)
 
         for i, (start, end) in enumerate(influence_ranges):
             
@@ -244,21 +259,25 @@ class BatchCreativeInterpolationNode:
                 strength_from = 1.0
                 strength_to = 1.0            
                 return_at_midpoint = False 
+                cn_strength = cn_strength_values[0]
             elif i == 1: # First image
                 image = images[0]
                 strength_from = 1.0
                 strength_to = 0.0
-                return_at_midpoint = False                            
+                return_at_midpoint = False   
+                cn_strength = cn_strength_values[0]                         
             elif i == len(images):  # Last image
                 image = images[i-1]
                 strength_from = 0.0
                 strength_to = 1.0
-                return_at_midpoint = False                                
+                return_at_midpoint = False         
+                cn_strength = cn_strength_values[i-1]                       
             else:  # Middle images
                 image = images[i-1]
                 strength_from = 0.0
                 strength_to = 1.0
                 return_at_midpoint = True
+                cn_strength = cn_strength_values[i-1]
                                                                                                               
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(
