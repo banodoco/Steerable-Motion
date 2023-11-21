@@ -1,4 +1,4 @@
-# ComfyUI-Creative-Interpolation (Beta)
+# Steerable Motion - creative interpolation For precise motion control in ComfyUI (Beta)
 
 This a ComfyUI node for batch creative interpolation. The goal is to allow you to input a batch of images, and to provide a range of simple settings to control how the images are interpolated between. 
 
