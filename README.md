@@ -1,4 +1,4 @@
-# Steerable Motion - ComfyUI node for creative interpolation with Animatediff (Beta)
+# Steerable Motion - ComfyUI node for creative interpolation and other methods for controlling Animatediff (Beta)
 
 This a ComfyUI node for batch creative interpolation. The goal is to allow you to input a batch of images, and to provide a range of simple settings to control how the images are interpolated between. 
 
