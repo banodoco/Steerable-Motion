@@ -1,7 +1,7 @@
 import numpy as np
 
 import folder_paths
-
+from ast import literal_eval
 from .control import ControlNetAdvancedImport, T2IAdapterAdvancedImport, load_controlnet, ControlNetWeightsTypeImport, T2IAdapterWeightsTypeImport,\
     LatentKeyframeGroupImport, TimestepKeyframeImport, TimestepKeyframeGroupImport, is_advanced_controlnet
 from .weight_nodes import ScaledSoftControlNetWeightsImport, SoftControlNetWeightsImport, CustomControlNetWeightsImport, \
@@ -153,6 +153,9 @@ class AdvancedControlNetApplyImport:
         return (out[0], out[1])
 
 class BatchCreativeInterpolationNode:
+    @classmethod
+    def IS_CHANGED(cls, **kwargs):
+        return float("NaN")
     
     @classmethod
     def INPUT_TYPES(s):
@@ -169,11 +172,11 @@ class BatchCreativeInterpolationNode:
                 "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}),
                 "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "1.0,1.0,1.0,0.5"}),
                 "type_of_cn_strength_distribution": (["linear", "dynamic"],),
-                "linear_cn_strength_value": ("FLOAT", {"default": 0.9, "min": 0.0, "max": 1.0, "step": 0.01}),      
-                "dynamic_cn_strength_values": ("STRING", {"multiline": True, "default": "0.9,0.9,0.9,0.5"}),
+                "linear_cn_strength_value": ("STRING", {"multiline": False, "default": "(0.0,1.0)"}),
+                "dynamic_cn_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),
                 "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
-                "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}),
+                "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),
             },
             "optional": {
             }
@@ -239,46 +242,53 @@ class BatchCreativeInterpolationNode:
             else:
                 # Create a list with the linear_key_frame_influence_value for each keyframe
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
- 
-        keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)
-
-        cn_strength_values = extract_keyframe_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)
-
-        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)
-                        
-        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)
-
-        influence_ranges = add_starting_buffer(influence_ranges, buffer)
+        
+        
+        def extract_start_and_endpoint_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
+            if type_of_key_frame_influence == "dynamic":
+                # If dynamic_key_frame_influence_values is a list of characters representing tuples, process it
+                if isinstance(dynamic_key_frame_influence_values[0], str) and dynamic_key_frame_influence_values[0] == "(":
+                    # Join the characters to form a single string and evaluate to convert into a list of tuples
+                    string_representation = ''.join(dynamic_key_frame_influence_values)
+                    dynamic_values = eval(f'[{string_representation}]')
+                else:
+                    # If it's already a list of tuples or a single tuple, use it directly
+                    dynamic_values = dynamic_key_frame_influence_values if isinstance(dynamic_key_frame_influence_values, list) else [dynamic_key_frame_influence_values]
+                return dynamic_values
+            else:
+                # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
+                return [linear_key_frame_influence_value for _ in keyframe_positions]
+        
+        keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
+        cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
+        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                        
+        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
+        influence_ranges = add_starting_buffer(influence_ranges, buffer)                
+        cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
+        
+        last_key_frame_position = (keyframe_positions[-1]) + buffer
 
         for i, (start, end) in enumerate(influence_ranges):
-            
             batch_index_from, batch_index_to_excl = influence_ranges[i]
-                                                                                                
+
             if i == 0:  # buffer image
                 image = images[0]
-                strength_from = 1.0
-                strength_to = 1.0            
+                strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)
                 return_at_midpoint = False 
-                cn_strength = cn_strength_values[0]
             elif i == 1: # First image
                 image = images[0]
-                strength_from = 1.0
-                strength_to = 0.0
+                strength_to, strength_from = cn_strength_values[0] if len(cn_strength_values) > 0 else (0.0, 1.0)
                 return_at_midpoint = False   
-                cn_strength = cn_strength_values[0]                         
             elif i == len(images):  # Last image
                 image = images[i-1]
-                strength_from = 0.0
-                strength_to = 1.0
+                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
                 return_at_midpoint = False         
-                cn_strength = cn_strength_values[i-1]                       
             else:  # Middle images
                 image = images[i-1]
-                strength_from = 0.0
-                strength_to = 1.0
+                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
                 return_at_midpoint = True
-                cn_strength = cn_strength_values[i-1]
-                                                                                                              
+
+
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(
                 batch_index_from,
@@ -286,7 +296,8 @@ class BatchCreativeInterpolationNode:
                 batch_index_to_excl,
                 strength_to,
                 interpolation,
-                return_at_midpoint)                        
+                return_at_midpoint,
+                last_key_frame_position)                        
                 
             scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
             control_net_weights, _ = scaled_soft_control_net_weights.load_weights(
@@ -314,11 +325,12 @@ class BatchCreativeInterpolationNode:
                 negative,
                 control_net,
                 image.unsqueeze(0),
-                cn_strength,
+                1.0,
                 0.0,
                 1.0)
+            
 
-        return (positive, negative)
+        return positive, negative
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {

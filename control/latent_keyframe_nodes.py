@@ -162,16 +162,25 @@ class LatentKeyframeInterpolationNodeImport:
                         strength_to: float,
                         interpolation: str,
                         revert_direction_at_midpoint: bool=False,
-                        prev_latent_keyframe: LatentKeyframeGroupImport=None
-                        ):
+                        last_key_frame_position: int=0,
+                        prev_latent_keyframe: LatentKeyframeGroupImport=None):
 
+        # print value and type
+        print(f"batch_index_from: {batch_index_from}")
+        print(f"batch_index_to_excl: {batch_index_to_excl}")
+        print(f"strength_to: {strength_to}")
+        print(f"strength_from: {strength_from}")
+        print(f"interpolation: {interpolation}")
+        print(f"revert_direction_at_midpoint: {revert_direction_at_midpoint}")
+        print(f"prev_latent_keyframe: {prev_latent_keyframe}")
+        print(f"last_key_frame_position: {last_key_frame_position}")
 
         if (batch_index_from > batch_index_to_excl):
             raise ValueError("batch_index_from must be less than or equal to batch_index_to.")
 
         if (batch_index_from < 0 and batch_index_to_excl >= 0):
             raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
-
+        
         if not prev_latent_keyframe:
             prev_latent_keyframe = LatentKeyframeGroupImport()
         curr_latent_keyframe = LatentKeyframeGroupImport()
@@ -179,10 +188,7 @@ class LatentKeyframeInterpolationNodeImport:
         steps = batch_index_to_excl - batch_index_from
         diff = strength_to - strength_from
 
-        if revert_direction_at_midpoint:
-            index = np.linspace(0, 1, steps // 2 + 1)
-        else:
-            index = np.linspace(0, 1, steps)
+        index = np.linspace(0, 1, steps // 2 + 1) if revert_direction_at_midpoint else np.linspace(0, 1, steps)
 
         if interpolation == "linear":
             weights = np.linspace(strength_from, strength_to, len(index))
@@ -194,16 +200,33 @@ class LatentKeyframeInterpolationNodeImport:
             weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
 
         if revert_direction_at_midpoint:
-            weights = np.concatenate([weights, weights[-2::-1]])
+            weights = np.concatenate([weights, weights[::-1]])
 
-        for i in range(steps):
+        # Generate frame numbers
+        frame_numbers = np.arange(batch_index_from, batch_index_from + len(weights))
+
+        # "Dropper" component: For keyframes with negative start, drop the weights
+        if batch_index_from < 0:
+            drop_count = abs(batch_index_from)
+            weights = weights[drop_count:]
+            frame_numbers = frame_numbers[drop_count:]
+
+        # Dropper component: for keyframes a batch_index_to_excl is greater than last_key_frame_position, drop the weights
+        if batch_index_to_excl > last_key_frame_position:
+            drop_count = batch_index_to_excl - last_key_frame_position
+            weights = weights[:-drop_count]
+            frame_numbers = frame_numbers[:-drop_count]
+
+        batch_index_from = frame_numbers[0]
+        
+        for i in range(len(frame_numbers)):
             keyframe = LatentKeyframeImport(batch_index_from + i, float(weights[i]))
             logger.info(f"keyframe {batch_index_from + i}:{weights[i]}")
             curr_latent_keyframe.add(keyframe)
 
-        # replace values with prev_latent_keyframes
         for latent_keyframe in prev_latent_keyframe.keyframes:
             curr_latent_keyframe.add(latent_keyframe)
+
 
         return (curr_latent_keyframe,)
 
