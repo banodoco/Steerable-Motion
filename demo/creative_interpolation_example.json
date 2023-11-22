@@ -1,6 +1,6 @@
 {
-  "last_node_id": 366,
-  "last_link_id": 667,
+  "last_node_id": 367,
+  "last_link_id": 670,
   "nodes": [
     {
       "id": 354,
@@ -119,7 +119,7 @@
         "1": 250
       },
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -169,7 +169,7 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "AD__00055.mp4",
+            "filename": "AD__00106.mp4",
             "subfolder": "creative_interpolation_results",
             "type": "output",
             "format": "video/h264-mp4"
@@ -178,65 +178,11 @@
       }
     },
     {
-      "id": 347,
-      "type": "BatchPromptSchedule",
-      "pos": [
-        95,
-        -1565
-      ],
-      "size": {
-        "0": 418.2182922363281,
-        "1": 459.75811767578125
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 634
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [
-            663
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchPromptSchedule"
-      },
-      "widgets_values": [
-        "\"0\" :\"\",\n\"16\" :\"\",\n\"32\" :\"\",\n\"48\" :\"\",\n\"64\" :\"\",\n\"80\" :\"\",\n\"96\" :\"\"\n",
-        324,
-        false,
-        "PRE",
-        "APP",
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
       "id": 364,
       "type": "Note",
       "pos": [
-        -416,
-        -964
+        -755.8573791503906,
+        -1122.8907699584963
       ],
       "size": {
         "0": 312.1289367675781,
@@ -360,116 +306,6 @@
       "bgcolor": "#653"
     },
     {
-      "id": 189,
-      "type": "Efficient Loader",
-      "pos": [
-        -510,
-        -1656
-      ],
-      "size": {
-        "0": 448.8115539550781,
-        "1": 605.9432983398438
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 5,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "lora_stack",
-          "type": "LORA_STACK",
-          "link": null
-        },
-        {
-          "name": "cnet_stack",
-          "type": "CONTROL_NET_STACK",
-          "link": null,
-          "slot_index": 1
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            571
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CONDITIONING+",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "CONDITIONING-",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            633
-          ],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            632
-          ],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            634,
-            644
-          ],
-          "shape": 3,
-          "slot_index": 5
-        },
-        {
-          "name": "DEPENDENCIES",
-          "type": "DEPENDENCIES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Efficient Loader"
-      },
-      "widgets_values": [
-        "Realistic_Vision_V5.0.safetensors",
-        "vae-ft-mse-840000-ema-pruned.safetensors",
-        -2,
-        "None",
-        1,
-        1,
-        "",
-        "",
-        "none",
-        "comfy",
-        512,
-        512,
-        52
-      ],
-      "color": "#223333",
-      "bgcolor": "#335555",
-      "shape": 1
-    },
-    {
       "id": 359,
       "type": "Note",
       "pos": [
@@ -481,7 +317,7 @@
         "1": 118.72222137451172
       },
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "properties": {
         "text": ""
@@ -504,7 +340,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "outputs": [
         {
@@ -535,7 +371,7 @@
         "1": 142
       },
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -590,7 +426,7 @@
         "1": 258
       },
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -654,7 +490,7 @@
         "1": 170
       },
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "outputs": [
         {
@@ -698,15 +534,15 @@
       "id": 360,
       "type": "Note",
       "pos": [
-        631,
-        -1677
+        291.14262084960933,
+        -1835.8907699584963
       ],
       "size": {
         "0": 508.23260498046875,
         "1": 385.82281494140625
       },
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "properties": {
         "text": ""
@@ -721,8 +557,8 @@
       "id": 352,
       "type": "CLIPTextEncode",
       "pos": [
-        10,
-        -962
+        -329.8573791503906,
+        -1120.8907699584963
       ],
       "size": {
         "0": 483.6921691894531,
@@ -731,7 +567,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 12,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -771,7 +607,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 10,
+      "order": 9,
       "mode": 0,
       "outputs": [
         {
@@ -791,11 +627,75 @@
       ]
     },
     {
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
+      "pos": [
+        1916,
+        -840
+      ],
+      "size": {
+        "0": 315,
+        "1": 190
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 17,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 570,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 627,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            543
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+      },
+      "widgets_values": [
+        "mm_sd_v15_v2.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        0.8,
+        false
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
       "id": 207,
       "type": "KSampler Adv. (Efficient)",
       "pos": [
-        1510,
-        -1040
+        1526,
+        -1066
       ],
       "size": {
         "0": 325,
@@ -911,21 +811,21 @@
       "id": 365,
       "type": "BatchCreativeInterpolation",
       "pos": [
-        624,
-        -1205
+        284,
+        -1364
       ],
       "size": {
         "0": 488.5699157714844,
         "1": 456
       },
       "flags": {},
-      "order": 15,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 663
+          "link": 670
         },
         {
           "name": "negative",
@@ -966,56 +866,44 @@
         "linear",
         16,
         "0,10,26,40,46",
-        "dynamic",
+        "linear",
         1.1,
         "0.5,0.5,2.0,0.5",
-        "linear",
-        0.5,
-        "0.5,0.8,0.5,0.1",
+        "dynamic",
+        "(0.0,1.0)",
+        "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)",
         0.85,
         "ease-in-out",
         4
       ]
     },
     {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
+      "id": 189,
+      "type": "Efficient Loader",
       "pos": [
-        1916,
-        -840
+        -849.8573791503906,
+        -1814.8907699584963
       ],
       "size": {
-        "0": 315,
-        "1": 190
+        "0": 448.8115539550781,
+        "1": 605.9432983398438
       },
       "flags": {
         "pinned": false
       },
-      "order": 17,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
-          "name": "model",
-          "type": "MODEL",
-          "link": 570,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
+          "name": "lora_stack",
+          "type": "LORA_STACK",
           "link": null
         },
         {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
+          "name": "cnet_stack",
+          "type": "CONTROL_NET_STACK",
           "link": null,
-          "slot_index": 3
+          "slot_index": 1
         }
       ],
       "outputs": [
@@ -1023,23 +911,134 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            543
+            571
           ],
           "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "CONDITIONING+",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "CONDITIONING-",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            633
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            632
+          ],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            644,
+            669
+          ],
+          "shape": 3,
+          "slot_index": 5
+        },
+        {
+          "name": "DEPENDENCIES",
+          "type": "DEPENDENCIES",
+          "links": null,
+          "shape": 3
         }
       ],
       "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+        "Node name for S&R": "Efficient Loader"
       },
       "widgets_values": [
-        "mm_sd_v15_v2.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        0.8,
-        false
+        "Realistic_Vision_V5.0.safetensors",
+        "vae-ft-mse-840000-ema-pruned.safetensors",
+        -2,
+        "None",
+        1,
+        1,
+        "",
+        "",
+        "none",
+        "comfy",
+        512,
+        512,
+        52
       ],
-      "color": "#232",
-      "bgcolor": "#353"
+      "color": "#223333",
+      "bgcolor": "#335555",
+      "shape": 1
+    },
+    {
+      "id": 367,
+      "type": "BatchPromptSchedule",
+      "pos": [
+        -241,
+        -1684
+      ],
+      "size": {
+        "0": 400,
+        "1": 340
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 669
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [
+            670
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchPromptSchedule"
+      },
+      "widgets_values": [
+        "\"0\" :\"\",\n\"12\" :\"\",\n\"24\" :\"\",\n\"36\" :\"\",\n\"48\" :\"\",\n\"60\" :\"\",\n\"72\" :\"\",\n\"84\" :\"\",\n\"96\" :\"\",\n\"108\" :\"\",\n\"120\" :\"\"\n",
+        120,
+        false,
+        "PRE",
+        "APP",
+        0,
+        0,
+        0,
+        0
+      ]
     }
   ],
   "links": [
@@ -1124,14 +1123,6 @@
       "LATENT"
     ],
     [
-      634,
-      189,
-      5,
-      347,
-      0,
-      "CLIP"
-    ],
-    [
       644,
       189,
       5,
@@ -1172,14 +1163,6 @@
       "IMAGE"
     ],
     [
-      663,
-      347,
-      0,
-      365,
-      0,
-      "CONDITIONING"
-    ],
-    [
       664,
       352,
       0,
@@ -1209,6 +1192,22 @@
       1,
       207,
       2,
+      "CONDITIONING"
+    ],
+    [
+      669,
+      189,
+      5,
+      367,
+      0,
+      "CLIP"
+    ],
+    [
+      670,
+      367,
+      0,
+      365,
+      0,
       "CONDITIONING"
     ]
   ],
@@ -1260,8 +1259,8 @@
     {
       "title": "Group",
       "bounding": [
-        -602,
-        -1770,
+        -942,
+        -1929,
         1783,
         1088
       ],

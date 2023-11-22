@@ -265,9 +265,9 @@ class BatchCreativeInterpolationNode:
         influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
         influence_ranges = add_starting_buffer(influence_ranges, buffer)                
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
-        
-        last_key_frame_position = (keyframe_positions[-1]) + buffer
 
+        last_key_frame_position = (keyframe_positions[-1]) + buffer
+        control_net = []
         for i, (start, end) in enumerate(influence_ranges):
             batch_index_from, batch_index_to_excl = influence_ranges[i]
 
@@ -327,9 +327,8 @@ class BatchCreativeInterpolationNode:
                 image.unsqueeze(0),
                 1.0,
                 0.0,
-                1.0)
-            
-
+                1.0)        
+        
         return positive, negative
 
 # NODE MAPPING

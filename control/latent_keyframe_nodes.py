@@ -135,6 +135,7 @@ class LatentKeyframeGroupNodeImport:
 
         
 class LatentKeyframeInterpolationNodeImport:
+    
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -165,15 +166,6 @@ class LatentKeyframeInterpolationNodeImport:
                         last_key_frame_position: int=0,
                         prev_latent_keyframe: LatentKeyframeGroupImport=None):
 
-        # print value and type
-        print(f"batch_index_from: {batch_index_from}")
-        print(f"batch_index_to_excl: {batch_index_to_excl}")
-        print(f"strength_to: {strength_to}")
-        print(f"strength_from: {strength_from}")
-        print(f"interpolation: {interpolation}")
-        print(f"revert_direction_at_midpoint: {revert_direction_at_midpoint}")
-        print(f"prev_latent_keyframe: {prev_latent_keyframe}")
-        print(f"last_key_frame_position: {last_key_frame_position}")
 
         if (batch_index_from > batch_index_to_excl):
             raise ValueError("batch_index_from must be less than or equal to batch_index_to.")
