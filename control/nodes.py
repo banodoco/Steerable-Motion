@@ -236,13 +236,19 @@ class BatchCreativeInterpolationNode:
                 # Check if the input is a string or a list
                 if isinstance(dynamic_key_frame_influence_values, str):
                     # Parse the dynamic key frame influence values without sorting
-                    return [float(influence.strip()) for influence in dynamic_key_frame_influence_values.split(',')]
+                    dynamic_values = [float(influence.strip()) for influence in dynamic_key_frame_influence_values.split(',')]
                 elif isinstance(dynamic_key_frame_influence_values, list):
-                    return dynamic_key_frame_influence_values
+                    dynamic_values = dynamic_key_frame_influence_values
+                else:
+                    raise ValueError("Invalid type for dynamic_key_frame_influence_values. Must be string or list.")
+
+                # Trim the dynamic_values to match the length of keyframe_positions
+                return dynamic_values[:len(keyframe_positions)]
+
             else:
                 # Create a list with the linear_key_frame_influence_value for each keyframe
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
-        
+
         
         def extract_start_and_endpoint_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
             if type_of_key_frame_influence == "dynamic":
@@ -259,12 +265,31 @@ class BatchCreativeInterpolationNode:
                 # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
         
+        print("type_of_frame_distribution",type_of_frame_distribution)
+        print("dynamic_frame_distribution_values",dynamic_frame_distribution_values)
+        print("linear_frame_distribution_value",linear_frame_distribution_value)
+        print("type_of_key_frame_influence",type_of_key_frame_influence)
+        print("linear_key_frame_influence_value",linear_key_frame_influence_value)
+        print("dynamic_key_frame_influence_values",dynamic_key_frame_influence_values)
+        print("type_of_cn_strength_distribution",type_of_cn_strength_distribution)
+        print("linear_cn_strength_value",linear_cn_strength_value)
+        print("dynamic_cn_strength_values",dynamic_cn_strength_values)
+        print("soft_scaled_cn_weights_multiplier",soft_scaled_cn_weights_multiplier)
+        print("interpolation",interpolation)
+        print("buffer",buffer)
+        
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
         cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
-        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                        
+        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                
         influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
         influence_ranges = add_starting_buffer(influence_ranges, buffer)                
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
+
+        print("keyframe_positions",keyframe_positions)
+        print("cn_strength_values",cn_strength_values)
+        print("key_frame_influence_values",key_frame_influence_values)
+        print("influence_ranges",influence_ranges)
+
 
         last_key_frame_position = (keyframe_positions[-1]) + buffer
         control_net = []
