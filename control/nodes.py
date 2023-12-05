@@ -1,14 +1,16 @@
 import numpy as np
-
+import torch
 import folder_paths
 from ast import literal_eval
 from .control import ControlNetAdvancedImport, T2IAdapterAdvancedImport, load_controlnet, ControlNetWeightsTypeImport, T2IAdapterWeightsTypeImport,\
     LatentKeyframeGroupImport, TimestepKeyframeImport, TimestepKeyframeGroupImport, is_advanced_controlnet
+
 from .weight_nodes import ScaledSoftControlNetWeightsImport, SoftControlNetWeightsImport, CustomControlNetWeightsImport, \
     SoftT2IAdapterWeightsImport, CustomT2IAdapterWeightsImport
 from .latent_keyframe_nodes import LatentKeyframeGroupNodeImport, LatentKeyframeInterpolationNodeImport, LatentKeyframeBatchedGroupNodeImport, LatentKeyframeNodeImport
 from .deprecated_nodes import LoadImagesFromDirectory
 from .logger import logger
+from .film import film_interpolation
 
 
 class TimestepKeyframeNodeImport:
@@ -151,6 +153,37 @@ class AdvancedControlNetApplyImport:
                 c.append(n)
             out.append(c)
         return (out[0], out[1])
+    
+
+class MaskGeneratorNode:
+    
+    RETURN_TYPES = ("MASK",)
+    FUNCTION = "generate_masks"
+    CATEGORY = "Steerable-Motion/Interpolation"
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "number_of_masks": ("INT", {"default": 16, "min": 1, "max": 100, "step": 1}),
+                "strength": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "width": ("INT", {"default": 512, "min": 16, "max": 4096, "step": 1}),
+                "height": ("INT", {"default": 512, "min": 16, "max": 4096, "step": 1}),
+            },
+        }
+
+    def generate_masks(self, number_of_masks, strength, width, height):
+
+        masks = []
+        for _ in range(number_of_masks):
+            mask = torch.full((height, width), strength)
+            masks.append(mask)
+
+        # Convert list of masks to a single tensor
+        masks_tensor = torch.stack(masks, dim=0)
+        return masks_tensor
+
+
 
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -177,18 +210,19 @@ class BatchCreativeInterpolationNode:
                 "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
                 "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
                 "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),
+                "intermediate_frame_mask_strength": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING","CONDITIONING")
+    RETURN_TYPES = ("CONDITIONING","CONDITIONING","IMAGE")
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "combined_function"
 
-    CATEGORY = "ComfyUI-Creative-Interpolation 🎞️🅟🅞🅜/Interpolation"
+    CATEGORY = "Steerable-Motion/Interpolation"
 
-    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,type_of_cn_strength_distribution,linear_cn_strength_value,dynamic_cn_strength_values,soft_scaled_cn_weights_multiplier,interpolation,buffer):
+    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,type_of_cn_strength_distribution,linear_cn_strength_value,dynamic_cn_strength_values,soft_scaled_cn_weights_multiplier,interpolation,buffer,intermediate_frame_mask_strength):
         
         def calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values):
             if len(keyframe_positions) < 2 or len(keyframe_positions) != len(key_frame_influence_values):
@@ -248,7 +282,6 @@ class BatchCreativeInterpolationNode:
             else:
                 # Create a list with the linear_key_frame_influence_value for each keyframe
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
-
         
         def extract_start_and_endpoint_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
             if type_of_key_frame_influence == "dynamic":
@@ -264,39 +297,23 @@ class BatchCreativeInterpolationNode:
             else:
                 # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
-        
-        print("type_of_frame_distribution",type_of_frame_distribution)
-        print("dynamic_frame_distribution_values",dynamic_frame_distribution_values)
-        print("linear_frame_distribution_value",linear_frame_distribution_value)
-        print("type_of_key_frame_influence",type_of_key_frame_influence)
-        print("linear_key_frame_influence_value",linear_key_frame_influence_value)
-        print("dynamic_key_frame_influence_values",dynamic_key_frame_influence_values)
-        print("type_of_cn_strength_distribution",type_of_cn_strength_distribution)
-        print("linear_cn_strength_value",linear_cn_strength_value)
-        print("dynamic_cn_strength_values",dynamic_cn_strength_values)
-        print("soft_scaled_cn_weights_multiplier",soft_scaled_cn_weights_multiplier)
-        print("interpolation",interpolation)
-        print("buffer",buffer)
-        
+                
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
         cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
         key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                
         influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
-        influence_ranges = add_starting_buffer(influence_ranges, buffer)                
+        if buffer > 0:
+            influence_ranges = add_starting_buffer(influence_ranges, buffer)                            
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
 
-        print("keyframe_positions",keyframe_positions)
-        print("cn_strength_values",cn_strength_values)
-        print("key_frame_influence_values",key_frame_influence_values)
-        print("influence_ranges",influence_ranges)
-
+        ipadapter_input, = film_interpolation(images, keyframe_positions, buffer)
 
         last_key_frame_position = (keyframe_positions[-1]) + buffer
         control_net = []
         for i, (start, end) in enumerate(influence_ranges):
             batch_index_from, batch_index_to_excl = influence_ranges[i]
 
-            if i == 0:  # buffer image
+            if i == 0 and buffer > 0:  # First image with buffer
                 image = images[0]
                 strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)
                 return_at_midpoint = False 
@@ -312,7 +329,6 @@ class BatchCreativeInterpolationNode:
                 image = images[i-1]
                 strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
                 return_at_midpoint = True
-
 
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
             latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(
@@ -354,12 +370,14 @@ class BatchCreativeInterpolationNode:
                 0.0,
                 1.0)        
         
-        return positive, negative
+        return positive, negative, ipadapter_input
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Combined
-    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
+    "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
+    "MaskGenerator": MaskGeneratorNode
+    # "FILMVFIImport": FILMVFINode
     # Keyframes
     # "TimestepKeyframe": TimestepKeyframeNodeImport,
     # "LatentKeyframeImport": LatentKeyframeNodeImport,
@@ -383,7 +401,8 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     # Combined
-    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜"
+    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜",
+    "MaskGenerator": "Mask Generator 🎞️🅟🅞🅜"
     # Keyframes
     # "TimestepKeyframe": "Timestep Keyframe 🎞️🅟🅞🅜",
     # "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
