@@ -216,7 +216,7 @@ class BatchCreativeInterpolationNode:
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING","CONDITIONING","IMAGE")
+    RETURN_TYPES = ("CONDITIONING","CONDITIONING","IMAGE","MASK")
     RETURN_NAMES = ("positive", "negative")
     FUNCTION = "combined_function"
 
@@ -297,16 +297,74 @@ class BatchCreativeInterpolationNode:
             else:
                 # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
-                
+                        
+        def create_mask_batch(keyframe_positions, buffer, masked_strength):
+            # Hardcoded dimensions
+            width, height = 512, 512
+
+            def generate_masks(number_of_masks, strength):
+                # Create masks with the specified strength
+                masks = []
+                for _ in range(number_of_masks):
+                    mask = torch.full((height, width), strength)
+                    masks.append(mask)
+
+                # Convert list of masks to a single tensor
+                masks_tensor = torch.stack(masks, dim=0)
+                return masks_tensor
+
+            masks = []
+
+            # Creating initial buffer masks if buffer > 0
+            if buffer > 0:
+                buffer_masks = generate_masks(buffer, 1.0)
+                masks.append(buffer_masks)
+
+            # Iterating through the keyframe positions
+            last_position = -1
+            for pos in keyframe_positions:
+                # Number of masks to create between last position and current keyframe
+                num_masks = pos - last_position
+
+                if not (pos == 0 and buffer > 0):
+                    # Create masks of strength 0.0 for the keyframe itself
+                    keyframe_mask = generate_masks(1, 1.0)
+                    masks.append(keyframe_mask)
+
+                if num_masks > 1:
+                    # Create masks of masked_strength for positions between keyframes
+                    intermediate_masks = generate_masks(num_masks - 1, masked_strength)
+                    masks.append(intermediate_masks)
+
+                last_position = pos
+
+            # Ensure a mask of 0.0 strength is created at the last keyframe position
+            if keyframe_positions[-1] == last_position:
+                last_keyframe_mask = generate_masks(1, 1.0)
+                masks.append(last_keyframe_mask)
+
+            # Flatten the list of tensors into a single tensor
+            masks_tensor = torch.cat(masks, dim=0)
+            return masks_tensor
+
+
+
+        
+        
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
         cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
         key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                
         influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
         if buffer > 0:
             influence_ranges = add_starting_buffer(influence_ranges, buffer)                            
+        print(f"keyframe_positions: {keyframe_positions}")
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
 
         ipadapter_input, = film_interpolation(images, keyframe_positions, buffer)
+
+                
+        generated_masks_tensor = create_mask_batch(keyframe_positions, buffer, intermediate_frame_mask_strength)
+        
 
         last_key_frame_position = (keyframe_positions[-1]) + buffer
         control_net = []
@@ -370,7 +428,7 @@ class BatchCreativeInterpolationNode:
                 0.0,
                 1.0)        
         
-        return positive, negative, ipadapter_input
+        return positive, negative, ipadapter_input,generated_masks_tensor
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
