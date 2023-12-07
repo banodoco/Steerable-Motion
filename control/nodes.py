@@ -1,16 +1,28 @@
 import numpy as np
 import torch
 import folder_paths
+from PIL import Image
 from ast import literal_eval
 from .control import ControlNetAdvancedImport, T2IAdapterAdvancedImport, load_controlnet, ControlNetWeightsTypeImport, T2IAdapterWeightsTypeImport,\
     LatentKeyframeGroupImport, TimestepKeyframeImport, TimestepKeyframeGroupImport, is_advanced_controlnet
+import matplotlib.pyplot as plt
+from .IPAdapterPlus import contrast_adaptive_sharpening, IPAdapterApply,prep_image
 
 from .weight_nodes import ScaledSoftControlNetWeightsImport, SoftControlNetWeightsImport, CustomControlNetWeightsImport, \
     SoftT2IAdapterWeightsImport, CustomT2IAdapterWeightsImport
-from .latent_keyframe_nodes import LatentKeyframeGroupNodeImport, LatentKeyframeInterpolationNodeImport, LatentKeyframeBatchedGroupNodeImport, LatentKeyframeNodeImport
+from .latent_keyframe_nodes import LatentKeyframeGroupNodeImport, LatentKeyframeInterpolationNodeImport, LatentKeyframeBatchedGroupNodeImport, LatentKeyframeNodeImport,calculate_weights
 from .deprecated_nodes import LoadImagesFromDirectory
 from .logger import logger
-from .film import film_interpolation
+import torchvision.transforms as TT
+import torch.nn.functional as F
+
+import comfy.utils
+import comfy.model_management
+from comfy.clip_vision import clip_preprocess
+from comfy.ldm.modules.attention import optimized_attention
+# import BytesIO
+from io import BytesIO
+
 
 
 class TimestepKeyframeNodeImport:
@@ -196,35 +208,45 @@ class BatchCreativeInterpolationNode:
             "required": {
                 "positive": ("CONDITIONING", ),
                 "negative": ("CONDITIONING", ),
-                "control_net_name": (folder_paths.get_filename_list("controlnet"), ),
                 "images": ("IMAGE", ),
+                "model": ("MODEL", ),
+                "ipadapter": ("IPADAPTER", ),
+                "clip_vision": ("CLIP_VISION",),
+                "control_net_name": (folder_paths.get_filename_list("controlnet"), ),                
                 "type_of_frame_distribution": (["linear", "dynamic"],),
                 "linear_frame_distribution_value": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),                
                 "dynamic_frame_distribution_values": ("STRING", {"multiline": True, "default": "0,10,26,40"}),
                 "type_of_key_frame_influence": (["linear", "dynamic"],),
-                "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.001}),
+                "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.1}),
                 "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "1.0,1.0,1.0,0.5"}),
                 "type_of_cn_strength_distribution": (["linear", "dynamic"],),
-                "linear_cn_strength_value": ("STRING", {"multiline": False, "default": "(0.0,1.0)"}),
+                "linear_cn_strength_value": ("STRING", {"multiline": False, "default": "(0.0,0.4)"}),
                 "dynamic_cn_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),
-                "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.01}),          
-                "interpolation": (["ease-in", "ease-out", "ease-in-out"],),
-                "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),
-                "intermediate_frame_mask_strength": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.1}),          
+                # "interpolation": (["ease-in-out", "ease-in", "ease-out"],),
+                "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}),
+                "relative_ipadapter_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 5.0, "step": 0.1}),
+                "relative_ipadapter_influence": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 5.0, "step": 0.1}),
+                "ipadapter_noise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
             }
         }
 
-    RETURN_TYPES = ("CONDITIONING","CONDITIONING","IMAGE","MASK")
-    RETURN_NAMES = ("positive", "negative")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL",)
+    RETURN_NAMES = ("GRAPH","POSITIVE", "NEGATIVE","MODEL")
     FUNCTION = "combined_function"
 
     CATEGORY = "Steerable-Motion/Interpolation"
 
-    def combined_function(self, positive, negative, control_net_name, images,type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,type_of_cn_strength_distribution,linear_cn_strength_value,dynamic_cn_strength_values,soft_scaled_cn_weights_multiplier,interpolation,buffer,intermediate_frame_mask_strength):
+    def combined_function(self, positive, negative, images,model,ipadapter,clip_vision,control_net_name, 
+                          type_of_frame_distribution,linear_frame_distribution_value,dynamic_frame_distribution_values,
+                          type_of_key_frame_influence,linear_key_frame_influence_value,dynamic_key_frame_influence_values,
+                          type_of_cn_strength_distribution,linear_cn_strength_value,dynamic_cn_strength_values,
+                          soft_scaled_cn_weights_multiplier,buffer,relative_ipadapter_strength,
+                          relative_ipadapter_influence,ipadapter_noise):
         
-        def calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values):
+        def calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values, allow_extension=True):
             if len(keyframe_positions) < 2 or len(keyframe_positions) != len(key_frame_influence_values):
                 return []
 
@@ -240,8 +262,9 @@ class BatchCreativeInterpolationNode:
                 end_influence = position + range_size
 
                 # Adjust start and end influence to not exceed previous and next keyframes
-                start_influence = max(start_influence, keyframe_positions[i - 1] if i > 0 else 0)
-                end_influence = min(end_influence, keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else keyframe_positions[-1])
+                if not allow_extension:
+                    start_influence = max(start_influence, keyframe_positions[i - 1] if i > 0 else 0)
+                    end_influence = min(end_influence, keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else keyframe_positions[-1])
 
                 influence_ranges.append((round(start_influence), round(end_influence)))
 
@@ -298,143 +321,218 @@ class BatchCreativeInterpolationNode:
                 # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
                 return [linear_key_frame_influence_value for _ in keyframe_positions]
                         
-        def create_mask_batch(keyframe_positions, buffer, masked_strength):
+        def create_mask_batch(last_key_frame_position, weights, frames):
             # Hardcoded dimensions
             width, height = 512, 512
 
-            def generate_masks(number_of_masks, strength):
-                # Create masks with the specified strength
-                masks = []
-                for _ in range(number_of_masks):
-                    mask = torch.full((height, width), strength)
-                    masks.append(mask)
+            # Calculate the reversed weights in a generalizable way (e.g., 0.6 becomes 0.4, 0.1 becomes 0.9)
+            reversed_weights = [1.0 - weight for weight in weights]
 
-                # Convert list of masks to a single tensor
-                masks_tensor = torch.stack(masks, dim=0)
-                return masks_tensor
+            # Map frames to their corresponding reversed weights for easy lookup
+            frame_to_weight = {frame: weights[i] for i, frame in enumerate(frames)}
 
+            # Create masks for each frame up to last_key_frame_position
             masks = []
+            for frame_number in range(last_key_frame_position):
+                # Determine the strength of the mask
+                strength = frame_to_weight.get(frame_number, 0.0)
 
-            # Creating initial buffer masks if buffer > 0
-            if buffer > 0:
-                buffer_masks = generate_masks(buffer, 1.0)
-                masks.append(buffer_masks)
+                # Create the mask with the determined strength
+                mask = torch.full((height, width), strength)
+                masks.append(mask)
 
-            # Iterating through the keyframe positions
-            last_position = -1
-            for pos in keyframe_positions:
-                # Number of masks to create between last position and current keyframe
-                num_masks = pos - last_position
+            # Convert list of masks to a single tensor
+            masks_tensor = torch.stack(masks, dim=0)
 
-                if not (pos == 0 and buffer > 0):
-                    # Create masks of strength 0.0 for the keyframe itself
-                    keyframe_mask = generate_masks(1, 1.0)
-                    masks.append(keyframe_mask)
-
-                if num_masks > 1:
-                    # Create masks of masked_strength for positions between keyframes
-                    intermediate_masks = generate_masks(num_masks - 1, masked_strength)
-                    masks.append(intermediate_masks)
-
-                last_position = pos
-
-            # Ensure a mask of 0.0 strength is created at the last keyframe position
-            if keyframe_positions[-1] == last_position:
-                last_keyframe_mask = generate_masks(1, 1.0)
-                masks.append(last_keyframe_mask)
-
-            # Flatten the list of tensors into a single tensor
-            masks_tensor = torch.cat(masks, dim=0)
             return masks_tensor
+                                
+        def adjust_influence_range(batch_index_from, batch_index_to_excl, last_key_frame_position, scale_factor, buffer):
+            # Calculate the midpoint of the current range
+            midpoint = (batch_index_from + batch_index_to_excl) // 2
 
+            # Calculate the new range length
+            new_range_length = int((batch_index_to_excl - batch_index_from) * scale_factor)
 
+            # Adjusting both sides of the range
+            if batch_index_from == 0:
+                # Start is anchored at 0
+                new_batch_index_from = 0
+                new_batch_index_to_excl = batch_index_from + new_range_length
+            elif batch_index_to_excl == last_key_frame_position:
+                # End is anchored at last_key_frame_position
+                new_batch_index_from = batch_index_to_excl - new_range_length
+                new_batch_index_to_excl = last_key_frame_position
+            else:
+                # No anchoring, adjust both sides around the midpoint
+                new_batch_index_from = midpoint - new_range_length // 2
+                new_batch_index_to_excl = midpoint + new_range_length // 2
 
+            # Remove minimum and maximum constraints
+
+            return new_batch_index_from, new_batch_index_to_excl
+                    
+        def adjust_strength_values(strength_from, strength_to, multiplier):
+            mid_point = (strength_from + strength_to) / 2
+            range_half = abs(strength_to - strength_from) / 2
+
+            # Adjust the range with the multiplier
+            new_range_half = min(range_half * multiplier, 0.5)
+
+            # Calculate new strength values, ensuring they stay within [0.0, 1.0]
+            new_strength_from = max(mid_point - new_range_half, 0.0)
+            new_strength_to = min(mid_point + new_range_half, 1.0)
+
+            # Preserve the order of the original strength values
+            if strength_from > strength_to:
+                new_strength_from, new_strength_to = new_strength_to, new_strength_from
+
+            return (new_strength_from, new_strength_to)
         
+        def plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer):
+            plt.figure(figsize=(12, 8))
+
+            # Defining colors for each set of data
+            colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+
+            # Alternating the data sets with labels and colors
+            max_length = max(len(cn_frame_numbers), len(ipadapter_frame_numbers))
+            label_counter = 1 if buffer < 0 else 0  # Start from 1 if buffer < 0, else start from 0
+            for i in range(max_length):
+                # Label for cn_strength
+                if i < len(cn_frame_numbers):
+                    if i == 0 and buffer > 0:
+                        label = 'cn_strength_buffer'
+                    else:
+                        label = f'cn_strength_{label_counter}'
+                    plt.plot(cn_frame_numbers[i], cn_weights[i], marker='o', color=colors[i % len(colors)], label=label)
+
+                # Label for ipa_strength
+                if i < len(ipadapter_frame_numbers):
+                    if i == 0 and buffer > 0:
+                        label = 'ipa_strength_buffer'
+                    else:
+                        label = f'ipa_strength_{label_counter}'
+                    plt.plot(ipadapter_frame_numbers[i], ipadapter_weights[i], marker='x', linestyle='--', color=colors[i % len(colors)], label=label)
+
+                if label_counter == 0 or buffer < 0 or i > 0:
+                    label_counter += 1
+
+            plt.legend()
+            max_weight = max([weight.max() for weight in cn_weights + ipadapter_weights]) * 1.5
+            plt.ylim(0, max_weight)
+
+            buffer_io = BytesIO()
+            plt.savefig(buffer_io, format='png', bbox_inches='tight')
+            plt.close()
+
+            buffer_io.seek(0)
+            img = Image.open(buffer_io)
+
+            img_tensor = TT.ToTensor()(img)
         
+            img_tensor = img_tensor.unsqueeze(0)
+            
+            img_tensor = img_tensor.permute([0, 2, 3, 1])
+
+            return (img_tensor,)
+                
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
         cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
         key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                
         influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
-        if buffer > 0:
-            influence_ranges = add_starting_buffer(influence_ranges, buffer)                            
-        print(f"keyframe_positions: {keyframe_positions}")
+        
+        influence_ranges = add_starting_buffer(influence_ranges, buffer)                                    
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
 
-        ipadapter_input, = film_interpolation(images, keyframe_positions, buffer)
-
-                
-        generated_masks_tensor = create_mask_batch(keyframe_positions, buffer, intermediate_frame_mask_strength)
+        cn_frame_numbers = []
+        cn_weights = []
+        ipadapter_frame_numbers = []
+        ipadapter_weights = []
         
-
         last_key_frame_position = (keyframe_positions[-1]) + buffer
         control_net = []
         for i, (start, end) in enumerate(influence_ranges):
             batch_index_from, batch_index_to_excl = influence_ranges[i]
+            ipadapter_strength_multiplier = relative_ipadapter_strength
+            ipadapter_influence_multiplier = relative_ipadapter_influence 
 
-            if i == 0 and buffer > 0:  # First image with buffer
-                image = images[0]
-                strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)
-                return_at_midpoint = False 
+            if i == 0:
+                if buffer > 0:  # First image with buffer
+                    image = images[0]
+                    strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)
+                    revert_direction_at_midpoint = False 
+                    ipadapter_strength_multiplier = 1.0
+                    ipadapter_influence_multiplier = 1.0
+                    interpolation = "ease-in-out"
+                else:
+                    continue  # Skip first image without buffer
             elif i == 1: # First image
                 image = images[0]
                 strength_to, strength_from = cn_strength_values[0] if len(cn_strength_values) > 0 else (0.0, 1.0)
-                return_at_midpoint = False   
+                revert_direction_at_midpoint = False 
+                interpolation = "ease-in"
+
+                
+                
             elif i == len(images):  # Last image
                 image = images[i-1]
                 strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
-                return_at_midpoint = False         
+                revert_direction_at_midpoint = False     
+                interpolation =  "ease-out"
+                                
             else:  # Middle images
                 image = images[i-1]
                 strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
-                return_at_midpoint = True
-
+                revert_direction_at_midpoint = True
+                interpolation = "ease-in-out"    
+                                
+        
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
-            latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(
-                batch_index_from,
-                strength_from,
-                batch_index_to_excl,
-                strength_to,
-                interpolation,
-                return_at_midpoint,
-                last_key_frame_position)                        
-                
-            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
-            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(
-                soft_scaled_cn_weights_multiplier,
-                False)
+            weights, frame_numbers, latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from,strength_from,batch_index_to_excl,strength_to,interpolation,revert_direction_at_midpoint,last_key_frame_position,i,len(influence_ranges),buffer)                        
 
+            cn_frame_numbers.append(frame_numbers)
+            cn_weights.append(weights)
+
+            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
+            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier,False)
 
             timestep_keyframe_node = TimestepKeyframeNodeImport()
-            timestep_keyframe, = timestep_keyframe_node.load_keyframe(
-                start_percent=0.0,
-                control_net_weights=control_net_weights,
-                t2i_adapter_weights=None,
-                latent_keyframe=latent_keyframe,
-                prev_timestep_keyframe=None
-            )
+            timestep_keyframe, = timestep_keyframe_node.load_keyframe(start_percent=0.0,control_net_weights=control_net_weights,t2i_adapter_weights=None,latent_keyframe=latent_keyframe,prev_timestep_keyframe=None)
 
             control_net_loader = ControlNetLoaderAdvancedImport()
-            control_net, = control_net_loader.load_controlnet(
-                control_net_name, 
-                timestep_keyframe)
+            control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
 
             apply_advanced_control_net = AdvancedControlNetApplyImport()                                    
-            positive, negative = apply_advanced_control_net.apply_controlnet(
-                positive,
-                negative,
-                control_net,
-                image.unsqueeze(0),
-                1.0,
-                0.0,
-                1.0)        
+            positive, negative = apply_advanced_control_net.apply_controlnet(positive,negative,control_net,image.unsqueeze(0),1.0,0.0,1.0)       
+                                     
+            prepped_image, = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)
+
+            ipadapter_application = IPAdapterApply()
+            
+            ipa_strength_from, ipa_strength_to = adjust_strength_values(strength_from, strength_to, ipadapter_strength_multiplier)        
+            
+            ipa_batch_index_from, ipa_batch_index_to_excl = adjust_influence_range(batch_index_from, batch_index_to_excl, last_key_frame_position, ipadapter_influence_multiplier, buffer)
+
+            ipa_weights, ipa_frame_numbers = calculate_weights(ipa_batch_index_from,ipa_batch_index_to_excl,ipa_strength_from, ipa_strength_to,interpolation, revert_direction_at_midpoint, last_key_frame_position,i, len(influence_ranges),buffer)
+            
+
+            ipadapter_frame_numbers.append(ipa_frame_numbers)
+            ipadapter_weights.append(ipa_weights)
+
+
+            masks = create_mask_batch(last_key_frame_position, weights, frame_numbers)
+            
+            model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, clip_vision=clip_vision, image=prepped_image, weight_type="original", noise=ipadapter_noise, embeds=None, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)        
         
-        return positive, negative, ipadapter_input,generated_masks_tensor
+        comparison_diagram, = plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer)
+        
+        return comparison_diagram, positive, negative, model
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     # Combined
-    "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
-    "MaskGenerator": MaskGeneratorNode
+    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
+    # "MaskGenerator": MaskGeneratorNode
     # "FILMVFIImport": FILMVFINode
     # Keyframes
     # "TimestepKeyframe": TimestepKeyframeNodeImport,
@@ -459,8 +557,8 @@ NODE_CLASS_MAPPINGS = {
 
 NODE_DISPLAY_NAME_MAPPINGS = {
     # Combined
-    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜",
-    "MaskGenerator": "Mask Generator 🎞️🅟🅞🅜"
+    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜"
+    # "MaskGenerator": "Mask Generator 🎞️🅟🅞🅜"
     # Keyframes
     # "TimestepKeyframe": "Timestep Keyframe 🎞️🅟🅞🅜",
     # "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",

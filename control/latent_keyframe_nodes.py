@@ -164,63 +164,96 @@ class LatentKeyframeInterpolationNodeImport:
                         interpolation: str,
                         revert_direction_at_midpoint: bool=False,
                         last_key_frame_position: int=0,
+                        i=0,
+                        number_of_items=0,
+                        buffer=0,
                         prev_latent_keyframe: LatentKeyframeGroupImport=None):
 
 
-        if (batch_index_from > batch_index_to_excl):
-            raise ValueError("batch_index_from must be less than or equal to batch_index_to.")
 
-        if (batch_index_from < 0 and batch_index_to_excl >= 0):
-            raise ValueError("batch_index_from and batch_index_to must be either both positive or both negative.")
-        
         if not prev_latent_keyframe:
             prev_latent_keyframe = LatentKeyframeGroupImport()
+        
         curr_latent_keyframe = LatentKeyframeGroupImport()
 
-        steps = batch_index_to_excl - batch_index_from
-        diff = strength_to - strength_from
-
-        index = np.linspace(0, 1, steps // 2 + 1) if revert_direction_at_midpoint else np.linspace(0, 1, steps)
-
-        if interpolation == "linear":
-            weights = np.linspace(strength_from, strength_to, len(index))
-        elif interpolation == "ease-in":
-            weights = diff * np.power(index, 2) + strength_from
-        elif interpolation == "ease-out":
-            weights = diff * (1 - np.power(1 - index, 2)) + strength_from
-        elif interpolation == "ease-in-out":
-            weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
-
-        if revert_direction_at_midpoint:
-            weights = np.concatenate([weights, weights[::-1]])
-
-        # Generate frame numbers
-        frame_numbers = np.arange(batch_index_from, batch_index_from + len(weights))
-
-        # "Dropper" component: For keyframes with negative start, drop the weights
-        if batch_index_from < 0:
-            drop_count = abs(batch_index_from)
-            weights = weights[drop_count:]
-            frame_numbers = frame_numbers[drop_count:]
-
-        # Dropper component: for keyframes a batch_index_to_excl is greater than last_key_frame_position, drop the weights
-        if batch_index_to_excl > last_key_frame_position:
-            drop_count = batch_index_to_excl - last_key_frame_position
-            weights = weights[:-drop_count]
-            frame_numbers = frame_numbers[:-drop_count]
-
-        batch_index_from = frame_numbers[0]
+        weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, revert_direction_at_midpoint, last_key_frame_position,i,number_of_items, buffer)
         
-        for i in range(len(frame_numbers)):
-            keyframe = LatentKeyframeImport(batch_index_from + i, float(weights[i]))
-            logger.info(f"keyframe {batch_index_from + i}:{weights[i]}")
+        for i, frame_number in enumerate(frame_numbers):
+            keyframe = LatentKeyframeImport(frame_number, float(weights[i]))
+            logger.info(f"keyframe {frame_number}:{weights[i]}")
             curr_latent_keyframe.add(keyframe)
 
         for latent_keyframe in prev_latent_keyframe.keyframes:
             curr_latent_keyframe.add(latent_keyframe)
 
 
-        return (curr_latent_keyframe,)
+        return (weights, frame_numbers, curr_latent_keyframe,)
+
+
+def calculate_weights(batch_index_from, batch_index_to, strength_from, strength_to, interpolation,revert_direction_at_midpoint, last_key_frame_position,i, number_of_items,buffer):
+    print("<-------- LOOK HERE s")
+    print("batch_index_from",batch_index_from)
+    print("batch_index_to",batch_index_to)
+    print("strength_from",strength_from)
+    print("strength_to",strength_to)
+    print("interpolation",interpolation)
+    print("revert_direction_at_midpoint",revert_direction_at_midpoint)
+    print("last_key_frame_position",last_key_frame_position)
+    print("i",i)
+    print("number_of_items",number_of_items)
+    # Initialize variables based on the position of the keyframe
+    range_start = batch_index_from
+    range_end = batch_index_to
+    # if it's the first value, set influence range from 1.0 to 0.0
+    if buffer > 0:
+        if i == 0:
+            range_start = 0
+        elif i == 1:
+            range_start = buffer
+    else:
+        if i == 1:
+            range_start = 0
+    
+    if i == number_of_items - 1:
+        range_end = last_key_frame_position
+
+    steps = range_end - range_start
+    diff = strength_to - strength_from
+
+    # Calculate index for interpolation
+    index = np.linspace(0, 1, steps // 2 + 1) if revert_direction_at_midpoint else np.linspace(0, 1, steps)
+
+    # Calculate weights based on interpolation type
+    if interpolation == "linear":
+        weights = np.linspace(strength_from, strength_to, len(index))
+    elif interpolation == "ease-in":
+        weights = diff * np.power(index, 2) + strength_from
+    elif interpolation == "ease-out":
+        weights = diff * (1 - np.power(1 - index, 2)) + strength_from
+    elif interpolation == "ease-in-out":
+        weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
+
+    # If it's a middle keyframe, mirror the weights
+    if revert_direction_at_midpoint:
+        weights = np.concatenate([weights, weights[::-1]])
+
+    # Generate frame numbers
+    frame_numbers = np.arange(range_start, range_start + len(weights))
+
+    # "Dropper" component: For keyframes with negative start, drop the weights
+    if range_start < 0 and i > 0:
+        drop_count = abs(range_start)
+        weights = weights[drop_count:]
+        frame_numbers = frame_numbers[drop_count:]
+
+    # Dropper component: for keyframes a range_End is greater than last_key_frame_position, drop the weights
+    if range_end > last_key_frame_position and i < number_of_items - 1:
+        drop_count = range_end - last_key_frame_position
+        weights = weights[:-drop_count]
+        frame_numbers = frame_numbers[:-drop_count]
+
+    return weights, frame_numbers
+
 
 
 class LatentKeyframeBatchedGroupNodeImport:
