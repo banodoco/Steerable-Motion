@@ -1,13 +1,13 @@
 {
-  "last_node_id": 428,
-  "last_link_id": 780,
+  "last_node_id": 442,
+  "last_link_id": 833,
   "nodes": [
     {
       "id": 363,
       "type": "Note",
       "pos": [
-        2651.475905889869,
-        -676.7707149068145
+        2739.5175354568137,
+        -674.111819693321
       ],
       "size": {
         "0": 312.1289367675781,
@@ -26,96 +26,6 @@
       "bgcolor": "#653"
     },
     {
-      "id": 342,
-      "type": "ADE_AnimateDiffUniformContextOptions",
-      "pos": [
-        1499.4110682194105,
-        -1407.4911848643637
-      ],
-      "size": {
-        "0": 315,
-        "1": 154
-      },
-      "flags": {},
-      "order": 1,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "CONTEXT_OPTIONS",
-          "type": "CONTEXT_OPTIONS",
-          "links": [
-            627
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
-      },
-      "widgets_values": [
-        16,
-        2,
-        2,
-        "uniform",
-        false
-      ]
-    },
-    {
-      "id": 367,
-      "type": "BatchPromptSchedule",
-      "pos": [
-        -33,
-        -1554
-      ],
-      "size": {
-        "0": 400,
-        "1": 364
-      },
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 669
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [
-            670
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchPromptSchedule"
-      },
-      "widgets_values": [
-        "\"0\" :\"\",\n\"12\" :\"\",\n\"24\" :\"\",\n\"36\" :\"\",\n\"48\" :\"\",\n\"60\" :\"\",\n\"72\" :\"\",\n\"84\" :\"\",\n\"96\" :\"\",\n\"108\" :\"\",\n\"120\" :\"\"\n",
-        120,
-        false,
-        "PRE",
-        "APP",
-        0,
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
       "id": 359,
       "type": "Note",
       "pos": [
@@ -127,7 +37,7 @@
         "1": 118.72222137451172
       },
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "properties": {
         "text": ""
@@ -139,154 +49,18 @@
       "bgcolor": "#653"
     },
     {
-      "id": 389,
-      "type": "PreviewImage",
-      "pos": [
-        -1399,
-        -565
-      ],
-      "size": {
-        "0": 380,
-        "1": 250
-      },
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 737
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
-      "pos": [
-        1924,
-        -874
-      ],
-      "size": {
-        "0": 315,
-        "1": 190
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 20,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 697,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
-          "link": null
-        },
-        {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
-          "link": null,
-          "slot_index": 3
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            690
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
-      },
-      "widgets_values": [
-        "mm_sd_v15_v2.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        1,
-        false
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        3352,
-        -1039
-      ],
-      "size": [
-        320,
-        544
-      ],
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 656
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 14,
-        "loop_count": 0,
-        "filename_prefix": "creative_interpolation_results/AD_",
-        "format": "video/h264-mp4",
-        "pingpong": false,
-        "save_image": true,
-        "crf": 20,
-        "save_metadata": true,
-        "audio_file": "",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00332.mp4",
-            "subfolder": "creative_interpolation_results",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
-    },
-    {
       "id": 292,
       "type": "STMFNet VFI",
       "pos": [
-        2568.475905889869,
-        -932.7707149068144
+        2656.5175354568137,
+        -930.1118196933209
       ],
       "size": {
         "0": 443.4000244140625,
         "1": 150
       },
       "flags": {},
-      "order": 23,
+      "order": 18,
       "mode": 0,
       "inputs": [
         {
@@ -322,65 +96,6 @@
       ]
     },
     {
-      "id": 354,
-      "type": "VHS_SplitImages",
-      "pos": [
-        2548,
-        -1140
-      ],
-      "size": {
-        "0": 315,
-        "1": 118
-      },
-      "flags": {},
-      "order": 22,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 756
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE_A",
-          "type": "IMAGE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "A_count",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "IMAGE_B",
-          "type": "IMAGE",
-          "links": [
-            758
-          ],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "B_count",
-          "type": "INT",
-          "links": null,
-          "shape": 3,
-          "slot_index": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_SplitImages"
-      },
-      "widgets_values": {
-        "split_index": 4
-      }
-    },
-    {
       "id": 401,
       "type": "VHS_LoadImagesPath",
       "pos": [
@@ -392,7 +107,7 @@
         "1": 170
       },
       "flags": {},
-      "order": 3,
+      "order": 2,
       "mode": 0,
       "outputs": [
         {
@@ -400,7 +115,7 @@
           "type": "IMAGE",
           "links": [
             737,
-            738
+            823
           ],
           "shape": 3,
           "slot_index": 0
@@ -432,11 +147,106 @@
       "bgcolor": "#593930"
     },
     {
+      "id": 389,
+      "type": "PreviewImage",
+      "pos": [
+        -1399,
+        -565
+      ],
+      "size": {
+        "0": 380,
+        "1": 250
+      },
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 737
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 364,
+      "type": "Note",
+      "pos": [
+        -632.9539818636737,
+        -682.3698404564998
+      ],
+      "size": {
+        "0": 295.6344299316406,
+        "1": 204.49923706054688
+      },
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "properties": {
+        "text": ""
+      },
+      "widgets_values": [
+        "Please set batch_size at frames_per_key_frame * number_of_key_frames + 4 - the 4 is to give additional buffer to solve issues with the uniform context scheduling. A hacky solution for now."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3379.5156021557077,
+        -1024.2727017010202
+      ],
+      "size": [
+        320,
+        544
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 656
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 14,
+        "loop_count": 0,
+        "filename_prefix": "creative_interpolation_results/AD_",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_image": true,
+        "crf": 20,
+        "save_metadata": true,
+        "audio_file": "",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00407.mp4",
+            "subfolder": "creative_interpolation_results",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
       "id": 352,
       "type": "CLIPTextEncode",
       "pos": [
-        -122,
-        -982
+        33,
+        -1011
       ],
       "size": {
         "0": 483.6921691894531,
@@ -445,7 +255,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 12,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -459,7 +269,7 @@
           "name": "CONDITIONING",
           "type": "CONDITIONING",
           "links": [
-            664
+            822
           ],
           "slot_index": 0
         }
@@ -474,61 +284,133 @@
       "bgcolor": "#533"
     },
     {
-      "id": 362,
-      "type": "Note",
+      "id": 367,
+      "type": "BatchPromptSchedule",
       "pos": [
-        1969,
-        -1357
+        22,
+        -1452
       ],
       "size": {
-        "0": 256.1595153808594,
-        "1": 253.7761993408203
+        "0": 482.4560241699219,
+        "1": 371.4627990722656
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 669
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [
+            821
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchPromptSchedule"
+      },
+      "widgets_values": [
+        "\"0\" :\"\",\n\"12\" :\"\",\n\"24\" :\"\",\n\"36\" :\"\",\n\"48\" :\"\",\n\"60\" :\"\",\n\"72\" :\"\",\n\"84\" :\"\",\n\"96\" :\"\",\n\"108\" :\"\",\n\"120\" :\"\"\n",
+        120,
+        false,
+        "PRE",
+        "APP",
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 370,
+      "type": "CLIPVisionLoader",
+      "pos": [
+        -616,
+        -238
+      ],
+      "size": {
+        "0": 315,
+        "1": 58
       },
       "flags": {},
       "order": 4,
       "mode": 0,
+      "outputs": [
+        {
+          "name": "CLIP_VISION",
+          "type": "CLIP_VISION",
+          "links": [
+            826
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "text": ""
+        "Node name for S&R": "CLIPVisionLoader"
       },
       "widgets_values": [
-        "motion_scale can also be really useful - tuning it down can remove jolty motion."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
+        "SD1.5/pytorch_model.bin"
+      ]
     },
     {
-      "id": 364,
-      "type": "Note",
+      "id": 369,
+      "type": "IPAdapterModelLoader",
       "pos": [
-        -596,
-        -1006
+        -591,
+        -424
       ],
       "size": {
-        "0": 295.6344299316406,
-        "1": 204.49923706054688
+        "0": 303.41448974609375,
+        "1": 58
       },
       "flags": {},
       "order": 5,
       "mode": 0,
+      "outputs": [
+        {
+          "name": "IPADAPTER",
+          "type": "IPADAPTER",
+          "links": [
+            825
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
       "properties": {
-        "text": ""
+        "Node name for S&R": "IPAdapterModelLoader"
       },
       "widgets_values": [
-        "Please set batch_size at frames_per_key_frame * number_of_key_frames + 4 - the 4 is to give additional buffer to solve issues with the uniform context scheduling. A hacky solution for now."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
+        "ip-adapter-plus_sd15.bin"
+      ]
     },
     {
       "id": 360,
       "type": "Note",
       "pos": [
-        483,
-        -1698
+        711,
+        -1372
       ],
       "size": {
-        "0": 508.23260498046875,
-        "1": 385.82281494140625
+        "0": 444.2115173339844,
+        "1": 615.5187377929688
       },
       "flags": {},
       "order": 6,
@@ -543,199 +425,134 @@
       "bgcolor": "#653"
     },
     {
-      "id": 397,
-      "type": "PreviewImage",
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
       "pos": [
-        -481,
-        24
-      ],
-      "size": {
-        "0": 380,
-        "1": 250
-      },
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 775
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 370,
-      "type": "CLIPVisionLoader",
-      "pos": [
-        -19,
-        172
+        1530,
+        -470
       ],
       "size": {
         "0": 315,
-        "1": 58
+        "1": 190
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 829,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 627,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            815
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+      },
+      "widgets_values": [
+        "mm_sd_v15_v2.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        1,
+        false
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 362,
+      "type": "Note",
+      "pos": [
+        2030,
+        -670
+      ],
+      "size": {
+        "0": 256.1595153808594,
+        "1": 253.7761993408203
       },
       "flags": {},
       "order": 7,
       "mode": 0,
-      "outputs": [
-        {
-          "name": "CLIP_VISION",
-          "type": "CLIP_VISION",
-          "links": [
-            693
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
       "properties": {
-        "Node name for S&R": "CLIPVisionLoader"
+        "text": ""
       },
       "widgets_values": [
-        "SD1.5/pytorch_model.bin"
-      ]
+        "motion_scale can also be really useful - tuning it down can remove jolty motion."
+      ],
+      "color": "#432",
+      "bgcolor": "#653"
     },
     {
-      "id": 425,
-      "type": "MaskToImage",
+      "id": 342,
+      "type": "ADE_AnimateDiffUniformContextOptions",
       "pos": [
-        49,
-        -140
+        1970,
+        -1080
       ],
       "size": {
-        "0": 210,
-        "1": 26
+        "0": 315,
+        "1": 154
       },
       "flags": {},
-      "order": 16,
+      "order": 8,
       "mode": 0,
-      "inputs": [
-        {
-          "name": "mask",
-          "type": "MASK",
-          "link": 780
-        }
-      ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
+          "name": "CONTEXT_OPTIONS",
+          "type": "CONTEXT_OPTIONS",
           "links": [
-            777
+            627
           ],
           "shape": 3,
           "slot_index": 0
         }
       ],
       "properties": {
-        "Node name for S&R": "MaskToImage"
-      }
-    },
-    {
-      "id": 365,
-      "type": "BatchCreativeInterpolation",
-      "pos": [
-        486,
-        -1242
-      ],
-      "size": {
-        "0": 488.5699157714844,
-        "1": 500
-      },
-      "flags": {},
-      "order": 14,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 670
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 664
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 738
-        },
-        {
-          "name": "create_masks",
-          "type": "BOOL",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            666
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            667
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            772
-          ],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": [
-            779,
-            780
-          ],
-          "shape": 3,
-          "slot_index": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchCreativeInterpolation"
+        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
       },
       "widgets_values": [
-        "control_v11f1e_sd15_tile_fp16.safetensors",
-        "linear",
-        16,
-        "0,20,32",
-        "linear",
-        1.1,
-        "1.5,2.8,1.0",
-        "linear",
-        "(0.0,0.40)",
-        "(0.0,0.35),(0.0,0.35),(0.0,1.0),(0.0,1.0)",
-        0.85,
-        "ease-in-out",
-        4,
-        0.5
+        17,
+        2,
+        2,
+        "uniform",
+        false
       ]
     },
     {
       "id": 189,
       "type": "Efficient Loader",
       "pos": [
-        -655,
-        -1656
+        -665.9539818636737,
+        -1439.3698404565005
       ],
       "size": {
         "0": 448.8115539550781,
@@ -744,7 +561,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 8,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -764,7 +581,7 @@
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            699
+            824
           ],
           "shape": 3,
           "slot_index": 0
@@ -834,163 +651,77 @@
         "comfy",
         512,
         512,
-        36
+        52
       ],
       "color": "#223333",
       "bgcolor": "#335555",
       "shape": 1
     },
     {
-      "id": 376,
-      "type": "IPAdapterApply",
+      "id": 354,
+      "type": "VHS_SplitImages",
       "pos": [
-        510,
-        67
+        2628,
+        -1159
       ],
       "size": {
-        "0": 290.56597900390625,
-        "1": 259.95843505859375
+        "0": 315,
+        "1": 118
       },
       "flags": {},
       "order": 17,
       "mode": 0,
       "inputs": [
         {
-          "name": "ipadapter",
-          "type": "IPADAPTER",
-          "link": 698
-        },
-        {
-          "name": "clip_vision",
-          "type": "CLIP_VISION",
-          "link": 693
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 716
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 699
-        },
-        {
-          "name": "attn_mask",
-          "type": "MASK",
-          "link": 779
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            697
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IPAdapterApply"
-      },
-      "widgets_values": [
-        0.45,
-        0.45,
-        "original",
-        0,
-        1,
-        true
-      ]
-    },
-    {
-      "id": 426,
-      "type": "PreviewImage",
-      "pos": [
-        466,
-        -180
-      ],
-      "size": [
-        333.9960299630926,
-        173.49532369649108
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [
-        {
           "name": "images",
           "type": "IMAGE",
-          "link": 777,
-          "slot_index": 0
+          "link": 756
         }
       ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 369,
-      "type": "IPAdapterModelLoader",
-      "pos": [
-        -32,
-        6
-      ],
-      "size": {
-        "0": 303.41448974609375,
-        "1": 58
-      },
-      "flags": {},
-      "order": 9,
-      "mode": 0,
       "outputs": [
         {
-          "name": "IPADAPTER",
-          "type": "IPADAPTER",
-          "links": [
-            698
-          ],
+          "name": "IMAGE_A",
+          "type": "IMAGE",
+          "links": [],
           "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "A_count",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "IMAGE_B",
+          "type": "IMAGE",
+          "links": [
+            758
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "B_count",
+          "type": "INT",
+          "links": null,
+          "shape": 3,
+          "slot_index": 3
         }
       ],
       "properties": {
-        "Node name for S&R": "IPAdapterModelLoader"
+        "Node name for S&R": "VHS_SplitImages"
       },
-      "widgets_values": [
-        "ip-adapter-plus_sd15.bin"
-      ]
-    },
-    {
-      "id": 361,
-      "type": "Note",
-      "pos": [
-        867,
-        -81
-      ],
-      "size": {
-        "0": 210,
-        "1": 315.380859375
-      },
-      "flags": {},
-      "order": 10,
-      "mode": 0,
-      "properties": {
-        "text": ""
-      },
-      "widgets_values": [
-        "Ipadapter weight also has a huge impact on the outcome - more = more adherence to the original images. Sometimes this can be too much control."
-      ],
-      "color": "#432",
-      "bgcolor": "#653"
+      "widgets_values": {
+        "split_index": 4
+      }
     },
     {
       "id": 207,
       "type": "KSampler Adv. (Efficient)",
       "pos": [
-        1533,
-        -1114
+        1520,
+        -1320
       ],
       "size": {
         "0": 325,
@@ -999,23 +730,23 @@
       "flags": {
         "pinned": false
       },
-      "order": 21,
+      "order": 16,
       "mode": 0,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 690
+          "link": 815
         },
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 666
+          "link": 827
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 667
+          "link": 828
         },
         {
           "name": "latent_image",
@@ -1103,46 +834,134 @@
       "shape": 1
     },
     {
-      "id": 372,
-      "type": "PrepImageForClipVision",
+      "id": 437,
+      "type": "BatchCreativeInterpolation",
       "pos": [
-        -501,
-        -158
+        -71,
+        -735
       ],
       "size": {
-        "0": 315,
-        "1": 106
+        "0": 400,
+        "1": 588
       },
       "flags": {},
-      "order": 15,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
-          "name": "image",
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 821
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 822
+        },
+        {
+          "name": "images",
           "type": "IMAGE",
-          "link": 772
+          "link": 823
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 824
+        },
+        {
+          "name": "ipadapter",
+          "type": "IPADAPTER",
+          "link": 825
+        },
+        {
+          "name": "clip_vision",
+          "type": "CLIP_VISION",
+          "link": 826
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
+          "name": "graph",
           "type": "IMAGE",
           "links": [
-            716,
-            775
+            816
           ],
           "shape": 3,
           "slot_index": 0
+        },
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            827
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            828
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "links": [
+            829
+          ],
+          "shape": 3,
+          "slot_index": 3
         }
       ],
       "properties": {
-        "Node name for S&R": "PrepImageForClipVision"
+        "Node name for S&R": "BatchCreativeInterpolation"
       },
       "widgets_values": [
-        "LANCZOS",
-        "pad",
-        0
+        "control_v11f1e_sd15_tile_fp16.safetensors",
+        "linear",
+        16,
+        "0,20,36",
+        "linear",
+        1.5,
+        "2.3,1.5,1.5,1.5",
+        "linear",
+        "(0.0,0.4)",
+        "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)",
+        0.85,
+        4,
+        1.5,
+        1.2000000000000002,
+        0.3
       ]
+    },
+    {
+      "id": 436,
+      "type": "PreviewImage",
+      "pos": [
+        497,
+        -638
+      ],
+      "size": {
+        "0": 720,
+        "1": 440
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 816
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
     }
   ],
   "links": [
@@ -1187,30 +1006,6 @@
       "IMAGE"
     ],
     [
-      664,
-      352,
-      0,
-      365,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      666,
-      365,
-      0,
-      207,
-      1,
-      "CONDITIONING"
-    ],
-    [
-      667,
-      365,
-      1,
-      207,
-      2,
-      "CONDITIONING"
-    ],
-    [
       669,
       189,
       5,
@@ -1219,75 +1014,11 @@
       "CLIP"
     ],
     [
-      670,
-      367,
-      0,
-      365,
-      0,
-      "CONDITIONING"
-    ],
-    [
-      690,
-      187,
-      0,
-      207,
-      0,
-      "MODEL"
-    ],
-    [
-      693,
-      370,
-      0,
-      376,
-      1,
-      "CLIP_VISION"
-    ],
-    [
-      697,
-      376,
-      0,
-      187,
-      0,
-      "MODEL"
-    ],
-    [
-      698,
-      369,
-      0,
-      376,
-      0,
-      "IPADAPTER"
-    ],
-    [
-      699,
-      189,
-      0,
-      376,
-      3,
-      "MODEL"
-    ],
-    [
-      716,
-      372,
-      0,
-      376,
-      2,
-      "IMAGE"
-    ],
-    [
       737,
       401,
       0,
       389,
       0,
-      "IMAGE"
-    ],
-    [
-      738,
-      401,
-      0,
-      365,
-      2,
       "IMAGE"
     ],
     [
@@ -1307,63 +1038,100 @@
       "IMAGE"
     ],
     [
-      772,
-      365,
+      815,
+      187,
+      0,
+      207,
+      0,
+      "MODEL"
+    ],
+    [
+      816,
+      437,
+      0,
+      436,
+      0,
+      "IMAGE"
+    ],
+    [
+      821,
+      367,
+      0,
+      437,
+      0,
+      "CONDITIONING"
+    ],
+    [
+      822,
+      352,
+      0,
+      437,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      823,
+      401,
+      0,
+      437,
       2,
-      372,
-      0,
       "IMAGE"
     ],
     [
-      775,
-      372,
+      824,
+      189,
       0,
-      397,
-      0,
-      "IMAGE"
-    ],
-    [
-      777,
-      425,
-      0,
-      426,
-      0,
-      "IMAGE"
-    ],
-    [
-      779,
-      365,
+      437,
       3,
-      376,
+      "MODEL"
+    ],
+    [
+      825,
+      369,
+      0,
+      437,
       4,
-      "MASK"
+      "IPADAPTER"
     ],
     [
-      780,
-      365,
-      3,
-      425,
+      826,
+      370,
       0,
-      "MASK"
+      437,
+      5,
+      "CLIP_VISION"
+    ],
+    [
+      827,
+      437,
+      1,
+      207,
+      1,
+      "CONDITIONING"
+    ],
+    [
+      828,
+      437,
+      2,
+      207,
+      2,
+      "CONDITIONING"
+    ],
+    [
+      829,
+      437,
+      3,
+      187,
+      0,
+      "MODEL"
     ]
   ],
   "groups": [
     {
-      "title": "IPAdapter",
-      "bounding": [
-        -620,
-        -287,
-        1761,
-        640
-      ],
-      "color": "#3f789e",
-      "font_size": 24
-    },
-    {
       "title": "First sampler, interpolation",
       "bounding": [
-        1390,
-        -1602,
+        1430,
+        -1472,
         929,
         1307
       ],
@@ -1373,8 +1141,8 @@
     {
       "title": "Increase Framerate",
       "bounding": [
-        2458,
-        -1259,
+        2546,
+        -1257,
         657,
         898
       ],
@@ -1384,8 +1152,8 @@
     {
       "title": "Saving",
       "bounding": [
-        3325,
-        -1153,
+        3351,
+        -1116,
         375,
         657
       ],
@@ -1395,10 +1163,10 @@
     {
       "title": "Group",
       "bounding": [
-        -747,
-        -1770,
-        1783,
-        1088
+        -758,
+        -1553,
+        2079,
+        1455
       ],
       "color": "#3f789e",
       "font_size": 24
@@ -1410,28 +1178,6 @@
         -1277,
         752,
         1100
-      ],
-      "color": "#3f789e",
-      "font_size": 24
-    },
-    {
-      "title": "Group",
-      "bounding": [
-        1189,
-        -1949,
-        140,
-        80
-      ],
-      "color": "#3f789e",
-      "font_size": 24
-    },
-    {
-      "title": "Group",
-      "bounding": [
-        422,
-        868,
-        140,
-        80
       ],
       "color": "#3f789e",
       "font_size": 24
