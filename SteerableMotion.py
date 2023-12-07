@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 import folder_paths
 
-from .imports.IPAdapterPlus import IPAdapterApplyImport, prep_image
+from .imports.IPAdapterPlus import (IPAdapterApplyImport, prep_image,IPAdapterBatchEmbedsImport, IPAdapterEncoderImport,)
 from .imports.AdvancedControlNet import (
     calculate_weights,
     LatentKeyframeInterpolationNodeImport,    
@@ -261,6 +261,9 @@ class BatchCreativeInterpolationNode:
         cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights = [], [], [], []        
         last_key_frame_position = (keyframe_positions[-1]) + buffer        
 
+        batches = []
+        current_batch = []
+
         for i, (start, end) in enumerate(influence_ranges):
             # set basic values
             batch_index_from, batch_index_to_excl = influence_ranges[i]
@@ -300,6 +303,8 @@ class BatchCreativeInterpolationNode:
             control_net_loader = ControlNetLoaderAdvancedImport()
             apply_advanced_control_net = AdvancedControlNetApplyImport()
             ipadapter_application = IPAdapterApplyImport()
+            ipadapter_encoder = IPAdapterEncoderImport()
+            ipadapter_batcher = IPAdapterBatchEmbedsImport()
 
             # Load keyframe and append frame numbers and weights
             weights, frame_numbers, latent_keyframe = latent_keyframe_interpolation_node.load_keyframe(
@@ -318,8 +323,8 @@ class BatchCreativeInterpolationNode:
             # Prepare image
             prepped_image = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)[0]
 
-            # Adjust strength values and influence range
-            ipa_strength_from, ipa_strength_to = adjust_strength_values(strength_from, strength_to, ipadapter_strength_multiplier)
+            # Adjust strength values and influence range    
+            ipa_strength_from, ipa_strength_to = adjust_strength_values(strength_from, strength_to, ipadapter_strength_multiplier)            
             ipa_batch_index_from, ipa_batch_index_to_excl = adjust_influence_range(batch_index_from, batch_index_to_excl, last_key_frame_position, ipadapter_influence_multiplier, buffer)
 
             # Calculate weights and append frame numbers and weights
@@ -328,9 +333,32 @@ class BatchCreativeInterpolationNode:
             ipadapter_weights.append(ipa_weights)
 
             # Create mask batch and apply ipadapter
-            masks = create_mask_batch(last_key_frame_position, weights, frame_numbers)
-            model = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, clip_vision=clip_vision, image=prepped_image, weight_type="original", noise=ipadapter_noise, embeds=None, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)[0]
+            
+            masks = create_mask_batch(last_key_frame_position, weights, frame_numbers)        
+
+            # Apply ipadapter
+            encoded, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, ipadapter_noise, 1.0, image_2=None, image_3=None, image_4=None, weight_2=1.0, weight_3=1.0, weight_4=1.0)
+
+            current_batch.append(encoded)
+
+            # If (i+1) is divisible by 8, start a new batch
+            if (i + 1) % 8 == 0:
+                batches.append(current_batch)
+                current_batch = []            
         
+        # Add the last batch if it's not empty
+        if current_batch:
+            batches.append(current_batch)
+
+        # embeds = ipadapter_batcher.batch(self, embed1, embed2)
+            
+        for batch in batches:
+            # Combine all the encoded data in the batch into a single tensor
+            embeds = torch.cat(batch, dim=1)
+
+            # Apply ipadapter
+        model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", noise=None, embeds=embeds, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)
+                
         comparison_diagram, = plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer)
         
         return comparison_diagram, positive, negative, model

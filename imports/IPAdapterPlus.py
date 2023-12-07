@@ -682,3 +682,99 @@ class ResamplerImport(nn.Module):
             
         latents = self.proj_out(latents)
         return self.norm_out(latents)
+
+
+class IPAdapterEncoderImport:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "clip_vision": ("CLIP_VISION",),
+            "image_1": ("IMAGE",),
+            "ipadapter_plus": ("BOOLEAN", { "default": False }),
+            "noise": ("FLOAT", { "default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01 }),
+            "weight_1": ("FLOAT", { "default": 1.0, "min": 0, "max": 1.0, "step": 0.01 }),
+            },
+            "optional": {
+                "image_2": ("IMAGE",),
+                "image_3": ("IMAGE",),
+                "image_4": ("IMAGE",),
+                "weight_2": ("FLOAT", { "default": 1.0, "min": 0, "max": 1.0, "step": 0.01 }),
+                "weight_3": ("FLOAT", { "default": 1.0, "min": 0, "max": 1.0, "step": 0.01 }),
+                "weight_4": ("FLOAT", { "default": 1.0, "min": 0, "max": 1.0, "step": 0.01 }),
+            }
+        }
+
+    RETURN_TYPES = ("EMBEDS",)
+    FUNCTION = "preprocess"
+    CATEGORY = "ipadapter"
+
+    def preprocess(self, clip_vision, image_1, ipadapter_plus, noise, weight_1, image_2=None, image_3=None, image_4=None, weight_2=1.0, weight_3=1.0, weight_4=1.0):
+        weight_1 *= (0.1 + (weight_1 - 0.1))
+        weight_1 = 1.19e-05 if weight_1 <= 1.19e-05 else weight_1
+        weight_2 *= (0.1 + (weight_2 - 0.1))
+        weight_2 = 1.19e-05 if weight_2 <= 1.19e-05 else weight_2
+        weight_3 *= (0.1 + (weight_3 - 0.1))
+        weight_3 = 1.19e-05 if weight_3 <= 1.19e-05 else weight_3
+        weight_4 *= (0.1 + (weight_4 - 0.1))
+        weight_5 = 1.19e-05 if weight_4 <= 1.19e-05 else weight_4
+
+        image = image_1
+        weight = [weight_1]*image_1.shape[0]
+        
+        if image_2 is not None:
+            if image_1.shape[1:] != image_2.shape[1:]:
+                image_2 = comfy.utils.common_upscale(image_2.movedim(-1,1), image.shape[2], image.shape[1], "bilinear", "center").movedim(1,-1)
+            image = torch.cat((image, image_2), dim=0)
+            weight += [weight_2]*image_2.shape[0]
+        if image_3 is not None:
+            if image.shape[1:] != image_3.shape[1:]:
+                image_3 = comfy.utils.common_upscale(image_3.movedim(-1,1), image.shape[2], image.shape[1], "bilinear", "center").movedim(1,-1)
+            image = torch.cat((image, image_3), dim=0)
+            weight += [weight_3]*image_3.shape[0]
+        if image_4 is not None:
+            if image.shape[1:] != image_4.shape[1:]:
+                image_4 = comfy.utils.common_upscale(image_4.movedim(-1,1), image.shape[2], image.shape[1], "bilinear", "center").movedim(1,-1)
+            image = torch.cat((image, image_4), dim=0)
+            weight += [weight_4]*image_4.shape[0]
+        
+        clip_embed = clip_vision.encode_image(image)
+        neg_image = image_add_noise(image, noise) if noise > 0 else None
+        
+        if ipadapter_plus:
+            clip_embed = clip_embed.penultimate_hidden_states
+            if noise > 0:
+                clip_embed_zeroed = clip_vision.encode_image(neg_image).penultimate_hidden_states
+            else:
+                clip_embed_zeroed = zeroed_hidden_states(clip_vision, image.shape[0])
+        else:
+            clip_embed = clip_embed.image_embeds
+            if noise > 0:
+                clip_embed_zeroed = clip_vision.encode_image(neg_image).image_embeds
+            else:
+                clip_embed_zeroed = torch.zeros_like(clip_embed)
+
+        if any(e != 1.0 for e in weight):
+            weight = torch.tensor(weight).unsqueeze(-1) if not ipadapter_plus else torch.tensor(weight).unsqueeze(-1).unsqueeze(-1)
+            clip_embed = clip_embed * weight
+        
+        output = torch.stack((clip_embed, clip_embed_zeroed))
+
+        return( output, )
+
+
+
+class IPAdapterBatchEmbedsImport:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {"required": {
+            "embed1": ("EMBEDS",),
+            "embed2": ("EMBEDS",),
+        }}
+
+    RETURN_TYPES = ("EMBEDS",)
+    FUNCTION = "batch"
+    CATEGORY = "ipadapter"
+
+    def batch(self, embed1, embed2):
+        output = torch.cat((embed1, embed2), dim=1)
+        return (output, )
