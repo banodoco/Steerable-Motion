@@ -1,202 +1,22 @@
-import numpy as np
-import torch
-import folder_paths
-from PIL import Image
 from ast import literal_eval
-from .control import ControlNetAdvancedImport, T2IAdapterAdvancedImport, load_controlnet, ControlNetWeightsTypeImport, T2IAdapterWeightsTypeImport,\
-    LatentKeyframeGroupImport, TimestepKeyframeImport, TimestepKeyframeGroupImport, is_advanced_controlnet
-import matplotlib.pyplot as plt
-from .IPAdapterPlus import contrast_adaptive_sharpening, IPAdapterApply,prep_image
-
-from .weight_nodes import ScaledSoftControlNetWeightsImport, SoftControlNetWeightsImport, CustomControlNetWeightsImport, \
-    SoftT2IAdapterWeightsImport, CustomT2IAdapterWeightsImport
-from .latent_keyframe_nodes import LatentKeyframeGroupNodeImport, LatentKeyframeInterpolationNodeImport, LatentKeyframeBatchedGroupNodeImport, LatentKeyframeNodeImport,calculate_weights
-from .deprecated_nodes import LoadImagesFromDirectory
-from .logger import logger
-import torchvision.transforms as TT
-import torch.nn.functional as F
-
-import comfy.utils
-import comfy.model_management
-from comfy.clip_vision import clip_preprocess
-from comfy.ldm.modules.attention import optimized_attention
-# import BytesIO
 from io import BytesIO
+import torch
+import torchvision.transforms as TT
+from PIL import Image
+import matplotlib.pyplot as plt
 
+import folder_paths
 
-
-class TimestepKeyframeNodeImport:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "start_percent": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}, ),
-            },
-            "optional": {
-                "control_net_weights": ("CONTROL_NET_WEIGHTS", ),
-                "t2i_adapter_weights": ("T2I_ADAPTER_WEIGHTS", ),
-                "latent_keyframe": ("LATENT_KEYFRAME", ),
-                "prev_timestep_keyframe": ("TIMESTEP_KEYFRAME", ),                
-            }
-        }
+from .imports.IPAdapterPlus import IPAdapterApplyImport, prep_image
+from .imports.AdvancedControlNet import (
+    calculate_weights,
+    LatentKeyframeInterpolationNodeImport,    
+    ScaledSoftControlNetWeightsImport,
+    ControlNetLoaderAdvancedImport,
+    AdvancedControlNetApplyImport,
+    TimestepKeyframeNodeImport,
+)
     
-    RETURN_TYPES = ("TIMESTEP_KEYFRAME", )
-    FUNCTION = "load_keyframe"
-
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/keyframes"
-
-    def load_keyframe(self,
-                      start_percent: float,
-                      control_net_weights: ControlNetWeightsTypeImport=None,
-                      t2i_adapter_weights: T2IAdapterWeightsTypeImport=None,
-                      latent_keyframe: LatentKeyframeGroupImport=None,
-                      prev_timestep_keyframe: TimestepKeyframeGroupImport=None):
-        if not prev_timestep_keyframe:
-            prev_timestep_keyframe = TimestepKeyframeGroupImport()
-        keyframe = TimestepKeyframeImport(start_percent, control_net_weights, t2i_adapter_weights, latent_keyframe)
-        prev_timestep_keyframe.add(keyframe)
-        return (prev_timestep_keyframe,)
-
-
-class ControlNetLoaderAdvancedImport:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "control_net_name": (folder_paths.get_filename_list("controlnet"), ),
-            },
-            "optional": {
-                "timestep_keyframe": ("TIMESTEP_KEYFRAME", ),
-            }
-        }
-    
-    RETURN_TYPES = ("CONTROL_NET", )
-    FUNCTION = "load_controlnet"
-
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
-
-    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroupImport=None):
-        controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
-        controlnet = load_controlnet(controlnet_path, timestep_keyframe)
-        return (controlnet,)
-    
-
-class DiffControlNetLoaderAdvancedImport:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "model": ("MODEL",),
-                "control_net_name": (folder_paths.get_filename_list("controlnet"), )
-            },
-            "optional": {
-                "timestep_keyframe": ("TIMESTEP_KEYFRAME", ),
-            }
-        }
-    
-    RETURN_TYPES = ("CONTROL_NET", )
-    FUNCTION = "load_controlnet"
-
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/loaders"
-
-    def load_controlnet(self, control_net_name, timestep_keyframe: TimestepKeyframeGroupImport, model):
-        controlnet_path = folder_paths.get_full_path("controlnet", control_net_name)
-        controlnet = load_controlnet(controlnet_path, timestep_keyframe, model)
-        return (controlnet,)
-
-
-class AdvancedControlNetApplyImport:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "positive": ("CONDITIONING", ),
-                "negative": ("CONDITIONING", ),
-                "control_net": ("CONTROL_NET", ),
-                "image": ("IMAGE", ),
-                "strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
-                "start_percent": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.001}),
-                "end_percent": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 1.0, "step": 0.001})
-            },
-            "optional": {
-                "mask_optional": ("MASK", ),
-            }
-        }
-
-    RETURN_TYPES = ("CONDITIONING","CONDITIONING")
-    RETURN_NAMES = ("positive", "negative")
-    FUNCTION = "apply_controlnet"
-
-    CATEGORY = "Adv-ControlNet 🛂🅐🅒🅝/conditioning"
-
-    def apply_controlnet(self, positive, negative, control_net, image, strength, start_percent, end_percent, mask_optional=None):
-        if strength == 0:
-            return (positive, negative)
-
-        control_hint = image.movedim(-1,1)
-        cnets = {}
-
-        out = []
-        for conditioning in [positive, negative]:
-            c = []
-                        
-            for t in conditioning:
-                d = t[1].copy()
-
-                prev_cnet = d.get('control', None)
-                if prev_cnet in cnets:
-                    c_net = cnets[prev_cnet]
-                    
-                else:
-                    c_net = control_net.copy().set_cond_hint(control_hint, strength, (start_percent, end_percent))
-                    # set cond hint mask
-                    if mask_optional is not None:
-                        if is_advanced_controlnet(c_net):
-                            # if not in the form of a batch, make it so
-                            if len(mask_optional.shape) < 3:
-                                mask_optional = mask_optional.unsqueeze(0)
-                            c_net.set_cond_hint_mask(mask_optional)
-                    c_net.set_previous_controlnet(prev_cnet)
-                    cnets[prev_cnet] = c_net
-
-                d['control'] = c_net
-                d['control_apply_to_uncond'] = False
-                n = [t[0], d]
-                c.append(n)
-            out.append(c)
-        return (out[0], out[1])
-    
-
-class MaskGeneratorNode:
-    
-    RETURN_TYPES = ("MASK",)
-    FUNCTION = "generate_masks"
-    CATEGORY = "Steerable-Motion/Interpolation"
-
-    @classmethod
-    def INPUT_TYPES(s):
-        return {
-            "required": {
-                "number_of_masks": ("INT", {"default": 16, "min": 1, "max": 100, "step": 1}),
-                "strength": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01}),
-                "width": ("INT", {"default": 512, "min": 16, "max": 4096, "step": 1}),
-                "height": ("INT", {"default": 512, "min": 16, "max": 4096, "step": 1}),
-            },
-        }
-
-    def generate_masks(self, number_of_masks, strength, width, height):
-
-        masks = []
-        for _ in range(number_of_masks):
-            mask = torch.full((height, width), strength)
-            masks.append(mask)
-
-        # Convert list of masks to a single tensor
-        masks_tensor = torch.stack(masks, dim=0)
-        return masks_tensor
-
-
-
 class BatchCreativeInterpolationNode:
     @classmethod
     def IS_CHANGED(cls, **kwargs):
@@ -222,8 +42,7 @@ class BatchCreativeInterpolationNode:
                 "type_of_cn_strength_distribution": (["linear", "dynamic"],),
                 "linear_cn_strength_value": ("STRING", {"multiline": False, "default": "(0.0,0.4)"}),
                 "dynamic_cn_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),
-                "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.1}),          
-                # "interpolation": (["ease-in-out", "ease-in", "ease-out"],),
+                "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.1}),                          
                 "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}),
                 "relative_ipadapter_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 5.0, "step": 0.1}),
                 "relative_ipadapter_influence": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 5.0, "step": 0.1}),
@@ -324,9 +143,6 @@ class BatchCreativeInterpolationNode:
         def create_mask_batch(last_key_frame_position, weights, frames):
             # Hardcoded dimensions
             width, height = 512, 512
-
-            # Calculate the reversed weights in a generalizable way (e.g., 0.6 becomes 0.4, 0.1 becomes 0.9)
-            reversed_weights = [1.0 - weight for weight in weights]
 
             # Map frames to their corresponding reversed weights for easy lookup
             frame_to_weight = {frame: weights[i] for i, frame in enumerate(frames)}
@@ -439,143 +255,92 @@ class BatchCreativeInterpolationNode:
         keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                    
         cn_strength_values = extract_start_and_endpoint_values(type_of_cn_strength_distribution, dynamic_cn_strength_values, keyframe_positions, linear_cn_strength_value)                
         key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                
-        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)        
-        
+        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions,key_frame_influence_values)                
         influence_ranges = add_starting_buffer(influence_ranges, buffer)                                    
         cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
+        cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights = [], [], [], []        
+        last_key_frame_position = (keyframe_positions[-1]) + buffer        
 
-        cn_frame_numbers = []
-        cn_weights = []
-        ipadapter_frame_numbers = []
-        ipadapter_weights = []
-        
-        last_key_frame_position = (keyframe_positions[-1]) + buffer
-        control_net = []
         for i, (start, end) in enumerate(influence_ranges):
+            # set basic values
             batch_index_from, batch_index_to_excl = influence_ranges[i]
             ipadapter_strength_multiplier = relative_ipadapter_strength
             ipadapter_influence_multiplier = relative_ipadapter_influence 
 
+            # Default values
+            revert_direction_at_midpoint = False
+            interpolation = "ease-in-out"
+            strength_from = strength_to = 1.0
+
             if i == 0:
                 if buffer > 0:  # First image with buffer
                     image = images[0]
-                    strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)
-                    revert_direction_at_midpoint = False 
-                    ipadapter_strength_multiplier = 1.0
+                    strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)                                    
                     ipadapter_influence_multiplier = 1.0
                     interpolation = "ease-in-out"
                 else:
                     continue  # Skip first image without buffer
             elif i == 1: # First image
                 image = images[0]
-                strength_to, strength_from = cn_strength_values[0] if len(cn_strength_values) > 0 else (0.0, 1.0)
-                revert_direction_at_midpoint = False 
-                interpolation = "ease-in"
-
-                
-                
+                strength_to, strength_from = cn_strength_values[0] if len(cn_strength_values) > 0 else (0.0, 1.0)                
+                interpolation = "ease-in"                                
             elif i == len(images):  # Last image
                 image = images[i-1]
-                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
-                revert_direction_at_midpoint = False     
-                interpolation =  "ease-out"
-                                
+                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)                 
+                interpolation =  "ease-out"                                
             else:  # Middle images
                 image = images[i-1]
-                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)
+                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)                                                                
                 revert_direction_at_midpoint = True
-                interpolation = "ease-in-out"    
-                                
         
+            # Import necessary modules
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
-            weights, frame_numbers, latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(batch_index_from,strength_from,batch_index_to_excl,strength_to,interpolation,revert_direction_at_midpoint,last_key_frame_position,i,len(influence_ranges),buffer)                        
+            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
+            timestep_keyframe_node = TimestepKeyframeNodeImport()
+            control_net_loader = ControlNetLoaderAdvancedImport()
+            apply_advanced_control_net = AdvancedControlNetApplyImport()
+            ipadapter_application = IPAdapterApplyImport()
 
+            # Load keyframe and append frame numbers and weights
+            weights, frame_numbers, latent_keyframe = latent_keyframe_interpolation_node.load_keyframe(
+                batch_index_from, strength_from, batch_index_to_excl, strength_to, interpolation, revert_direction_at_midpoint, last_key_frame_position, i, len(influence_ranges), buffer)
             cn_frame_numbers.append(frame_numbers)
             cn_weights.append(weights)
 
-            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
-            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier,False)
+            # Load weights and keyframe
+            control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
+            timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, t2i_adapter_weights=None, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]
 
-            timestep_keyframe_node = TimestepKeyframeNodeImport()
-            timestep_keyframe, = timestep_keyframe_node.load_keyframe(start_percent=0.0,control_net_weights=control_net_weights,t2i_adapter_weights=None,latent_keyframe=latent_keyframe,prev_timestep_keyframe=None)
+            # Load and apply control net
+            control_net = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)[0]
+            positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, 0.0, 1.0)
 
-            control_net_loader = ControlNetLoaderAdvancedImport()
-            control_net, = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)
+            # Prepare image
+            prepped_image = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)[0]
 
-            apply_advanced_control_net = AdvancedControlNetApplyImport()                                    
-            positive, negative = apply_advanced_control_net.apply_controlnet(positive,negative,control_net,image.unsqueeze(0),1.0,0.0,1.0)       
-                                     
-            prepped_image, = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)
-
-            ipadapter_application = IPAdapterApply()
-            
-            ipa_strength_from, ipa_strength_to = adjust_strength_values(strength_from, strength_to, ipadapter_strength_multiplier)        
-            
+            # Adjust strength values and influence range
+            ipa_strength_from, ipa_strength_to = adjust_strength_values(strength_from, strength_to, ipadapter_strength_multiplier)
             ipa_batch_index_from, ipa_batch_index_to_excl = adjust_influence_range(batch_index_from, batch_index_to_excl, last_key_frame_position, ipadapter_influence_multiplier, buffer)
 
-            ipa_weights, ipa_frame_numbers = calculate_weights(ipa_batch_index_from,ipa_batch_index_to_excl,ipa_strength_from, ipa_strength_to,interpolation, revert_direction_at_midpoint, last_key_frame_position,i, len(influence_ranges),buffer)
-            
-
+            # Calculate weights and append frame numbers and weights
+            ipa_weights, ipa_frame_numbers = calculate_weights(ipa_batch_index_from, ipa_batch_index_to_excl, ipa_strength_from, ipa_strength_to, interpolation, revert_direction_at_midpoint, last_key_frame_position, i, len(influence_ranges), buffer)
             ipadapter_frame_numbers.append(ipa_frame_numbers)
             ipadapter_weights.append(ipa_weights)
 
-
+            # Create mask batch and apply ipadapter
             masks = create_mask_batch(last_key_frame_position, weights, frame_numbers)
-            
-            model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, clip_vision=clip_vision, image=prepped_image, weight_type="original", noise=ipadapter_noise, embeds=None, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)        
+            model = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, clip_vision=clip_vision, image=prepped_image, weight_type="original", noise=ipadapter_noise, embeds=None, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)[0]
         
         comparison_diagram, = plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer)
         
         return comparison_diagram, positive, negative, model
 
+
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
-    # Combined
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode
-    # "MaskGenerator": MaskGeneratorNode
-    # "FILMVFIImport": FILMVFINode
-    # Keyframes
-    # "TimestepKeyframe": TimestepKeyframeNodeImport,
-    # "LatentKeyframeImport": LatentKeyframeNodeImport,
-    # "LatentKeyframeGroupImport": LatentKeyframeGroupImportNode,
-    # "LatentKeyframeBatchedGroupImport": LatentKeyframeBatchedGroupNodeImport,
-    # "LatentKeyframeTiming": LatentKeyframeInterpolationNodeImport,
-    # Loaders
-    # "ControlNetLoaderAdvancedImport": ControlNetLoaderAdvancedImport,
-    # "DiffControlNetLoaderAdvancedImport": DiffControlNetLoaderAdvancedImport,
-    # Conditioning
-    # "ACN_AdvancedControlNetApplyImport": AdvancedControlNetApplyImport,
-    # Weights
-    # "ScaledSoftControlNetWeightsImport": ScaledSoftControlNetWeightsImport,
-    # "SoftControlNetWeights": SoftControlNetWeights,
-    # "CustomControlNetWeights": CustomControlNetWeights,
-    # "SoftT2IAdapterWeights": SoftT2IAdapterWeights,
-    # "CustomT2IAdapterWeights": CustomT2IAdapterWeights,
-    # Image
-    # "LoadImagesFromDirectory": LoadImagesFromDirectory
 }
 
-NODE_DISPLAY_NAME_MAPPINGS = {
-    # Combined
-    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅟🅞🅜"
-    # "MaskGenerator": "Mask Generator 🎞️🅟🅞🅜"
-    # Keyframes
-    # "TimestepKeyframe": "Timestep Keyframe 🎞️🅟🅞🅜",
-    # "LatentKeyframe": "Latent Keyframe 🛂🅐🅒🅝",
-    # "LatentKeyframeGroupImport": "Latent Keyframe Group 🛂🅐🅒🅝",
-    # "LatentKeyframeBatchedGroup": "Latent Keyframe Batched Group 🛂🅐🅒🅝",
-    # "LatentKeyframeTiming": "Latent Keyframe Interpolation 🛂🅐🅒🅝",
-    # Loaders
-    # "ControlNetLoaderAdvancedImport": "Load ControlNet Model (Advanced) 🛂🅐🅒🅝",
-    # "DiffControlNetLoaderAdvancedImport": "Load ControlNet Model (diff Advanced) 🛂🅐🅒🅝",
-    # Conditioning
-    # "ACN_AdvancedControlNetApplyImport": "Apply Advanced ControlNet 🛂🅐🅒🅝",
-    # Weights
-    # "ScaledSoftControlNetWeightsImport": "Scaled Soft ControlNet Weights 🛂🅐🅒🅝",
-    # "SoftControlNetWeights": "Soft ControlNet Weights 🛂🅐🅒🅝",
-    # "CustomControlNetWeights": "Custom ControlNet Weights 🛂🅐🅒🅝",
-    # "SoftT2IAdapterWeights": "Soft T2IAdapter Weights 🛂🅐🅒🅝",
-    # "CustomT2IAdapterWeights": "Custom T2IAdapter Weights 🛂🅐🅒🅝",
-    # Image
-    # "LoadImagesFromDirectory": "Load Images [DEPRECATED] 🛂🅐🅒🅝"
+NODE_DISPLAY_NAME_MAPPINGS = {    
+    "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅢🅜"
 }
