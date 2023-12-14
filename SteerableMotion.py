@@ -1,21 +1,22 @@
+# Standard library imports
 from ast import literal_eval
 from io import BytesIO
+
+# Third-party library imports
 import torch
 import torchvision.transforms as TT
 from PIL import Image
 import matplotlib.pyplot as plt
 
+# Local application/library specific imports
 import folder_paths
-
-from .imports.IPAdapterPlus import (IPAdapterApplyImport, prep_image,IPAdapterBatchEmbedsImport, IPAdapterEncoderImport,)
-from .imports.AdvancedControlNet import (
+from .imports.IPAdapterPlus import (IPAdapterApplyImport, prep_image, IPAdapterEncoderImport,)
+from .imports.AdvancedControlNet.latent_keyframe_nodes import (
     calculate_weights,
-    LatentKeyframeInterpolationNodeImport,    
-    ScaledSoftControlNetWeightsImport,
-    ControlNetLoaderAdvancedImport,
-    AdvancedControlNetApplyImport,
-    TimestepKeyframeNodeImport,
+    LatentKeyframeInterpolationNodeImport
 )
+from .imports.AdvancedControlNet.weight_nodes import ScaledSoftUniversalWeightsImport
+from .imports.AdvancedControlNet.nodes import ControlNetLoaderAdvancedImport, AdvancedControlNetApplyImport,TimestepKeyframeNodeImport
     
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -261,8 +262,10 @@ class BatchCreativeInterpolationNode:
         cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights = [], [], [], []        
         last_key_frame_position = (keyframe_positions[-1]) + buffer        
 
-        batches = []
-        current_batch = []
+        
+        embeds = []
+        masks = []
+        existing_embeds = []
 
         for i, (start, end) in enumerate(influence_ranges):
             # set basic values
@@ -298,13 +301,13 @@ class BatchCreativeInterpolationNode:
         
             # Import necessary modules
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
-            scaled_soft_control_net_weights = ScaledSoftControlNetWeightsImport()
+            scaled_soft_control_net_weights = ScaledSoftUniversalWeightsImport()
             timestep_keyframe_node = TimestepKeyframeNodeImport()
             control_net_loader = ControlNetLoaderAdvancedImport()
             apply_advanced_control_net = AdvancedControlNetApplyImport()
             ipadapter_application = IPAdapterApplyImport()
             ipadapter_encoder = IPAdapterEncoderImport()
-            ipadapter_batcher = IPAdapterBatchEmbedsImport()
+            # ipadapter_batcher = IPAdapterBatchEmbedsImport()
 
             # Load keyframe and append frame numbers and weights
             weights, frame_numbers, latent_keyframe = latent_keyframe_interpolation_node.load_keyframe(
@@ -314,7 +317,7 @@ class BatchCreativeInterpolationNode:
 
             # Load weights and keyframe
             control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
-            timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, t2i_adapter_weights=None, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]
+            timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]
 
             # Load and apply control net
             control_net = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)[0]
@@ -332,33 +335,29 @@ class BatchCreativeInterpolationNode:
             ipadapter_frame_numbers.append(ipa_frame_numbers)
             ipadapter_weights.append(ipa_weights)
 
-            # Create mask batch and apply ipadapter
+                        
+            mask = create_mask_batch(last_key_frame_position, ipa_weights, frame_numbers)        
+            # add mask to masks list
+            masks.append(mask)
             
-            masks = create_mask_batch(last_key_frame_position, weights, frame_numbers)        
+            embed, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, 0.0, 1.0)
+            # add embeds to current batch
+            embeds.append(embed)    
 
-            # Apply ipadapter
-            encoded, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, ipadapter_noise, 1.0, image_2=None, image_3=None, image_4=None, weight_2=1.0, weight_3=1.0, weight_4=1.0)
+            model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", 
+                                                noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=0.0, end_at=1.0, unfold_batch=True)
+                                    
 
-            current_batch.append(encoded)
+        # print out the format for the embeds        
+                        
+        # merged_embeds = torch.cat(embeds, dim=1)
 
-            # If (i+1) is divisible by 8, start a new batch
-            if (i + 1) % 8 == 0:
-                batches.append(current_batch)
-                current_batch = []            
+        # stacked_masks = torch.stack(masks)
+
+        # merged_masks = torch.cat(masks, dim=1)
         
-        # Add the last batch if it's not empty
-        if current_batch:
-            batches.append(current_batch)
 
-        # embeds = ipadapter_batcher.batch(self, embed1, embed2)
-            
-        for batch in batches:
-            # Combine all the encoded data in the batch into a single tensor
-            embeds = torch.cat(batch, dim=1)
 
-            # Apply ipadapter
-        model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", noise=None, embeds=embeds, attn_mask=masks, start_at=0.0, end_at=1.0, unfold_batch=True)
-                
         comparison_diagram, = plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer)
         
         return comparison_diagram, positive, negative, model

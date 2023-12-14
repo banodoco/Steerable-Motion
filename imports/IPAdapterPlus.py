@@ -167,10 +167,10 @@ def zeroed_hidden_states(clip_vision, batch_size):
         precision_scope = lambda a, b: contextlib.nullcontext(a)
 
     with precision_scope(comfy.model_management.get_autocast_device(clip_vision.load_device), torch.float32):
-        outputs = clip_vision.model(pixel_values, output_hidden_states=True)
+        outputs = clip_vision.model(pixel_values, intermediate_output=-2)
 
     # we only need the penultimate hidden states
-    outputs = outputs['hidden_states'][-2].cpu() if 'hidden_states' in outputs else None
+    outputs = outputs[1].to(comfy.model_management.intermediate_device())
 
     return outputs
 
@@ -433,41 +433,13 @@ class CrossAttentionPatchImport:
 
         return out.to(dtype=org_dtype)
 
-class IPAdapterModelLoaderImport:
-    @classmethod
-    def INPUT_TYPES(s):
-        return {"required": { "ipadapter_file": (folder_paths.get_filename_list("ipadapter"), )}}
 
-    RETURN_TYPES = ("IPADAPTER",)
-    FUNCTION = "load_ipadapter_model"
-
-    CATEGORY = "ipadapter"
-
-    def load_ipadapter_model(self, ipadapter_file):
-        ckpt_path = folder_paths.get_full_path("ipadapter", ipadapter_file)
-
-        model = comfy.utils.load_torch_file(ckpt_path, safe_load=True)
-
-        if ckpt_path.lower().endswith(".safetensors"):
-            st_model = {"image_proj": {}, "ip_adapter": {}}
-            for key in model.keys():
-                if key.startswith("image_proj."):
-                    st_model["image_proj"][key.replace("image_proj.", "")] = model[key]
-                elif key.startswith("ip_adapter."):
-                    st_model["ip_adapter"][key.replace("ip_adapter.", "")] = model[key]
-            model = st_model
-                    
-        if not "ip_adapter" in model.keys() or not model["ip_adapter"]:
-            raise Exception("invalid IPAdapter model {}".format(ckpt_path))
-
-        return (model,)
 
 class IPAdapterApplyImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
             "required": {
-                
                 "ipadapter": ("IPADAPTER", ),
                 "clip_vision": ("CLIP_VISION",),
                 "image": ("IMAGE",),
@@ -489,8 +461,6 @@ class IPAdapterApplyImport:
     CATEGORY = "ipadapter"
 
     def apply_ipadapter(self, ipadapter, model, weight, clip_vision=None, image=None, weight_type="original", noise=None, embeds=None, attn_mask=None, start_at=0.0, end_at=1.0, unfold_batch=False):
-        for attr in list(self.__dict__): 
-            delattr(self, attr)
         self.dtype = model.model.diffusion_model.dtype
         self.device = comfy.model_management.get_torch_device()
         self.weight = weight
@@ -760,6 +730,7 @@ class IPAdapterEncoderImport:
         output = torch.stack((clip_embed, clip_embed_zeroed))
 
         return( output, )
+
 
 
 
