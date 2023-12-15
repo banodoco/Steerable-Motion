@@ -711,48 +711,6 @@
       "bgcolor": "#593930"
     },
     {
-      "id": 352,
-      "type": "CLIPTextEncode",
-      "pos": [
-        782.4848111817444,
-        -1197.2252734560077
-      ],
-      "size": {
-        "0": 332.93072509765625,
-        "1": 323.7524108886719
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 17,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 644
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONDITIONING",
-          "type": "CONDITIONING",
-          "links": [
-            822
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CLIPTextEncode"
-      },
-      "widgets_values": [
-        "hands, hand, (worst quality, low quality:1.2)"
-      ],
-      "color": "#322",
-      "bgcolor": "#533"
-    },
-    {
       "id": 448,
       "type": "Note Plus (mtb)",
       "pos": {
@@ -912,6 +870,113 @@
       ]
     },
     {
+      "id": 445,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1647,
+        "1": -914,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 645.7035522460938,
+        "1": 1039.391357421875
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Put the images in inputs/steerable-motion. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 389,
+      "type": "PreviewImage",
+      "pos": [
+        237,
+        61
+      ],
+      "size": {
+        "0": 969.0651245117188,
+        "1": 246
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 737
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3195,
+        -979
+      ],
+      "size": [
+        320,
+        544
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 656
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 14,
+        "loop_count": 0,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_image": true,
+        "crf": 20,
+        "save_metadata": true,
+        "audio_file": "",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00057.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
       "id": 189,
       "type": "Efficient Loader",
       "pos": [
@@ -925,7 +990,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 14,
+      "order": 15,
       "mode": 0,
       "inputs": [
         {
@@ -1015,118 +1080,53 @@
         "comfy",
         512,
         512,
-        52
+        36
       ],
       "color": "#223333",
       "bgcolor": "#335555",
       "shape": 1
     },
     {
-      "id": 445,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1647,
-        "1": -914,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
+      "id": 352,
+      "type": "CLIPTextEncode",
+      "pos": [
+        782.4848111817444,
+        -1197.2252734560077
+      ],
       "size": {
-        "0": 645.7035522460938,
-        "1": 1039.391357421875
+        "0": 332.93072509765625,
+        "1": 323.7524108886719
       },
-      "flags": {},
-      "order": 15,
+      "flags": {
+        "pinned": false
+      },
+      "order": 17,
       "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 644
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONDITIONING",
+          "type": "CONDITIONING",
+          "links": [
+            822
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CLIPTextEncode"
+      },
       "widgets_values": [
-        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Put the images in inputs/steerable-motion. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
-        "markdown",
-        ""
+        "hands, hand, (worst quality, low quality:1.2)"
       ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 389,
-      "type": "PreviewImage",
-      "pos": [
-        237,
-        61
-      ],
-      "size": {
-        "0": 969.0651245117188,
-        "1": 246
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 737
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        3195,
-        -979
-      ],
-      "size": [
-        320,
-        544
-      ],
-      "flags": {},
-      "order": 25,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 656
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 14,
-        "loop_count": 0,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pingpong": false,
-        "save_image": true,
-        "crf": 20,
-        "save_metadata": true,
-        "audio_file": "",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00054.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
+      "color": "#322",
+      "bgcolor": "#533"
     },
     {
       "id": 437,
@@ -1226,10 +1226,10 @@
         "16",
         "0,20,36,52",
         "linear",
-        1.7000000000000002,
+        1.5,
         "1.0,1.9,1.0",
         "linear",
-        "(0.0,0.35)",
+        "(0.225,0.35)",
         "(0.2,0.4),(0.0,0.25),(0.2,0.4)",
         0.85,
         4,
