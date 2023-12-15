@@ -1,54 +1,7 @@
 {
   "last_node_id": 456,
-  "last_link_id": 854,
+  "last_link_id": 860,
   "nodes": [
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        3194.7417927625493,
-        -979.3000775182852
-      ],
-      "size": [
-        320,
-        544
-      ],
-      "flags": {},
-      "order": 25,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 656
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 14,
-        "loop_count": 0,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pingpong": false,
-        "save_image": true,
-        "crf": 20,
-        "save_metadata": true,
-        "audio_file": "",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00046.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
-    },
     {
       "id": 436,
       "type": "PreviewImage",
@@ -237,12 +190,12 @@
         {
           "name": "positive",
           "type": "CONDITIONING",
-          "link": 852
+          "link": 858
         },
         {
           "name": "negative",
           "type": "CONDITIONING",
-          "link": 853
+          "link": 859
         },
         {
           "name": "latent_image",
@@ -349,7 +302,7 @@
         {
           "name": "model",
           "type": "MODEL",
-          "link": 854,
+          "link": 860,
           "slot_index": 0
         },
         {
@@ -905,31 +858,6 @@
       "shape": 1
     },
     {
-      "id": 389,
-      "type": "PreviewImage",
-      "pos": [
-        280,
-        55
-      ],
-      "size": {
-        "0": 969.0651245117188,
-        "1": 246
-      },
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 737
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
       "id": 367,
       "type": "BatchPromptSchedule",
       "pos": [
@@ -1094,11 +1022,118 @@
       "shape": 1
     },
     {
+      "id": 445,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1647,
+        "1": -914,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 645.7035522460938,
+        "1": 1039.391357421875
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Put the images in inputs/steerable-motion. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 389,
+      "type": "PreviewImage",
+      "pos": [
+        237,
+        61
+      ],
+      "size": {
+        "0": 969.0651245117188,
+        "1": 246
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 737
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        3195,
+        -979
+      ],
+      "size": [
+        320,
+        544
+      ],
+      "flags": {},
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 656
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 14,
+        "loop_count": 0,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pingpong": false,
+        "save_image": true,
+        "crf": 20,
+        "save_metadata": true,
+        "audio_file": "",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00054.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
       "id": 437,
       "type": "BatchCreativeInterpolation",
       "pos": [
-        -251.5151888182561,
-        -378.225273456007
+        -252,
+        -378
       ],
       "size": {
         "0": 444.7484436035156,
@@ -1158,7 +1193,7 @@
           "name": "positive",
           "type": "CONDITIONING",
           "links": [
-            852
+            858
           ],
           "shape": 3,
           "slot_index": 1
@@ -1167,7 +1202,7 @@
           "name": "negative",
           "type": "CONDITIONING",
           "links": [
-            853
+            859
           ],
           "shape": 3,
           "slot_index": 2
@@ -1176,7 +1211,7 @@
           "name": "model",
           "type": "MODEL",
           "links": [
-            854
+            860
           ],
           "shape": 3,
           "slot_index": 3
@@ -1191,52 +1226,17 @@
         "16",
         "0,20,36,52",
         "linear",
-        1.5,
+        1.7000000000000002,
         "1.0,1.9,1.0",
         "linear",
-        "(0.00,0.4)",
+        "(0.0,0.35)",
         "(0.2,0.4),(0.0,0.25),(0.2,0.4)",
         0.85,
         4,
-        1.6,
+        1.3,
         1,
         0.3
       ]
-    },
-    {
-      "id": 445,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1647,
-        "1": -914,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 645.7035522460938,
-        "1": 1039.391357421875
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Put the images in inputs/steerable-motion. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
     }
   ],
   "links": [
@@ -1377,7 +1377,7 @@
       "IMAGE"
     ],
     [
-      852,
+      858,
       437,
       1,
       207,
@@ -1385,7 +1385,7 @@
       "CONDITIONING"
     ],
     [
-      853,
+      859,
       437,
       2,
       207,
@@ -1393,7 +1393,7 @@
       "CONDITIONING"
     ],
     [
-      854,
+      860,
       437,
       3,
       187,
