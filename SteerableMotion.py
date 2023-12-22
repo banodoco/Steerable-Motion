@@ -211,28 +211,43 @@ class BatchCreativeInterpolationNode:
             # Defining colors for each set of data
             colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
 
-            # Alternating the data sets with labels and colors
+            # Alternating the datasets by assigning unique labels and colors for plotting
             max_length = max(len(cn_frame_numbers), len(ipadapter_frame_numbers))
-            label_counter = 1 if buffer < 0 else 0  # Start from 1 if buffer < 0, else start from 0
+            # Determine starting label index based on the buffer value
+            label_index = 1 if buffer < 0 else 0
+
             for i in range(max_length):
-                # Label for cn_strength
+                # Assign label and plot data for cn_strength
                 if i < len(cn_frame_numbers):
+                    # Special label for the first item when buffer is positive
                     if i == 0 and buffer > 0:
                         label = 'cn_strength_buffer'
                     else:
-                        label = f'cn_strength_{label_counter}'
-                    plt.plot(cn_frame_numbers[i], cn_weights[i], marker='o', color=colors[i % len(colors)], label=label)
+                        label = f'cn_strength_{label_index}'
 
-                # Label for ipa_strength
-                if i < len(ipadapter_frame_numbers):
-                    if i == 0 and buffer > 0:
-                        label = 'ipa_strength_buffer'
-                    else:
-                        label = f'ipa_strength_{label_counter}'
-                    plt.plot(ipadapter_frame_numbers[i], ipadapter_weights[i], marker='x', linestyle='--', color=colors[i % len(colors)], label=label)
+                    # Plotting the data point with a unique color and label
+                    color_index = i % len(colors)
+                    plt.plot(cn_frame_numbers[i], cn_weights[i], marker='o', color=colors[color_index], label=label)
 
-                if label_counter == 0 or buffer < 0 or i > 0:
-                    label_counter += 1
+                # Define a function to generate labels and plot data points
+                def plot_data_with_label(frame_numbers, weights, label_base, marker, linestyle, buffer, colors):
+                    label_index = 1 if buffer < 0 else 0
+
+                    for i in range(len(frame_numbers)):
+                        # Special label for the first item when buffer is positive
+                        label = f'{label_base}_buffer' if i == 0 and buffer > 0 else f'{label_base}_{label_index}'
+
+                        # Plotting the data point with a unique color and label
+                        plt.plot(frame_numbers[i], weights[i], marker=marker, linestyle=linestyle,
+                                 color=colors[i % len(colors)], label=label)
+
+                        # Increment label index if not the first item or buffer is negative
+                        if label_index == 0 or buffer < 0 or i > 0:
+                            label_index += 1
+
+                # Usage of the function
+                plot_data_with_label(ipadapter_frame_numbers, ipadapter_weights, 'ipa_strength', 'x', '--', buffer,
+                                     colors)
 
             plt.legend()
             max_weight = max([weight.max() for weight in cn_weights + ipadapter_weights]) * 1.5
