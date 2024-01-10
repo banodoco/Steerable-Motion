@@ -247,11 +247,19 @@ def calculate_weights(batch_index_from, batch_index_to, strength_from, strength_
         weights = diff * (1 - np.power(1 - index, 2)) + strength_from
     elif interpolation == "ease-in-out":
         weights = diff * ((1 - np.cos(index * np.pi)) / 2) + strength_from
-
-    # If it's a middle keyframe, mirror the weights
+    
     if revert_direction_at_midpoint:
         weights = np.concatenate([weights, weights[::-1]])
-
+        
+        '''
+        peak_reduction = 2
+        if peak_reduction > 0:
+            mid_point = len(weights) // 2
+            start = mid_point - peak_reduction // 2
+            end = mid_point + peak_reduction // 2
+            weights = np.concatenate([weights[:start], weights[end:]])
+        '''
+    
     # Generate frame numbers
     frame_numbers = np.arange(range_start, range_start + len(weights))
 
