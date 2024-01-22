@@ -17,7 +17,9 @@ from .imports.AdvancedControlNet.weight_nodes import ScaledSoftUniversalWeightsI
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 from .imports.AdvancedControlNet.nodes import ControlNetLoaderAdvancedImport, AdvancedControlNetApplyImport,TimestepKeyframeNodeImport
 
-    
+from color_matcher import ColorMatcher
+
+
 
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -39,8 +41,8 @@ class BatchCreativeInterpolationNode:
                 "linear_frame_distribution_value": ("INT", {"default": 16, "min": 4, "max": 64, "step": 1}),     
                 "dynamic_frame_distribution_values": ("STRING", {"multiline": True, "default": "0,10,26,40"}),                
                 "type_of_key_frame_influence": (["linear", "dynamic"],),
-                "linear_key_frame_influence_value": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.1}),
-                "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "1.0,1.0,1.0,0.5"}),                
+                "linear_key_frame_influence_value": ("STRING", {"multiline": False, "default": "(1.0,1.0)"}),
+                "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "(1.0,1.0),(1.0,1.5)(1.0,0.5)"}),                
                 "type_of_strength_distribution": (["linear", "dynamic"],),
                 "linear_strength_value": ("STRING", {"multiline": False, "default": "(0.3,0.4)"}),
                 "dynamic_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),
@@ -49,62 +51,28 @@ class BatchCreativeInterpolationNode:
                 "relative_cn_strength": ("FLOAT", {"default": 0.1, "min": 0.0, "max": 10.0, "step": 0.01}),
                 "relative_ipadapter_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                 "ipadapter_noise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "ipadapter_start_at": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "ipadapter_end_at": ("FLOAT", {"default": 0.75, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
             }
         }
 
-    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "COLOR_MATCH_FRAMES")
     # "comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position"
-    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE")
+    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "COLOR_MATCH_FRAMES")
     FUNCTION = "combined_function"
 
-    CATEGORY = "Steerable-Motion/Interpolation"
+    CATEGORY = "Steerable-Motion"
 
     def combined_function(self,positive,negative,images,model,ipadapter,clip_vision,control_net_name,
                           type_of_frame_distribution,linear_frame_distribution_value, dynamic_frame_distribution_values, 
                           type_of_key_frame_influence,linear_key_frame_influence_value,
                           dynamic_key_frame_influence_values,type_of_strength_distribution,
                           linear_strength_value,dynamic_strength_values, soft_scaled_cn_weights_multiplier,
-                          buffer, relative_cn_strength,relative_ipadapter_strength,ipadapter_noise):
+                          buffer, relative_cn_strength,relative_ipadapter_strength,ipadapter_noise,
+                          ipadapter_start_at,ipadapter_end_at):
         
-        def calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values, allow_extension=True):
-            if len(keyframe_positions) < 2 or len(keyframe_positions) != len(key_frame_influence_values):
-                return []
-
-            influence_ranges = []
-            for i, position in enumerate(keyframe_positions):
-                influence_factor = key_frame_influence_values[i]
-
-                if i == 0:
-                    # Special handling for the first keyframe (half the distance to the second keyframe)
-                    range_size = influence_factor * (keyframe_positions[1] - keyframe_positions[0]) / 2
-                    start_influence = position  # Start from the first keyframe position
-                    end_influence = position + range_size
-                elif i == len(keyframe_positions) - 1:
-                    # Special handling for the last keyframe (half the distance from the penultimate keyframe)
-                    range_size = influence_factor * (keyframe_positions[-1] - keyframe_positions[-2]) / 2
-                    start_influence = position - range_size
-                    end_influence = position  # End at the last keyframe position
-                else:
-                    # Regular calculation for other keyframes
-                    range_size = influence_factor * (keyframe_positions[-1] - keyframe_positions[0]) / (len(keyframe_positions) - 1) / 2
-                    start_influence = position - range_size
-                    end_influence = position + range_size
-
-                if not allow_extension:
-                    start_influence = max(start_influence, keyframe_positions[i - 1] if i > 0 else 0)
-                    end_influence = min(end_influence, keyframe_positions[i + 1] if i < len(keyframe_positions) - 1 else keyframe_positions[-1])
-
-                influence_ranges.append((round(start_influence), round(end_influence)))
-
-            return influence_ranges
-        
-        def add_starting_buffer(influence_ranges, buffer=4):
-            shifted_ranges = [(0, buffer)]
-            for start, end in influence_ranges:
-                shifted_ranges.append((start + buffer, end + buffer))
-            return shifted_ranges
         
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
@@ -117,24 +85,6 @@ class BatchCreativeInterpolationNode:
             else:
                 # Calculate the number of keyframes based on the total duration and linear_frames_per_keyframe
                 return [i * linear_frame_distribution_value for i in range(len(images))]
-
-        def extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
-            if type_of_key_frame_influence == "dynamic":
-                # Check if the input is a string or a list
-                if isinstance(dynamic_key_frame_influence_values, str):
-                    # Parse the dynamic key frame influence values without sorting
-                    dynamic_values = [float(influence.strip()) for influence in dynamic_key_frame_influence_values.split(',')]
-                elif isinstance(dynamic_key_frame_influence_values, list):
-                    dynamic_values = dynamic_key_frame_influence_values
-                else:
-                    raise ValueError("Invalid type for dynamic_key_frame_influence_values. Must be string or list.")
-
-                # Trim the dynamic_values to match the length of keyframe_positions
-                return dynamic_values[:len(keyframe_positions)]
-
-            else:
-                # Create a list with the linear_key_frame_influence_value for each keyframe
-                return [linear_key_frame_influence_value for _ in keyframe_positions]
         
         def create_mask_batch(last_key_frame_position, weights, frames):
             # Hardcoded dimensions
@@ -157,7 +107,6 @@ class BatchCreativeInterpolationNode:
             masks_tensor = torch.stack(masks, dim=0)
 
             return masks_tensor
-
 
         def plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer):
             plt.figure(figsize=(12, 8))
@@ -201,24 +150,66 @@ class BatchCreativeInterpolationNode:
             img_tensor = img_tensor.unsqueeze(0)
             img_tensor = img_tensor.permute([0, 2, 3, 1])
 
-            return img_tensor,
-                    
+            return img_tensor,                    
         
-        def extract_start_and_endpoint_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
+        def extract_strength_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
+            print("START AND ENDPOINT VALUES")
+            print(f"type_of_key_frame_influence {type_of_key_frame_influence}")
+            print(f"dynamic_key_frame_influence_values {dynamic_key_frame_influence_values}")
+            print(f"keyframe_positions {keyframe_positions}")
+            print(f"linear_key_frame_influence_value {linear_key_frame_influence_value}")
             if type_of_key_frame_influence == "dynamic":
-                # If dynamic_key_frame_influence_values is a list of characters representing tuples, process it
-                if isinstance(dynamic_key_frame_influence_values[0], str) and dynamic_key_frame_influence_values[0] == "(":
-                    # Join the characters to form a single string and evaluate to convert into a list of tuples
+                # Process the dynamic_key_frame_influence_values depending on its format
+                if isinstance(dynamic_key_frame_influence_values, str):
+                    dynamic_values = eval(dynamic_key_frame_influence_values)
+                else:
+                    dynamic_values = dynamic_key_frame_influence_values
+
+                # Iterate through the dynamic values and convert tuples with two values to three values
+                dynamic_values_corrected = []
+                for value in dynamic_values:
+                    if len(value) == 2:
+                        value = (value[0], value[1], value[0])
+                    dynamic_values_corrected.append(value)
+
+                return dynamic_values_corrected
+            else:
+                # Process for linear or other types
+                if len(linear_key_frame_influence_value) == 2:
+                    linear_key_frame_influence_value = (linear_key_frame_influence_value[0], linear_key_frame_influence_value[1], linear_key_frame_influence_value[0])
+                return [linear_key_frame_influence_value for _ in range(len(keyframe_positions) - 1)]
+            
+        
+        def extract_influence_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
+            # Check and convert linear_key_frame_influence_value if it's a float or string float        
+            # if it's a string that starts with a parenthesis, convert it to a tuple
+            if isinstance(linear_key_frame_influence_value, str) and linear_key_frame_influence_value[0] == "(":
+                linear_key_frame_influence_value = eval(linear_key_frame_influence_value)
+
+
+            if not isinstance(linear_key_frame_influence_value, tuple):
+                if isinstance(linear_key_frame_influence_value, (float, str)):
+                    try:
+                        value = float(linear_key_frame_influence_value)
+                        linear_key_frame_influence_value = (value, value)
+                    except ValueError:
+                        raise ValueError("linear_key_frame_influence_value must be a float or a string representing a float")
+
+            number_of_outputs = len(keyframe_positions) - 1
+
+            if type_of_key_frame_influence == "dynamic":
+                # Convert list of individual float values into tuples
+                if all(isinstance(x, float) for x in dynamic_key_frame_influence_values):
+                    dynamic_values = [(value, value) for value in dynamic_key_frame_influence_values]
+                elif isinstance(dynamic_key_frame_influence_values[0], str) and dynamic_key_frame_influence_values[0] == "(":
                     string_representation = ''.join(dynamic_key_frame_influence_values)
                     dynamic_values = eval(f'[{string_representation}]')
                 else:
-                    # If it's already a list of tuples or a single tuple, use it directly
                     dynamic_values = dynamic_key_frame_influence_values if isinstance(dynamic_key_frame_influence_values, list) else [dynamic_key_frame_influence_values]
-                return dynamic_values
+                return dynamic_values[:number_of_outputs]
             else:
-                # Return a list of tuples with the linear_key_frame_influence_value as a tuple repeated for each position
-                return [linear_key_frame_influence_value for _ in keyframe_positions]
-        
+                return [linear_key_frame_influence_value for _ in range(number_of_outputs)]
+
         def calculate_weights(batch_index_from, batch_index_to, strength_from, strength_to, interpolation,revert_direction_at_midpoint, last_key_frame_position,i, number_of_items,buffer):
 
             # Initialize variables based on the position of the keyframe
@@ -294,56 +285,160 @@ class BatchCreativeInterpolationNode:
 
             return list(filtered_frame_numbers), list(filtered_weights)
             
-        keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                            
-        cn_strength_values = extract_start_and_endpoint_values(type_of_strength_distribution, dynamic_strength_values, keyframe_positions, linear_strength_value)                
-        cn_strength_values = [literal_eval(val) if isinstance(val, str) else val for val in cn_strength_values]
-
-        shifted_keyframes_position = [position + buffer - 1 for position in keyframe_positions]
-        shifted_keyframe_positions_string = ','.join(str(pos) for pos in shifted_keyframes_position)
-        print(f"shifted_keyframe_positions_string: {shifted_keyframe_positions_string}")
+        def calculate_influence_frame_number(key_frame_position, next_key_frame_position, distance):
+            # Calculate the absolute distance between key frames
+            key_frame_distance = abs(next_key_frame_position - key_frame_position)
             
+            # Apply the distance multiplier
+            extended_distance = key_frame_distance * distance
+
+            # Determine the direction of influence based on the positions of the key frames
+            if key_frame_position < next_key_frame_position:
+                # Normal case: influence extends forward
+                influence_frame_number = key_frame_position + extended_distance
+            else:
+                # Reverse case: influence extends backward
+                influence_frame_number = key_frame_position - extended_distance
+            
+            # Return the result rounded to the nearest integer
+            return round(influence_frame_number)
+
+        # GET KEYFRAME POSITIONS
+        keyframe_positions = get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value)                                            
+
+        shifted_keyframes_position = [position + buffer - 2 for position in keyframe_positions]
+        shifted_keyframe_positions_string = ','.join(str(pos) for pos in shifted_keyframes_position)        
+
+        print(f"SparseCtrl impacts on frames {shifted_keyframe_positions_string}: ", shifted_keyframe_positions_string)
         sparseindexmethod = SparseIndexMethodNodeImport()        
         sparse_indexes, = sparseindexmethod.get_method(shifted_keyframe_positions_string)
         
-        key_frame_influence_values = extract_keyframe_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                                                        
-        influence_ranges = calculate_dynamic_influence_ranges(keyframe_positions, key_frame_influence_values)                
+        # ADD BUFFER TO KEYFRAME POSITIONS
 
-        influence_ranges = add_starting_buffer(influence_ranges, buffer)                                                    
-        last_key_frame_position = (keyframe_positions[-1]) + buffer        
+        if buffer > 0:
+            keyframe_positions = [position + buffer - 1 for position in keyframe_positions]
+            keyframe_positions.insert(0, 0)
+            
+        # GET STRENGTH VALUES
+        strength_values = extract_strength_values(type_of_strength_distribution, dynamic_strength_values, keyframe_positions, linear_strength_value)                        
+        strength_values = [literal_eval(val) if isinstance(val, str) else val for val in strength_values]        
+        print(f"strength_values: {strength_values}")
+            # GET SPARSE INDEXES                        
+        # GET KEYFRAME INFLUENCE VALUES
+        key_frame_influence_values = extract_influence_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                
+        key_frame_influence_values = [literal_eval(val) if isinstance(val, str) else val for val in key_frame_influence_values]
+        print(f"key_frame_influence_values: {key_frame_influence_values}")
+                                                                                                                                           
+        last_key_frame_position = (keyframe_positions[-1] + 1)
     
         all_cn_frame_numbers = []
         all_cn_weights = []
         all_ipa_weights = []
         all_ipa_frame_numbers = []
+        
+        for i in range(len(keyframe_positions)):
 
-        for i, (batch_index_from, batch_index_to_excl) in enumerate(influence_ranges):
-            
-            # Default values
-            revert_direction_at_midpoint = False
+            keyframe_position = keyframe_positions[i]                                    
             interpolation = "ease-in-out"
-            strength_from = strength_to = 1.0
-
-            if i == 0:
+            # strength_from = strength_to = 1.0
+                
+            
+            if i == 0: # buffer
+                
                 if buffer > 0:  # First image with buffer
                     image = images[0]
-                    strength_from = strength_to = cn_strength_values[0][1] if len(cn_strength_values) > 0 else (1.0, 1.0)                                                        
-                    # interpolation = "ease-in-out"
+                    strength_from = strength_to = strength_values[0][1]                    
                 else:
                     continue  # Skip first image without buffer
-            elif i == 1: # First image
-                image = images[0]
-                strength_to, strength_from = cn_strength_values[0] if len(cn_strength_values) > 0 else (0.0, 1.0)                
+                batch_index_from = 0
+                batch_index_to_excl = buffer
+                print("*********************************")
+                print(f"BUFFER - frame {i}")
+                print(f"keyframe_position {keyframe_position} goes from {batch_index_from} to {batch_index_to_excl}, from {strength_from} to {strength_to}")
+                weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
+            
+            elif i == 1: # first image 
+
+                # GET IMAGE AND KEYFRAME INFLUENCE VALUES              
+                image = images[0]                
+                key_frame_influence_from, key_frame_influence_to = key_frame_influence_values[0]                                
+                start_strength, mid_strength, end_strength = strength_values[0]
+                                
+                keyframe_position = keyframe_positions[i]
+                next_key_frame_position = keyframe_positions[i+1]
+                
+                batch_index_from = keyframe_position                
+                batch_index_to_excl = calculate_influence_frame_number(keyframe_position, next_key_frame_position, key_frame_influence_to)
+                print("*********************************")
+                print(f"FIRST IMAGE - frame {i}")
+                print(f"keyframe_position {keyframe_position} goes from {batch_index_from} to {batch_index_to_excl}, from {mid_strength} to {end_strength}")
+                weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, mid_strength, end_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
                 # interpolation = "ease-in"                                
-            elif i == len(images):  # Last image
+            
+            elif i == len(images):  # last image
+
+                # GET IMAGE AND KEYFRAME INFLUENCE VALUES
                 image = images[i-1]
-                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)                 
+                key_frame_influence_from,key_frame_influence_to = key_frame_influence_values[i-1]       
+                start_strength, mid_strength, end_strength = strength_values[i-1]
+                # strength_from, strength_to = cn_strength_values[i-1]
+
+                keyframe_position = keyframe_positions[i]
+                previous_key_frame_position = keyframe_positions[i-1]
+
+                batch_index_from = calculate_influence_frame_number(keyframe_position, previous_key_frame_position, key_frame_influence_from)
+                batch_index_to_excl = keyframe_position
+                print("*********************************")
+                print(f"LAST IMAGE - frame {i}")
+                print(f"keyframe_position {keyframe_position} goes from {batch_index_from} to {batch_index_to_excl}, from {start_strength} to {mid_strength}")
+                weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, start_strength, mid_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
                 # interpolation =  "ease-out"                                
-            else:  # Middle images
-                image = images[i-1]
-                strength_from, strength_to = cn_strength_values[i-1] if i-1 < len(cn_strength_values) else (0.0, 1.0)                                                                
-                revert_direction_at_midpoint = True
+            
+            else:  # middle images
+
+                # GET IMAGE AND KEYFRAME INFLUENCE VALUES
+                image = images[i-1]   
+                key_frame_influence_from,key_frame_influence_to = key_frame_influence_values[i-1]             
+                start_strength, mid_strength, end_strength = strength_values[i-1]
+                keyframe_position = keyframe_positions[i]
+                           
+                # CALCULATE WEIGHTS FOR FIRST HALF
+                previous_key_frame_position = keyframe_positions[i-1]   
+                batch_index_from = calculate_influence_frame_number(keyframe_position, previous_key_frame_position, key_frame_influence_from)                
+                batch_index_to_excl = keyframe_position
+                
+                print("*********************************")
+                print(f"MIDDLE IMAGE - frame {i}")                
+                print("------")
+                print("FRAME DETAILS FOR TESTING INFERENCE:")
+                print("batch_index_from", batch_index_from)
+                print("batch_index_to_excl", batch_index_to_excl)
+                print("strength_from", strength_from)
+                print("strength_to", strength_to)
+                print("interpolation", interpolation)   
+                print("last_key_frame_position", last_key_frame_position)
+                print("i", i)
+                print("len(keyframe_positions)", len(keyframe_positions))
+                print("buffer", buffer)
+
+                print("------")
+                print(f"The first half of keyframe_position {keyframe_position} goes from {batch_index_from} to {batch_index_to_excl}, from {start_strength} to {mid_strength}")
+
+                first_half_weights, first_half_frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, start_strength, mid_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                
+                
+                # CALCULATE WEIGHTS FOR SECOND HALF                
+                next_key_frame_position = keyframe_positions[i+1]
+                batch_index_from = keyframe_position
+                batch_index_to_excl = calculate_influence_frame_number(keyframe_position, next_key_frame_position, key_frame_influence_to)
+                
+                print(f"The second half of keyframe_position {keyframe_position} goes from {batch_index_from} to {batch_index_to_excl}, from {mid_strength} to {end_strength}")
+                second_half_weights, second_half_frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, mid_strength, end_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)
+                
+                # COMBINE FIRST AND SECOND HALF
+                weights = np.concatenate([first_half_weights, second_half_weights])                
+                frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                     
-            # IMPORTS
+            # IMPORT REQUIRED NODES
             latent_keyframe_interpolation_node = LatentKeyframeInterpolationNodeImport()
             scaled_soft_control_net_weights = ScaledSoftUniversalWeightsImport()
             timestep_keyframe_node = TimestepKeyframeNodeImport()
@@ -351,51 +446,57 @@ class BatchCreativeInterpolationNode:
             apply_advanced_control_net = AdvancedControlNetApplyImport()
             ipadapter_application = IPAdapterApplyImport()
             ipadapter_encoder = IPAdapterEncoderImport()
-                        
-            # CALCULATE WEIGHTS
-            weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, revert_direction_at_midpoint, last_key_frame_position, i, len(influence_ranges), buffer)                                    
-                                                             
-            # CONTROL NET    
+                                                                                                             
+            # IF CONTROL NET IS USED, APPLY IT
             if relative_cn_strength > 0.0:
                 cn_frame_numbers, cn_weights = process_weights(frame_numbers, weights, relative_cn_strength)        
                 latent_keyframe, = latent_keyframe_interpolation_node.load_keyframe(cn_weights, cn_frame_numbers)
                 control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
                 timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]            
                 control_net = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)[0]
-                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, 0.0, 1.0)
+                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, ipadapter_start_at, ipadapter_end_at)
                 all_cn_frame_numbers.append(cn_frame_numbers)
                 all_cn_weights.append(cn_weights)
             else:
                 all_cn_frame_numbers = None
                 all_cn_weights = None
             
-
-            # IP ADAPTER       
+            # IF IP ADAPTER IS USED, APPLY IT
             if relative_ipadapter_strength > 0.0:                    
                 ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, relative_ipadapter_strength)     
                 prepped_image = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)[0]                        
                 mask = create_mask_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)                        
                 embed, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, 0.0, 1.0)        
+                
+                # model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, clip_vision=clip_vision, 
+                  #                                             image=prepped_image, weight_type="original", noise=ipadapter_noise, embeds=None, 
+                   #                                             attn_mask=mask, start_at=0.0, end_at=0.75, unfold_batch=True)        
+
                 model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", 
-                                                    noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=0.0, end_at=1.0, unfold_batch=True)    
+                                                  noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=0.0, end_at=0.75, unfold_batch=True)    
                 all_ipa_frame_numbers.append(ipa_frame_numbers)
                 all_ipa_weights.append(ipa_weights)
             else:
                 all_ipa_frame_numbers = None
                 all_ipa_weights = None
-        # cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer):
-        print(f"all_cn_frame_numbers: {all_cn_frame_numbers}")
-        print(f"all_cn_weights: {all_cn_weights}")
-        print(f"all_ipa_frame_numbers: {all_ipa_frame_numbers}")
-        print(f"all_ipa_weights: {all_ipa_weights}")
+        
+        # PLOT WEIGHT COMPARISON
+        print("*********************************")
+        print("FRAME NUMBERS AND WEIGHTS")
+        print("all_ipa_frame_numbers")
+        print(all_ipa_frame_numbers)
+        print("all_ipa_weights")
+        print(all_ipa_weights)
+
+
+
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
 
         return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position
 
-
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
-    "BatchCreativeInterpolation": BatchCreativeInterpolationNode
+    "BatchCreativeInterpolation": BatchCreativeInterpolationNode    
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {    
