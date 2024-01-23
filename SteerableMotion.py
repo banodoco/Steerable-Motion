@@ -150,11 +150,7 @@ class BatchCreativeInterpolationNode:
             return img_tensor,                    
         
         def extract_strength_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
-            print("START AND ENDPOINT VALUES")
-            print(f"type_of_key_frame_influence {type_of_key_frame_influence}")
-            print(f"dynamic_key_frame_influence_values {dynamic_key_frame_influence_values}")
-            print(f"keyframe_positions {keyframe_positions}")
-            print(f"linear_key_frame_influence_value {linear_key_frame_influence_value}")
+
             if type_of_key_frame_influence == "dynamic":
                 # Process the dynamic_key_frame_influence_values depending on its format
                 if isinstance(dynamic_key_frame_influence_values, str):
@@ -305,9 +301,16 @@ class BatchCreativeInterpolationNode:
             keyframe_positions.insert(0, 0)
             
         # GET STRENGTH VALUES
+        
         strength_values = extract_strength_values(type_of_strength_distribution, dynamic_strength_values, keyframe_positions, linear_strength_value)                        
         strength_values = [literal_eval(val) if isinstance(val, str) else val for val in strength_values]                
-                               
+        corrected_strength_values = []
+        for val in strength_values:
+            if len(val) == 2:
+                val = (val[0], val[1], val[0])
+            corrected_strength_values.append(val)        
+        strength_values = corrected_strength_values
+                                    
         # GET KEYFRAME INFLUENCE VALUES
         key_frame_influence_values = extract_influence_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value)                
         key_frame_influence_values = [literal_eval(val) if isinstance(val, str) else val for val in key_frame_influence_values]        
