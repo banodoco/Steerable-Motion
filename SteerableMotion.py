@@ -55,9 +55,9 @@ class BatchCreativeInterpolationNode:
             }
         }
 
-    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "COLOR_MATCH_FRAMES")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT")
     # "comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position"
-    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "COLOR_MATCH_FRAMES")
+    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE")
     FUNCTION = "combined_function"
 
     CATEGORY = "Steerable-Motion"
