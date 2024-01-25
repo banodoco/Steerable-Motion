@@ -50,6 +50,8 @@ class BatchCreativeInterpolationNode:
                 "ipadapter_noise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "ipadapter_start_at": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
                 "ipadapter_end_at": ("FLOAT", {"default": 0.75, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "cn_start_at": ("FLOAT", {"default": 0.0, "min": 0.0, "max": 1.0, "step": 0.01}),
+                "cn_end_at": ("FLOAT", {"default": 0.75, "min": 0.0, "max": 1.0, "step": 0.01}),
             },
             "optional": {
             }
@@ -412,7 +414,7 @@ class BatchCreativeInterpolationNode:
                 control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
                 timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]            
                 control_net = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)[0]
-                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, ipadapter_start_at, ipadapter_end_at)
+                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, 0.0, 0.75)
                 all_cn_frame_numbers.append(cn_frame_numbers)
                 all_cn_weights.append(cn_weights)
             else:
@@ -426,7 +428,7 @@ class BatchCreativeInterpolationNode:
                 mask = create_mask_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)                        
                 embed, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, 0.0, 1.0)                        
                 model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", 
-                                                  noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=0.0, end_at=0.75, unfold_batch=True)    
+                                                  noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=ipadapter_start_at, end_at=ipadapter_end_at, unfold_batch=True)    
                 all_ipa_frame_numbers.append(ipa_frame_numbers)
                 all_ipa_weights.append(ipa_weights)
             else:

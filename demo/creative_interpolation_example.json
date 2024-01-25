@@ -296,41 +296,6 @@
       "shape": 1
     },
     {
-      "id": 454,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 212,
-        "1": -595,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 230,
-        "1": 260
-      },
-      "flags": {},
-      "order": 5,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
       "id": 389,
       "type": "PreviewImage",
       "pos": [
@@ -375,7 +340,7 @@
         "1": 1040
       },
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -383,41 +348,6 @@
       "properties": {},
       "widgets_values": [
         "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Select a folder with the images in them above. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 472,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1583,
-        "1": -357,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        672.9640119267688,
-        340.53735518126246
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  To download these models from Hugging Face\n<br>\n\nNavigate to the Comfy directory in your terminal and run the below for each of the models that you don't have - you can also find some of these on Comfy Manager:\n\n\n- wget -O models/controlnet/v3_sd15_sparsectrl_rgb.ckpt \"https://huggingface.co/guoyww/animatediff/resolve/main/v3_sd15_sparsectrl_rgb.ckpt\"\n- wget -O models/loras/v3_sd15_adapter.ckpt \"https://huggingface.co/guoyww/animatediff/resolve/main/v3_sd15_adapter.ckpt\"\n- wget -O models/clip_vision/SD1.5/pytorch_model.bin \"https://huggingface.co/openai/clip-vit-base-patch32/resolve/main/pytorch_model.bin\"\n- wget -O models/ipadapter/ip-adapter-plus-face_sd15.bin \"https://huggingface.co/h94/IP-Adapter/resolve/main/models/ip-adapter-plus-face_sd15.bin\"\n- wget -O custom_nodes/ComfyUI-AnimateDiff-Evolved/models/v3_sd15_mm.ckpt \"https://huggingface.co/guoyww/animatediff/resolve/main/v3_sd15_mm.ckpt\"",
         "markdown",
         ""
       ],
@@ -445,7 +375,7 @@
         "1": 404.44708251953125
       },
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -480,7 +410,7 @@
         "1": 270
       },
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -502,12 +432,12 @@
         383,
         -1774
       ],
-      "size": [
-        350.53927023649453,
-        98
-      ],
+      "size": {
+        "0": 350.5392761230469,
+        "1": 98
+      },
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "outputs": [
         {
@@ -590,10 +520,10 @@
         382,
         -1413
       ],
-      "size": [
-        362.17516155787325,
-        84.13288332508364
-      ],
+      "size": {
+        "0": 362.1751708984375,
+        "1": 84.13288116455078
+      },
       "flags": {},
       "order": 22,
       "mode": 0,
@@ -791,12 +721,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        459.86432363243875,
-        127.09552611282606
-      ],
+      "size": {
+        "0": 459.86431884765625,
+        "1": 127.09552764892578
+      },
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -826,12 +756,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        429.6674865443465,
-        138.77713731825634
-      ],
+      "size": {
+        "0": 429.66748046875,
+        "1": 138.77713012695312
+      },
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -861,12 +791,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        441.21501545567116,
-        147.54996935485087
-      ],
+      "size": {
+        "0": 441.21502685546875,
+        "1": 147.5499725341797
+      },
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -901,7 +831,7 @@
         "1": 390
       },
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -928,7 +858,7 @@
         "1": 95.60185241699219
       },
       "flags": {},
-      "order": 15,
+      "order": 13,
       "mode": 0,
       "outputs": [
         {
@@ -992,239 +922,6 @@
       ],
       "properties": {
         "Node name for S&R": "GetImageSize+"
-      }
-    },
-    {
-      "id": 468,
-      "type": "ACN_AdvancedControlNetApply",
-      "pos": [
-        -239,
-        -1880.1191788018743
-      ],
-      "size": {
-        "0": 314.1339111328125,
-        "1": 246
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 917,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 918,
-          "slot_index": 1
-        },
-        {
-          "name": "control_net",
-          "type": "CONTROL_NET",
-          "link": 879
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 880
-        },
-        {
-          "name": "mask_optional",
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "name": "timestep_kf",
-          "type": "TIMESTEP_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "latent_kf_override",
-          "type": "LATENT_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "weights_override",
-          "type": "CONTROL_NET_WEIGHTS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            967
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            968
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ACN_AdvancedControlNetApply"
-      },
-      "widgets_values": [
-        0.9,
-        0,
-        0.33
-      ]
-    },
-    {
-      "id": 505,
-      "type": "ACN_AdvancedControlNetApply",
-      "pos": [
-        -233,
-        -1539
-      ],
-      "size": [
-        285.6000061035156,
-        246
-      ],
-      "flags": {},
-      "order": 30,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 967,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 968,
-          "slot_index": 1
-        },
-        {
-          "name": "control_net",
-          "type": "CONTROL_NET",
-          "link": 978
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 963
-        },
-        {
-          "name": "mask_optional",
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "name": "timestep_kf",
-          "type": "TIMESTEP_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "latent_kf_override",
-          "type": "LATENT_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "weights_override",
-          "type": "CONTROL_NET_WEIGHTS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            971
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            972
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ACN_AdvancedControlNetApply"
-      },
-      "widgets_values": [
-        0.7000000000000001,
-        0.651,
-        0.725
-      ]
-    },
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        1588,
-        -1052
-      ],
-      "size": [
-        810,
-        1054
-      ],
-      "flags": {},
-      "order": 34,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 938
-        },
-        {
-          "name": "audio",
-          "type": "VHS_AUDIO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Filenames",
-          "type": "VHS_FILENAMES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 15,
-        "loop_count": 3,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pix_fmt": "yuv420p",
-        "crf": 20,
-        "save_metadata": true,
-        "pingpong": false,
-        "save_output": true,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00420.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
       }
     },
     {
@@ -1339,213 +1036,16 @@
       ]
     },
     {
-      "id": 401,
-      "type": "VHS_LoadImagesPath",
-      "pos": [
-        -1426.3693935183685,
-        -1835.5733992417513
-      ],
-      "size": [
-        320,
-        194
-      ],
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            737,
-            881,
-            908,
-            975
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_LoadImagesPath"
-      },
-      "widgets_values": {
-        "directory": "/workspace/ComfyUI/input/input_coffee/",
-        "image_load_cap": 0,
-        "skip_first_images": 0,
-        "select_every_nth": 1,
-        "choose folder to upload": "image",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "frame_load_cap": 0,
-            "skip_first_images": 0,
-            "filename": "/workspace/ComfyUI/input/input_coffee/",
-            "type": "path",
-            "format": "folder",
-            "select_every_nth": 1
-          }
-        }
-      },
-      "color": "#332922",
-      "bgcolor": "#593930"
-    },
-    {
-      "id": 473,
-      "type": "BatchCreativeInterpolation",
-      "pos": [
-        -222,
-        -686
-      ],
-      "size": {
-        "0": 400,
-        "1": 656
-      },
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 913
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 914
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 908
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 909
-        },
-        {
-          "name": "ipadapter",
-          "type": "IPADAPTER",
-          "link": 910
-        },
-        {
-          "name": "clip_vision",
-          "type": "CLIP_VISION",
-          "link": 911
-        }
-      ],
-      "outputs": [
-        {
-          "name": "GRAPH",
-          "type": "IMAGE",
-          "links": [
-            901
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "POSITIVE",
-          "type": "CONDITIONING",
-          "links": [
-            917
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "NEGATIVE",
-          "type": "CONDITIONING",
-          "links": [
-            918
-          ],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            900
-          ],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "KEYFRAME_POSITIONS",
-          "type": "SPARSE_METHOD",
-          "links": [
-            907
-          ],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "BATCH_SIZE",
-          "type": "INT",
-          "links": [
-            906
-          ],
-          "shape": 3,
-          "slot_index": 5
-        },
-        {
-          "name": "COLOR_MATCH_FRAMES",
-          "type": "STRING",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchCreativeInterpolation"
-      },
-      "widgets_values": [
-        "control_v11f1e_sd15_tile_fp16.safetensors",
-        "linear",
-        24,
-        "0,24,60",
-        "linear",
-        "0.85",
-        "(0.9,0.5),(0.2,0.3)",
-        "linear",
-        "(0.25,0.4,0.25)",
-        "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)",
-        0.85,
-        4,
-        0,
-        1,
-        0.2,
-        0.34,
-        0.65
-      ]
-    },
-    {
       "id": 187,
       "type": "ADE_AnimateDiffLoaderWithContext",
       "pos": [
         2025,
         -2177
       ],
-      "size": [
-        312.0755090205557,
-        252.39730613998154
-      ],
+      "size": {
+        "0": 312.07550048828125,
+        "1": 252.39730834960938
+      },
       "flags": {
         "pinned": false
       },
@@ -1611,12 +1111,12 @@
         2074,
         -1854
       ],
-      "size": [
-        271.8603479649696,
-        365.0423100930834
-      ],
+      "size": {
+        "0": 271.8603515625,
+        "1": 365.04229736328125
+      },
       "flags": {},
-      "order": 17,
+      "order": 14,
       "mode": 0,
       "outputs": [
         {
@@ -1756,6 +1256,508 @@
       "color": "#222233",
       "bgcolor": "#333355",
       "shape": 1
+    },
+    {
+      "id": 472,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1544,
+        "1": -353,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 594.319580078125,
+        "1": 273.9513854980469
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3_sd15_mm\n- For SparseCtrl, search: v3_sd15_sparsectrl\n- For s3_15 adapter, search: v3_sd15_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus_sd15.safetensors\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        1552,
+        -1054
+      ],
+      "size": [
+        810,
+        1054
+      ],
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 938
+        },
+        {
+          "name": "audio",
+          "type": "VHS_AUDIO",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 15,
+        "loop_count": 3,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 20,
+        "save_metadata": true,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00437.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
+      "id": 454,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 212,
+        "1": -591,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 230,
+        "1": 260
+      },
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 401,
+      "type": "VHS_LoadImagesPath",
+      "pos": [
+        -1426.3693935183685,
+        -1835.5733992417513
+      ],
+      "size": [
+        320,
+        194
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            737,
+            881,
+            908,
+            975
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_LoadImagesPath"
+      },
+      "widgets_values": {
+        "directory": "/workspace/ComfyUI/input/input_coffee/",
+        "image_load_cap": 0,
+        "skip_first_images": 0,
+        "select_every_nth": 1,
+        "choose folder to upload": "image",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "frame_load_cap": 0,
+            "skip_first_images": 0,
+            "filename": "/workspace/ComfyUI/input/input_coffee/",
+            "type": "path",
+            "format": "folder",
+            "select_every_nth": 1
+          }
+        }
+      },
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 468,
+      "type": "ACN_AdvancedControlNetApply",
+      "pos": [
+        -239,
+        -1880.1191788018743
+      ],
+      "size": {
+        "0": 314.1339111328125,
+        "1": 246
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 917,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 918,
+          "slot_index": 1
+        },
+        {
+          "name": "control_net",
+          "type": "CONTROL_NET",
+          "link": 879
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 880
+        },
+        {
+          "name": "mask_optional",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "timestep_kf",
+          "type": "TIMESTEP_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "latent_kf_override",
+          "type": "LATENT_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "weights_override",
+          "type": "CONTROL_NET_WEIGHTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            967
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            968
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ACN_AdvancedControlNetApply"
+      },
+      "widgets_values": [
+        0.8,
+        0,
+        0.33
+      ]
+    },
+    {
+      "id": 505,
+      "type": "ACN_AdvancedControlNetApply",
+      "pos": [
+        -233,
+        -1539
+      ],
+      "size": {
+        "0": 285.6000061035156,
+        "1": 246
+      },
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 967,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 968,
+          "slot_index": 1
+        },
+        {
+          "name": "control_net",
+          "type": "CONTROL_NET",
+          "link": 978
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 963
+        },
+        {
+          "name": "mask_optional",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "timestep_kf",
+          "type": "TIMESTEP_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "latent_kf_override",
+          "type": "LATENT_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "weights_override",
+          "type": "CONTROL_NET_WEIGHTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            971
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            972
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ACN_AdvancedControlNetApply"
+      },
+      "widgets_values": [
+        0.7000000000000001,
+        0.6,
+        0.675
+      ]
+    },
+    {
+      "id": 473,
+      "type": "BatchCreativeInterpolation",
+      "pos": [
+        -222,
+        -686
+      ],
+      "size": {
+        "0": 400,
+        "1": 680
+      },
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 913
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 914
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 908
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 909
+        },
+        {
+          "name": "ipadapter",
+          "type": "IPADAPTER",
+          "link": 910
+        },
+        {
+          "name": "clip_vision",
+          "type": "CLIP_VISION",
+          "link": 911
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GRAPH",
+          "type": "IMAGE",
+          "links": [
+            901
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "POSITIVE",
+          "type": "CONDITIONING",
+          "links": [
+            917
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "NEGATIVE",
+          "type": "CONDITIONING",
+          "links": [
+            918
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            900
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "KEYFRAME_POSITIONS",
+          "type": "SPARSE_METHOD",
+          "links": [
+            907
+          ],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "BATCH_SIZE",
+          "type": "INT",
+          "links": [
+            906
+          ],
+          "shape": 3,
+          "slot_index": 5
+        },
+        {
+          "name": "COLOR_MATCH_FRAMES",
+          "type": "STRING",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchCreativeInterpolation"
+      },
+      "widgets_values": [
+        "control_v11f1e_sd15_tile_fp16.safetensors",
+        "linear",
+        16,
+        "0,24,60",
+        "linear",
+        "0.8",
+        "(0.9,0.5),(0.2,0.3)",
+        "linear",
+        "(0.42,0.5,0.42)",
+        "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)",
+        0.85,
+        4,
+        0,
+        1,
+        0.2,
+        0,
+        0.6,
+        0,
+        0.65
+      ]
     }
   ],
   "links": [
@@ -2092,8 +2094,8 @@
       "bounding": [
         1456,
         -1163,
-        1044,
-        1843
+        1022,
+        1294
       ],
       "color": "#a1309b",
       "font_size": 24
