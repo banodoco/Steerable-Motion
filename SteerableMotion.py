@@ -70,7 +70,7 @@ class BatchCreativeInterpolationNode:
                           dynamic_key_frame_influence_values,type_of_strength_distribution,
                           linear_strength_value,dynamic_strength_values, soft_scaled_cn_weights_multiplier,
                           buffer, relative_cn_strength,relative_ipadapter_strength,ipadapter_noise,
-                          ipadapter_start_at,ipadapter_end_at):
+                          ipadapter_start_at,ipadapter_end_at, cn_start_at, cn_end_at):
         
         
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
@@ -414,7 +414,7 @@ class BatchCreativeInterpolationNode:
                 control_net_weights, _ = scaled_soft_control_net_weights.load_weights(soft_scaled_cn_weights_multiplier, False)
                 timestep_keyframe = timestep_keyframe_node.load_keyframe(start_percent=0.0, control_net_weights=control_net_weights, latent_keyframe=latent_keyframe, prev_timestep_keyframe=None)[0]            
                 control_net = control_net_loader.load_controlnet(control_net_name, timestep_keyframe)[0]
-                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, 0.0, 0.75)
+                positive, negative = apply_advanced_control_net.apply_controlnet(positive, negative, control_net, image.unsqueeze(0), 1.0, cn_start_at, cn_end_at)
                 all_cn_frame_numbers.append(cn_frame_numbers)
                 all_cn_weights.append(cn_weights)
             else:
