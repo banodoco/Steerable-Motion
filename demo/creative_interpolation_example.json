@@ -1,6 +1,6 @@
 {
-  "last_node_id": 516,
-  "last_link_id": 978,
+  "last_node_id": 535,
+  "last_link_id": 983,
   "nodes": [
     {
       "id": 482,
@@ -63,8 +63,8 @@
       "id": 370,
       "type": "CLIPVisionLoader",
       "pos": [
-        -280.7168099730984,
-        -1004.5074617878694
+        -318.36356795651943,
+        -946.5696654619941
       ],
       "size": {
         "0": 210,
@@ -95,8 +95,8 @@
       "id": 369,
       "type": "IPAdapterModelLoader",
       "pos": [
-        -20.716809973098563,
-        -1007.5074617878694
+        -58.363567956519574,
+        -949.5696654619941
       ],
       "size": {
         "0": 210,
@@ -124,56 +124,11 @@
       ]
     },
     {
-      "id": 507,
-      "type": "Get image size",
-      "pos": [
-        917,
-        -1043
-      ],
-      "size": {
-        "0": 210,
-        "1": 66
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "TUPLE",
-          "type": "TUPLE",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Get image size"
-      }
-    },
-    {
       "id": 464,
       "type": "ADE_EmptyLatentImageLarge",
       "pos": [
-        -201,
-        -839
+        -238.64675798342108,
+        -781.0622036741253
       ],
       "size": {
         "0": 310.79998779296875,
@@ -239,8 +194,8 @@
       "id": 436,
       "type": "PreviewImage",
       "pos": [
-        485,
-        -556
+        447.353242016579,
+        -498.06220367412527
       ],
       "size": {
         "0": 820.0277099609375,
@@ -264,8 +219,8 @@
       "id": 456,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": 221,
-        "1": -1010,
+        "0": 183.35324096679688,
+        "1": -952.0617065429688,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -280,7 +235,7 @@
         "1": 270
       },
       "flags": {},
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -299,8 +254,8 @@
       "id": 389,
       "type": "PreviewImage",
       "pos": [
-        457,
-        -898
+        419.353242016579,
+        -840.062203674125
       ],
       "size": {
         "0": 887.6273803710938,
@@ -340,7 +295,7 @@
         "1": 1040
       },
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -348,41 +303,6 @@
       "properties": {},
       "widgets_values": [
         "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Select a folder with the images in them above. The most important thing that will influence the quality of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 513,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 2426,
-        "1": -1884,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 254.81239318847656,
-        "1": 404.44708251953125
-      },
-      "flags": {},
-      "order": 6,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## ⬅ Tweak the context to change how the motion is influences by previous and forthcoming motion\n<br>\n\n- context_stride + context_overlap = 2 seems to provide the smoothest motion but leaves some artifacts.\n- context_stride 1, context_overlap = 4 feels like the best combination of smooothness and artifact avoidance.",
         "markdown",
         ""
       ],
@@ -410,7 +330,7 @@
         "1": 270
       },
       "flags": {},
-      "order": 7,
+      "order": 5,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -437,7 +357,7 @@
         "1": 98
       },
       "flags": {},
-      "order": 8,
+      "order": 6,
       "mode": 0,
       "outputs": [
         {
@@ -555,62 +475,6 @@
       "bgcolor": "#533"
     },
     {
-      "id": 470,
-      "type": "LoraLoader",
-      "pos": [
-        -681,
-        -1434
-      ],
-      "size": {
-        "0": 256.37469482421875,
-        "1": 126.03836059570312
-      },
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 896
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 893
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            909
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            894,
-            895
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoraLoader"
-      },
-      "widgets_values": [
-        "v3_sd15_adapter.ckpt",
-        0.01,
-        0.25
-      ]
-    },
-    {
       "id": 467,
       "type": "ACN_SparseCtrlLoaderAdvanced",
       "pos": [
@@ -710,8 +574,8 @@
       "id": 451,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": -769,
-        "1": -434,
+        "0": -806.6468505859375,
+        "1": -376.062255859375,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -726,7 +590,7 @@
         "1": 127.09552764892578
       },
       "flags": {},
-      "order": 9,
+      "order": 7,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -745,8 +609,8 @@
       "id": 452,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": -747,
-        "1": -252,
+        "0": -784.6468505859375,
+        "1": -194.06219482421875,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -761,7 +625,7 @@
         "1": 138.77713012695312
       },
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -780,8 +644,8 @@
       "id": 450,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": -764,
-        "1": -615,
+        "0": -801.6468505859375,
+        "1": -557.062255859375,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -796,7 +660,7 @@
         "1": 147.5499725341797
       },
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -815,8 +679,8 @@
       "id": 455,
       "type": "Note Plus (mtb)",
       "pos": {
-        "0": -785,
-        "1": -1059,
+        "0": -822.6468505859375,
+        "1": -1001.0614624023438,
         "2": 0,
         "3": 0,
         "4": 0,
@@ -831,7 +695,7 @@
         "1": 390
       },
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -858,7 +722,7 @@
         "1": 95.60185241699219
       },
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "outputs": [
         {
@@ -925,11 +789,608 @@
       }
     },
     {
+      "id": 187,
+      "type": "ADE_AnimateDiffLoaderWithContext",
+      "pos": [
+        2025,
+        -2177
+      ],
+      "size": {
+        "0": 312.07550048828125,
+        "1": 252.39730834960938
+      },
+      "flags": {
+        "pinned": false
+      },
+      "order": 25,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 900,
+          "slot_index": 0
+        },
+        {
+          "name": "context_options",
+          "type": "CONTEXT_OPTIONS",
+          "link": 980,
+          "slot_index": 1
+        },
+        {
+          "name": "motion_lora",
+          "type": "MOTION_LORA",
+          "link": null
+        },
+        {
+          "name": "motion_model_settings",
+          "type": "MOTION_MODEL_SETTINGS",
+          "link": null,
+          "slot_index": 3
+        },
+        {
+          "name": "sample_settings",
+          "type": "sample_settings",
+          "link": null
+        },
+        {
+          "name": "ad_keyframes",
+          "type": "AD_KEYFRAMES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            935
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
+      },
+      "widgets_values": [
+        "v3_sd15_mm.ckpt",
+        "sqrt_linear (AnimateDiff)",
+        1.3,
+        false
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 454,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 174.35324096679688,
+        "1": -533.062255859375,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 230,
+        "1": 260
+      },
+      "flags": {},
+      "order": 12,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 472,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1517,
+        "1": -359,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 591.9019165039062,
+        "1": 347.8489685058594
+      },
+      "flags": {},
+      "order": 13,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3\\_sd15\\_mm\n- For SparseCtrl, search: v3\\_sd15\\_sparsectrl\n- For s3\\_15 adapter, search: v3\\_sd15\\_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus\\_sd15.safetensors\n\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 521,
+      "type": "ADE_NoiseLayerAdd",
+      "pos": [
+        1522,
+        -2588
+      ],
+      "size": {
+        "0": 380.4000244140625,
+        "1": 198
+      },
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "prev_noise_layers",
+          "type": "NOISE_LAYERS",
+          "link": null
+        },
+        {
+          "name": "mask_optional",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "seed_override",
+          "type": "INT",
+          "link": null,
+          "widget": {
+            "name": "seed_override"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "NOISE_LAYERS",
+          "type": "NOISE_LAYERS",
+          "links": null,
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_NoiseLayerAdd"
+      },
+      "widgets_values": [
+        140,
+        "FreeNoise",
+        "use existing",
+        -78,
+        0.5,
+        0
+      ]
+    },
+    {
+      "id": 342,
+      "type": "ADE_AnimateDiffUniformContextOptions",
+      "pos": [
+        2074,
+        -1854
+      ],
+      "size": {
+        "0": 310.79998779296875,
+        "1": 365.04229736328125
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "prev_context",
+          "type": "CONTEXT_OPTIONS",
+          "link": null
+        },
+        {
+          "name": "view_opts",
+          "type": "VIEW_OPTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONTEXT_OPTIONS",
+          "type": "CONTEXT_OPTIONS",
+          "links": [
+            980
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
+      },
+      "widgets_values": [
+        16,
+        2,
+        4,
+        "uniform",
+        false,
+        "flat",
+        false,
+        0,
+        1
+      ]
+    },
+    {
+      "id": 470,
+      "type": "LoraLoader",
+      "pos": [
+        -692,
+        -1420
+      ],
+      "size": {
+        "0": 256.37469482421875,
+        "1": 126.03836059570312
+      },
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 896
+        },
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 893
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            909
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            894,
+            895
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoraLoader"
+      },
+      "widgets_values": [
+        "v3_sd15_adapter.ckpt",
+        0.01,
+        0.25
+      ]
+    },
+    {
+      "id": 505,
+      "type": "ACN_AdvancedControlNetApply",
+      "pos": [
+        -204,
+        -1492
+      ],
+      "size": {
+        "0": 285.6000061035156,
+        "1": 246
+      },
+      "flags": {},
+      "order": 30,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 967,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 968,
+          "slot_index": 1
+        },
+        {
+          "name": "control_net",
+          "type": "CONTROL_NET",
+          "link": 978
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 963
+        },
+        {
+          "name": "mask_optional",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "timestep_kf",
+          "type": "TIMESTEP_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "latent_kf_override",
+          "type": "LATENT_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "weights_override",
+          "type": "CONTROL_NET_WEIGHTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            971
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            972
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ACN_AdvancedControlNetApply"
+      },
+      "widgets_values": [
+        0.5,
+        0.6,
+        0.675
+      ]
+    },
+    {
+      "id": 468,
+      "type": "ACN_AdvancedControlNetApply",
+      "pos": [
+        -239,
+        -1880.1191788018743
+      ],
+      "size": {
+        "0": 314.1339111328125,
+        "1": 246
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 917,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 918,
+          "slot_index": 1
+        },
+        {
+          "name": "control_net",
+          "type": "CONTROL_NET",
+          "link": 879
+        },
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 880
+        },
+        {
+          "name": "mask_optional",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "timestep_kf",
+          "type": "TIMESTEP_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "latent_kf_override",
+          "type": "LATENT_KEYFRAME",
+          "link": null
+        },
+        {
+          "name": "weights_override",
+          "type": "CONTROL_NET_WEIGHTS",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "links": [
+            967
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "links": [
+            968
+          ],
+          "shape": 3,
+          "slot_index": 1
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ACN_AdvancedControlNetApply"
+      },
+      "widgets_values": [
+        0.6,
+        0,
+        0.05
+      ]
+    },
+    {
+      "id": 401,
+      "type": "VHS_LoadImagesPath",
+      "pos": [
+        -1426.3693935183685,
+        -1835.5733992417513
+      ],
+      "size": [
+        320,
+        194
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            737,
+            881,
+            908,
+            975
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_LoadImagesPath"
+      },
+      "widgets_values": {
+        "directory": "/workspace/ComfyUI/input/3images/",
+        "image_load_cap": 0,
+        "skip_first_images": 0,
+        "select_every_nth": 1,
+        "choose folder to upload": "image",
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "frame_load_cap": 0,
+            "skip_first_images": 0,
+            "filename": "/workspace/ComfyUI/input/3images/",
+            "type": "path",
+            "format": "folder",
+            "select_every_nth": 1
+          }
+        }
+      },
+      "color": "#332922",
+      "bgcolor": "#593930"
+    },
+    {
+      "id": 292,
+      "type": "STMFNet VFI",
+      "pos": [
+        2049.2307111212854,
+        -1235.158321614905
+      ],
+      "size": {
+        "0": 295.6000061035156,
+        "1": 174
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 33,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "frames",
+          "type": "IMAGE",
+          "link": 928
+        },
+        {
+          "name": "optional_interpolation_states",
+          "type": "INTERPOLATION_STATES",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            938
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "STMFNet VFI"
+      },
+      "widgets_values": [
+        "stmfnet.pth",
+        15,
+        2,
+        true,
+        false
+      ]
+    },
+    {
       "id": 354,
       "type": "VHS_SplitImages",
       "pos": [
-        1639,
-        -1266
+        1669.2307111212854,
+        -1234.158321614905
       ],
       "size": {
         "0": 231.97152709960938,
@@ -986,159 +1447,98 @@
       }
     },
     {
-      "id": 292,
-      "type": "STMFNet VFI",
+      "id": 281,
+      "type": "VHS_VideoCombine",
       "pos": [
-        2016,
-        -1267
+        1552,
+        -1054
       ],
-      "size": {
-        "0": 295.6000061035156,
-        "1": 174
-      },
-      "flags": {
-        "collapsed": true
-      },
-      "order": 33,
+      "size": [
+        810,
+        1074
+      ],
+      "flags": {},
+      "order": 34,
       "mode": 0,
       "inputs": [
         {
-          "name": "frames",
+          "name": "images",
           "type": "IMAGE",
-          "link": 928
+          "link": 938
         },
         {
-          "name": "optional_interpolation_states",
-          "type": "INTERPOLATION_STATES",
+          "name": "audio",
+          "type": "VHS_AUDIO",
           "link": null
         }
       ],
       "outputs": [
         {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            938
-          ],
-          "shape": 3,
-          "slot_index": 0
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null,
+          "shape": 3
         }
       ],
       "properties": {
-        "Node name for S&R": "STMFNet VFI"
+        "Node name for S&R": "VHS_VideoCombine"
       },
-      "widgets_values": [
-        "stmfnet.pth",
-        15,
-        2,
-        true,
-        false
-      ]
+      "widgets_values": {
+        "frame_rate": 15,
+        "loop_count": 3,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 20,
+        "save_metadata": true,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__00485.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
     },
     {
-      "id": 187,
-      "type": "ADE_AnimateDiffLoaderWithContext",
-      "pos": [
-        2025,
-        -2177
-      ],
+      "id": 513,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 2423,
+        "1": -1877,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
       "size": {
-        "0": 312.07550048828125,
-        "1": 252.39730834960938
-      },
-      "flags": {
-        "pinned": false
-      },
-      "order": 25,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 900,
-          "slot_index": 0
-        },
-        {
-          "name": "context_options",
-          "type": "CONTEXT_OPTIONS",
-          "link": 627,
-          "slot_index": 1
-        },
-        {
-          "name": "motion_lora",
-          "type": "MOTION_LORA",
-          "link": null
-        },
-        {
-          "name": "motion_model_settings",
-          "type": "MOTION_MODEL_SETTINGS",
-          "link": null,
-          "slot_index": 3
-        },
-        {
-          "name": "sample_settings",
-          "type": "sample_settings",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            935
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoaderWithContext"
-      },
-      "widgets_values": [
-        "v3_sd15_mm.ckpt",
-        "sqrt_linear (AnimateDiff)",
-        1.3,
-        false
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 342,
-      "type": "ADE_AnimateDiffUniformContextOptions",
-      "pos": [
-        2074,
-        -1854
-      ],
-      "size": {
-        "0": 271.8603515625,
-        "1": 365.04229736328125
+        "0": 254.81239318847656,
+        "1": 404.44708251953125
       },
       "flags": {},
-      "order": 14,
+      "order": 17,
       "mode": 0,
-      "outputs": [
-        {
-          "name": "CONTEXT_OPTIONS",
-          "type": "CONTEXT_OPTIONS",
-          "links": [
-            627
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffUniformContextOptions"
-      },
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
       "widgets_values": [
-        16,
-        2,
-        4,
-        "uniform",
-        false
-      ]
+        "## ⬅ Tweak the context to change how the motion is influences by previous and forthcoming motion\n<br>\n\n- context_stride + context_overlap = 2 seems to provide the smoothest motion but leaves some artifacts.\n- context_stride 1, context_overlap = 4 feels like the best combination of smooothness and artifact avoidance.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
     },
     {
       "id": 207,
@@ -1258,350 +1658,16 @@
       "shape": 1
     },
     {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        1552,
-        -1054
-      ],
-      "size": [
-        810,
-        1054
-      ],
-      "flags": {},
-      "order": 34,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 938
-        },
-        {
-          "name": "audio",
-          "type": "VHS_AUDIO",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Filenames",
-          "type": "VHS_FILENAMES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 15,
-        "loop_count": 3,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pix_fmt": "yuv420p",
-        "crf": 20,
-        "save_metadata": true,
-        "pingpong": false,
-        "save_output": true,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__00437.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
-    },
-    {
-      "id": 454,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 212,
-        "1": -591,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 230,
-        "1": 260
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 401,
-      "type": "VHS_LoadImagesPath",
-      "pos": [
-        -1426.3693935183685,
-        -1835.5733992417513
-      ],
-      "size": [
-        320,
-        194
-      ],
-      "flags": {},
-      "order": 16,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            737,
-            881,
-            908,
-            975
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_LoadImagesPath"
-      },
-      "widgets_values": {
-        "directory": "/workspace/ComfyUI/input/input_coffee/",
-        "image_load_cap": 0,
-        "skip_first_images": 0,
-        "select_every_nth": 1,
-        "choose folder to upload": "image",
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "frame_load_cap": 0,
-            "skip_first_images": 0,
-            "filename": "/workspace/ComfyUI/input/input_coffee/",
-            "type": "path",
-            "format": "folder",
-            "select_every_nth": 1
-          }
-        }
-      },
-      "color": "#332922",
-      "bgcolor": "#593930"
-    },
-    {
-      "id": 468,
-      "type": "ACN_AdvancedControlNetApply",
-      "pos": [
-        -239,
-        -1880.1191788018743
-      ],
-      "size": {
-        "0": 314.1339111328125,
-        "1": 246
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 917,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 918,
-          "slot_index": 1
-        },
-        {
-          "name": "control_net",
-          "type": "CONTROL_NET",
-          "link": 879
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 880
-        },
-        {
-          "name": "mask_optional",
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "name": "timestep_kf",
-          "type": "TIMESTEP_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "latent_kf_override",
-          "type": "LATENT_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "weights_override",
-          "type": "CONTROL_NET_WEIGHTS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            967
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            968
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ACN_AdvancedControlNetApply"
-      },
-      "widgets_values": [
-        0.8,
-        0,
-        0.33
-      ]
-    },
-    {
-      "id": 505,
-      "type": "ACN_AdvancedControlNetApply",
-      "pos": [
-        -233,
-        -1539
-      ],
-      "size": {
-        "0": 285.6000061035156,
-        "1": 246
-      },
-      "flags": {},
-      "order": 30,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 967,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 968,
-          "slot_index": 1
-        },
-        {
-          "name": "control_net",
-          "type": "CONTROL_NET",
-          "link": 978
-        },
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 963
-        },
-        {
-          "name": "mask_optional",
-          "type": "MASK",
-          "link": null
-        },
-        {
-          "name": "timestep_kf",
-          "type": "TIMESTEP_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "latent_kf_override",
-          "type": "LATENT_KEYFRAME",
-          "link": null
-        },
-        {
-          "name": "weights_override",
-          "type": "CONTROL_NET_WEIGHTS",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "links": [
-            971
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "links": [
-            972
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ACN_AdvancedControlNetApply"
-      },
-      "widgets_values": [
-        0.7000000000000001,
-        0.6,
-        0.675
-      ]
-    },
-    {
       "id": 473,
       "type": "BatchCreativeInterpolation",
       "pos": [
-        -222,
-        -686
+        -278,
+        -629
       ],
-      "size": {
-        "0": 400,
-        "1": 680
-      },
+      "size": [
+        378.3703423237811,
+        680
+      ],
       "flags": {},
       "order": 23,
       "mode": 0,
@@ -1706,12 +1772,12 @@
         "control_v11f1e_sd15_tile_fp16.safetensors",
         "linear",
         16,
-        "0,24,60",
+        "0,16,32,48",
         "linear",
-        "0.8",
-        "(0.9,0.5),(0.2,0.3)",
+        "0.75",
+        "",
         "linear",
-        "(0.42,0.5,0.42)",
+        "(0.4,0.5,0.4)",
         "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)",
         0.85,
         4,
@@ -1723,52 +1789,9 @@
         0,
         0.65
       ]
-    },
-    {
-      "id": 472,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1517,
-        "1": -359,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        591.901944247159,
-        347.8489601828835
-      ],
-      "flags": {},
-      "order": 17,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3\\_sd15\\_mm\n- For SparseCtrl, search: v3\\_sd15\\_sparsectrl\n- For s3\\_15 adapter, search: v3\\_sd15\\_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus\\_sd15.safetensors\n\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
     }
   ],
   "links": [
-    [
-      627,
-      342,
-      0,
-      187,
-      1,
-      "CONTEXT_OPTIONS"
-    ],
     [
       737,
       401,
@@ -2064,6 +2087,14 @@
       505,
       2,
       "CONTROL_NET"
+    ],
+    [
+      980,
+      342,
+      0,
+      187,
+      1,
+      "CONTEXT_OPTIONS"
     ]
   ],
   "groups": [
@@ -2081,8 +2112,8 @@
     {
       "title": "Increase Framerate",
       "bounding": [
-        1358,
-        -1360,
+        1359,
+        -1327,
         1048,
         129
       ],
@@ -2094,8 +2125,8 @@
       "bounding": [
         1456,
         -1163,
-        1022,
-        1294
+        1017,
+        1321
       ],
       "color": "#a1309b",
       "font_size": 24
@@ -2103,8 +2134,8 @@
     {
       "title": "Group",
       "bounding": [
-        -828,
-        -1159,
+        -865,
+        -1101,
         2194,
         1190
       ],
