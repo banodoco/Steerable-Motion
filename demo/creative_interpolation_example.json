@@ -1258,41 +1258,6 @@
       "shape": 1
     },
     {
-      "id": 472,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1544,
-        "1": -353,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 594.319580078125,
-        "1": 273.9513854980469
-      },
-      "flags": {},
-      "order": 15,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3_sd15_mm\n- For SparseCtrl, search: v3_sd15_sparsectrl\n- For s3_15 adapter, search: v3_sd15_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus_sd15.safetensors\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
       "id": 281,
       "type": "VHS_VideoCombine",
       "pos": [
@@ -1371,7 +1336,7 @@
         "1": 260
       },
       "flags": {},
-      "order": 16,
+      "order": 15,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1398,7 +1363,7 @@
         194
       ],
       "flags": {},
-      "order": 17,
+      "order": 16,
       "mode": 0,
       "outputs": [
         {
@@ -1758,6 +1723,41 @@
         0,
         0.65
       ]
+    },
+    {
+      "id": 472,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1517,
+        "1": -359,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        591.901944247159,
+        347.8489601828835
+      ],
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3\\_sd15\\_mm\n- For SparseCtrl, search: v3\\_sd15\\_sparsectrl\n- For s3\\_15 adapter, search: v3\\_sd15\\_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus\\_sd15.safetensors\n\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
     }
   ],
   "links": [
