@@ -124,41 +124,6 @@
       ]
     },
     {
-      "id": 454,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 181.60427856445312,
-        "1": -512.2832641601562,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 230,
-        "1": 260
-      },
-      "flags": {},
-      "order": 3,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
       "id": 281,
       "type": "VHS_VideoCombine",
       "pos": [
@@ -234,7 +199,7 @@
         "1": 117.29389953613281
       },
       "flags": {},
-      "order": 4,
+      "order": 3,
       "mode": 0,
       "outputs": [
         {
@@ -281,7 +246,7 @@
         "1": 99.132568359375
       },
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "outputs": [
         {
@@ -359,7 +324,7 @@
         194
       ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "outputs": [
         {
@@ -412,31 +377,6 @@
       },
       "color": "#332922",
       "bgcolor": "#593930"
-    },
-    {
-      "id": 389,
-      "type": "PreviewImage",
-      "pos": [
-        426,
-        -819
-      ],
-      "size": {
-        "0": 887.6273803710938,
-        "1": 246
-      },
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 737
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
     },
     {
       "id": 541,
@@ -762,7 +702,7 @@
         "1": 58
       },
       "flags": {},
-      "order": 7,
+      "order": 6,
       "mode": 0,
       "inputs": [
         {
@@ -801,7 +741,7 @@
         "1": 365.04229736328125
       },
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -861,7 +801,7 @@
         300
       ],
       "flags": {},
-      "order": 9,
+      "order": 8,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -999,7 +939,7 @@
         82
       ],
       "flags": {},
-      "order": 10,
+      "order": 9,
       "mode": 4,
       "inputs": [
         {
@@ -1028,136 +968,6 @@
       ]
     },
     {
-      "id": 551,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 3022,
-        "1": -1134,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        234.37235839843515,
-        148.41668457031153
-      ],
-      "flags": {},
-      "order": 11,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## You can add Motion LoRAs above\n<br>\nJust un-bypass the nodes. You can learn more about training them [here](https://github.com/ExponentialML/AnimateDiff-MotionDirector).",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 472,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -1496,
-        "1": -329,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 591.9019165039062,
-        "1": 347.8489685058594
-      },
-      "flags": {},
-      "order": 12,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3\\_sd15\\_mm\n- For SparseCtrl, search: v3\\_sd15\\_sparsectrl\n- For s3\\_15 adapter, search: v3\\_sd15\\_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus\\_sd15.safetensors\n\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 436,
-      "type": "PreviewImage",
-      "pos": [
-        493,
-        -490
-      ],
-      "size": {
-        "0": 820.0277099609375,
-        "1": 511.5301818847656
-      },
-      "flags": {},
-      "order": 29,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 901
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "PreviewImage"
-      }
-    },
-    {
-      "id": 553,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 134,
-        "1": -126,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        329.7846012594214,
-        207.47863415191
-      ],
-      "flags": {},
-      "order": 13,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  ⬅ TIP-Adapter vs CN Tile  \n\n<br>\n\nSeeing relative_ipa_strength to &gt;0.0 turns on IP-Adapter while setting relative_cn_strength to &gt;0.0 turns on ControlNet Tile. I recommend leaving IP-Adapter at 1.0, and ControlNet Tile at 0.0 but you're welcome to experment. For example, 0.5 leaves them at half strength.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
       "id": 451,
       "type": "Note Plus (mtb)",
       "pos": {
@@ -1177,7 +987,7 @@
         147.40195837099685
       ],
       "flags": {},
-      "order": 14,
+      "order": 10,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1212,7 +1022,7 @@
         163.10225195312478
       ],
       "flags": {},
-      "order": 15,
+      "order": 11,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1247,7 +1057,7 @@
         "1": 1040
       },
       "flags": {},
-      "order": 16,
+      "order": 12,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1282,7 +1092,7 @@
         "1": 390
       },
       "flags": {},
-      "order": 17,
+      "order": 13,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -1290,111 +1100,6 @@
       "properties": {},
       "widgets_values": [
         "## Understanding the settings\n\n<br>\nThere are 3 main settings:\n\n<br>\n\n- Key frame position\n- Length of influence\n- Strength of influence\n\n<br>\n\nThe type_of fields decide whether each of settings are the same for each frame or different.\n\n<br>\n\nWhen the type has been set to 'linear', you can adjust the value for every in with the _value fields.\n\n<br>\n\nWhen the type is set to 'dynamic', the text box below each setting are for the individual values - follow the format provided to set values for each frame.\n",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 450,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -787,
-        "1": -544,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 441.21502685546875,
-        "1": 147.5499725341797
-      },
-      "flags": {},
-      "order": 18,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Setting frame position ⮕\n\n<br>\n\nSetting linear frame distribution makes the frames spaced out by the linear value - for example, if it's set to 16, the frames will be at positions 0, 16, 32, etc. If you set type to dynamic, you'll need to enter the values in the text box below.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 456,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 188,
-        "1": -950,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        210,
-        186.0922504882799
-      ],
-      "flags": {},
-      "order": 19,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "##  ⬅  Download the models from Comfy Manager\n<br>\nSee details on where to find them on the left.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 556,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -724,
-        "1": -1952,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        334.258056640625,
-        188.175537109375
-      ],
-      "flags": {},
-      "order": 20,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## Tweak Sparse Ctrl Strength is improve adherence  ⮕\n<br>\nI'd recommend that you increase the end_percent to the right. Higher values tend to cause flickering. However, increase the adapter strength below along with it below to fix this to an extend.",
         "markdown",
         ""
       ],
@@ -1749,41 +1454,6 @@
         0,
         0.3
       ]
-    },
-    {
-      "id": 513,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 2465,
-        "1": -1797,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        316.796583007811,
-        265.0110820312493
-      ],
-      "flags": {},
-      "order": 21,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "## ⬅ Tweak the context to change how the motion is influences by previous and forthcoming motion\n<br>\n\n- context_stride + context_overlap = 2 seems to provide the smoothest motion but leaves some artifacts.\n- context_stride 1, context_overlap = 4 feels like the best combination of smooothness and artifact avoidance.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
     },
     {
       "id": 548,
@@ -2161,6 +1831,336 @@
       ],
       "color": "#222233",
       "bgcolor": "#333355",
+      "shape": 1
+    },
+    {
+      "id": 436,
+      "type": "PreviewImage",
+      "pos": [
+        476,
+        -543
+      ],
+      "size": {
+        "0": 820.0277099609375,
+        "1": 511.5301818847656
+      },
+      "flags": {},
+      "order": 29,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 901
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 389,
+      "type": "PreviewImage",
+      "pos": [
+        495,
+        -861
+      ],
+      "size": [
+        785.2230418989993,
+        213.74885413809125
+      ],
+      "flags": {},
+      "order": 23,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 737
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      }
+    },
+    {
+      "id": 456,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 213,
+        "1": -941,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        210,
+        186.0922504882799
+      ],
+      "flags": {},
+      "order": 14,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  ⬅  Download the models from Comfy Manager\n<br>\nSee details on where to find them on the left.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 454,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 166,
+        "1": -517,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 230,
+        "1": 260
+      },
+      "flags": {},
+      "order": 15,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Observe the graph to understand the the motion ⮕\n<br>\n As you tweak the settings, observe the impact on the graph. You can disconnect the positive, negative and model connections to just observe the graph without creating videos.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 553,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 137,
+        "1": -174,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        295.77066521066445,
+        256.3551480732426
+      ],
+      "flags": {},
+      "order": 16,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  ⬅ IP-Adapter vs CN Tile  \n\n<br>\n\nSeeing `relative_ipa_strength` to &gt; 0.0 turns on IP-Adapter while setting `relative_cn_strength` to &gt; 0.0 turns on ControlNet Tile. I recommend leaving IP-Adapter at 1.0, and ControlNet Tile at 0.0 but you're welcome to experiment. For example, 0.5 leaves them at half strength.\n",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 472,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -1521,
+        "1": -323,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 591.9019165039062,
+        "1": 347.8489685058594
+      },
+      "flags": {},
+      "order": 17,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "##  To download these models from Comfy Manager\n<br>\n\nOn the bar on the right, click \"Manager\", then click \"Install Models\" and search up the below - the models that show for those queries should be the right ones:\n<br>\n<br>\n\n\n- For Animatediff, search: v3\\_sd15\\_mm\n- For SparseCtrl, search: v3\\_sd15\\_sparsectrl\n- For s3\\_15 adapter, search: v3\\_sd15\\_adapter\n- For Clip Vision, search: CLIP-ViT-H-14\n- For ControlNet Tile, search: tile\n- For IP-Adapter-Plus, search: plus\\_sd15.safetensors\n\n<br>\n<br>\n\nFor the VAE and styling model, *make sure to use SD 1.5 models*.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 556,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -750,
+        "1": -1942,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        334.258056640625,
+        188.175537109375
+      ],
+      "flags": {},
+      "order": 18,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Tweak Sparse Ctrl Strength is improve adherence  ⮕\n<br>\nI'd recommend that you increase the end_percent to the right. Higher values tend to cause flickering. However, increase the adapter strength below along with it below to fix this to an extend.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 551,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 3005,
+        "1": -1126,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        319.92206505535205,
+        140.94316622515657
+      ],
+      "flags": {},
+      "order": 19,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## You can add Motion LoRAs above\n<br>\nJust un-bypass the nodes. You can learn more about training them [here](https://github.com/ExponentialML/AnimateDiff-MotionDirector).",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 513,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 2465,
+        "1": -1797,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        316.796583007811,
+        265.0110820312493
+      ],
+      "flags": {},
+      "order": 20,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## ⬅ Tweak the context to change how the motion is influences by previous and forthcoming motion\n<br>\n\n- `context_stride` + `context_overlap` = 2 seems to provide the smoothest motion but leaves some artifacts.\n- `context_stride` 1, `context_overlap` = 4 feels like the best combination of smooothness and artifact avoidance.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 450,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -787,
+        "1": -544,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 441.21502685546875,
+        "1": 147.5499725341797
+      },
+      "flags": {},
+      "order": 21,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Setting frame position ⮕\n\n<br>\n\nSetting linear frame distribution makes the frames spaced out by the linear value - for example, if it's set to 16, the frames will be at positions 0, 16, 32, etc. If you set type to dynamic, you'll need to enter the values in the text box below.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
       "shape": 1
     }
   ],
