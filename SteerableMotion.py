@@ -44,7 +44,7 @@ class BatchCreativeInterpolationNode:
                 "linear_strength_value": ("STRING", {"multiline": False, "default": "(0.3,0.4)"}),
                 "dynamic_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),
                 "soft_scaled_cn_weights_multiplier": ("FLOAT", {"default": 0.85, "min": 0.0, "max": 10.0, "step": 0.1}),
-                "buffer": ("INT", {"default": 4, "min": 0, "max": 16, "step": 1}), 
+                "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}), 
                 "relative_cn_strength": ("FLOAT", {"default": 0.1, "min": 0.0, "max": 10.0, "step": 0.01}),
                 "relative_ipadapter_strength": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 10.0, "step": 0.01}),
                 "ipadapter_noise": ("FLOAT", {"default": 0.3, "min": 0.0, "max": 1.0, "step": 0.01}),
@@ -205,20 +205,22 @@ class BatchCreativeInterpolationNode:
                 return [linear_key_frame_influence_value for _ in range(number_of_outputs)]
 
         def calculate_weights(batch_index_from, batch_index_to, strength_from, strength_to, interpolation,revert_direction_at_midpoint, last_key_frame_position,i, number_of_items,buffer):
-
+            
             # Initialize variables based on the position of the keyframe
             range_start = batch_index_from
             range_end = batch_index_to
             # if it's the first value, set influence range from 1.0 to 0.0
+            '''
             if buffer > 0:
                 if i == 0:
                     range_start = 0
-                elif i == 1:
-                    range_start = buffer
+                else:
+                    if batch_index_from <= buffer:
+                        range_start = buffer                                        
             else:
                 if i == 1:
                     range_start = 0
-            
+            '''
             if i == number_of_items - 1:
                 range_end = last_key_frame_position
 
@@ -346,15 +348,15 @@ class BatchCreativeInterpolationNode:
             elif i == 1: # first image 
 
                 # GET IMAGE AND KEYFRAME INFLUENCE VALUES              
-                image = images[0]                
-                key_frame_influence_from, key_frame_influence_to = key_frame_influence_values[0]                                
-                start_strength, mid_strength, end_strength = strength_values[0]
+                image = images[i-1]                
+                key_frame_influence_from, key_frame_influence_to = key_frame_influence_values[i-1]
+                start_strength, mid_strength, end_strength = strength_values[i-1]
                                 
                 keyframe_position = keyframe_positions[i]
                 next_key_frame_position = keyframe_positions[i+1]
-                
+                                                
                 batch_index_from = keyframe_position                
-                batch_index_to_excl = calculate_influence_frame_number(keyframe_position, next_key_frame_position, key_frame_influence_to)
+                batch_index_to_excl = calculate_influence_frame_number(keyframe_position, next_key_frame_position, key_frame_influence_to)                
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, mid_strength, end_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
                 # interpolation = "ease-in"                                
             
@@ -368,9 +370,10 @@ class BatchCreativeInterpolationNode:
 
                 keyframe_position = keyframe_positions[i]
                 previous_key_frame_position = keyframe_positions[i-1]
-
+                                                
                 batch_index_from = calculate_influence_frame_number(keyframe_position, previous_key_frame_position, key_frame_influence_from)
-                batch_index_to_excl = keyframe_position
+                
+                batch_index_to_excl = keyframe_position                
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, start_strength, mid_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
                 # interpolation =  "ease-out"                                
             
