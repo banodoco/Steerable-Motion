@@ -382,7 +382,7 @@ class BatchCreativeInterpolationNode:
 
             elif i == len(keyframe_positions) - 1:
                 image = images[i-2]
-                strength_from = strength_to = strength_values[i-1][1]
+                strength_from = strength_to = strength_values[i-2][1]
                 batch_index_from = keyframe_positions[i-1]
                 batch_index_to_excl = last_key_frame_position
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)
@@ -451,6 +451,10 @@ class BatchCreativeInterpolationNode:
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
 
         return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position
+
+
+class ArmyOfLoRAs:
+    
 
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
