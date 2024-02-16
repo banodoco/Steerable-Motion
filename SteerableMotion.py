@@ -301,8 +301,13 @@ class BatchCreativeInterpolationNode:
         
         # ADD BUFFER TO KEYFRAME POSITIONS
         if buffer > 0:
+            # add front buffer
             keyframe_positions = [position + buffer - 1 for position in keyframe_positions]
             keyframe_positions.insert(0, 0)
+            # add end buffer
+            last_position_with_buffer = keyframe_positions[-1] + buffer - 1
+            keyframe_positions.append(last_position_with_buffer)
+
             
         # GET STRENGTH VALUES
         
@@ -334,13 +339,11 @@ class BatchCreativeInterpolationNode:
             interpolation = "ease-in-out"
             # strength_from = strength_to = 1.0
                                         
-            if i == 0: # buffer
+            if i == 0: # buffer                
                 
-                if buffer > 0:  # First image with buffer
-                    image = images[0]
-                    strength_from = strength_to = strength_values[0][1]                    
-                else:
-                    continue  # Skip first image without buffer
+                image = images[0]
+                strength_from = strength_to = strength_values[0][1]                    
+
                 batch_index_from = 0
                 batch_index_to_excl = buffer
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
@@ -360,7 +363,7 @@ class BatchCreativeInterpolationNode:
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, mid_strength, end_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
                 # interpolation = "ease-in"                                
             
-            elif i == len(images):  # last image
+            elif i == len(keyframe_positions) - 2: # last image
 
                 # GET IMAGE AND KEYFRAME INFLUENCE VALUES
                 image = images[i-1]
@@ -375,7 +378,14 @@ class BatchCreativeInterpolationNode:
                 
                 batch_index_to_excl = keyframe_position                
                 weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, start_strength, mid_strength, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)                                    
-                # interpolation =  "ease-out"                                
+                # interpolation =  "ease-out"    
+
+            elif i == len(keyframe_positions) - 1:
+                image = images[i-2]
+                strength_from = strength_to = strength_values[i-1][1]
+                batch_index_from = keyframe_positions[i-1]
+                batch_index_to_excl = last_key_frame_position
+                weights, frame_numbers = calculate_weights(batch_index_from, batch_index_to_excl, strength_from, strength_to, interpolation, False, last_key_frame_position, i, len(keyframe_positions), buffer)
             
             else:  # middle images
 
@@ -430,7 +440,7 @@ class BatchCreativeInterpolationNode:
                 prepped_image = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)[0]                        
                 mask = create_mask_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)                        
                 embed, = ipadapter_encoder.preprocess(clip_vision, prepped_image, True, 0.0, 1.0)                        
-                model, = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", 
+                model,_,_ = ipadapter_application.apply_ipadapter(ipadapter=ipadapter, model=model, weight=1.0, image=None, weight_type="original", 
                                                   noise=ipadapter_noise, embeds=embed, attn_mask=mask, start_at=ipadapter_start_at, end_at=ipadapter_end_at, unfold_batch=True)    
                 all_ipa_frame_numbers.append(ipa_frame_numbers)
                 all_ipa_weights.append(ipa_weights)
