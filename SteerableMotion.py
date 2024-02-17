@@ -452,10 +452,6 @@ class BatchCreativeInterpolationNode:
 
         return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position
 
-
-class ArmyOfLoRAs:
-    
-
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode    
