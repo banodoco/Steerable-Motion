@@ -8,7 +8,6 @@ import torchvision.transforms as transforms
 from PIL import Image
 import matplotlib.pyplot as plt
 # Local application/library specific imports
-import folder_paths
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
