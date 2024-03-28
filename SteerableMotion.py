@@ -35,10 +35,10 @@ class BatchCreativeInterpolationNode:
                 "dynamic_key_frame_influence_values": ("STRING", {"multiline": True, "default": "(1.0,1.0),(1.0,1.5)(1.0,0.5)"}),                
                 "type_of_strength_distribution": (["linear", "dynamic"],),
                 "linear_strength_value": ("STRING", {"multiline": False, "default": "(0.3,0.4)"}),
-                "dynamic_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),                                                                                                                            
-                "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),
-                "high_detail_mode": ("BOOL", {"default": True}),
+                "dynamic_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),                                                                                                                                            
+                "high_detail_mode": ("BOOLEAN", {"default": True}),
                 "ipa_weight": ("FLOAT", {"default": 1.0, "min": 0.0, "max": 2.0, "step": 0.1}),
+                "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),
             },
             "optional": {
             }
@@ -398,12 +398,11 @@ class BatchCreativeInterpolationNode:
                 frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
-            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, relative_ipadapter_strength)    
+            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
 
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
-
-            prepped_image = prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.0)[0]                                    
+                                        
             mask = create_mask_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)       
 
             if high_detail_mode:
@@ -418,7 +417,7 @@ class BatchCreativeInterpolationNode:
                 
             if high_detail_mode:
                 tiled_ipa_application = IPAdapterTiledImport()
-                model, _ = ipadapter_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=ipa_weight, weight_type='ease in-out', start_at=normal_ipa_start_at, end_at=normal_ipa_end_at, clip_vision=clip_vision, attn_mask=mask)
+                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=ipa_weight, weight_type='ease in-out', start_at=0.25, end_at=0.75, clip_vision=clip_vision, attn_mask=mask,sharpening=0.1)
 
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
