@@ -34,6 +34,17 @@ Through trial and error, you'll need to build an understanding of how the motion
 
 It won't work for everything but if you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.
 
+## Want to help explore new ways to use this and expand the capabilities?
+
+I believe that that are endless ways to expand upon and extend the ideas in this node.
+
+For example, you can use Ostiris' composition IPA to provide additional structure to the generation:
+
+![IPA Structure](https://github.com/banodoco/steerable-motion/blob/main/demo/ipa_structure.gif)
+
+Additionally, in [this example by Superbeasts.ai](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json), you can see how he uses depth maps to create a smoother motion effect.
+
+
 ## Want to give feedback, or join a community who are pushing open source models to their artistic and technical limits?
 
 You're very welcome to drop into our Discord [here](https://discord.com/invite/8Wx9dFu5tP).

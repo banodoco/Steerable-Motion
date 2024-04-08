@@ -1,6 +1,6 @@
 {
-  "last_node_id": 607,
-  "last_link_id": 1105,
+  "last_node_id": 611,
+  "last_link_id": 1108,
   "nodes": [
     {
       "id": 570,
@@ -171,7 +171,7 @@
         "1": 118
       },
       "flags": {},
-      "order": 62,
+      "order": 63,
       "mode": 0,
       "inputs": [
         {
@@ -264,13 +264,13 @@
         "1": 278
       },
       "flags": {},
-      "order": 45,
+      "order": 48,
       "mode": 4,
       "inputs": [
         {
           "name": "model",
           "type": "MODEL",
-          "link": 1066
+          "link": 1107
         },
         {
           "name": "ipadapter",
@@ -333,7 +333,7 @@
         "1": 107.56318664550781
       },
       "flags": {},
-      "order": 41,
+      "order": 43,
       "mode": 4,
       "inputs": [
         {
@@ -539,13 +539,13 @@
         "1": 364.0000305175781
       },
       "flags": {},
-      "order": 46,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
           "name": "clip",
           "type": "CLIP",
-          "link": 994
+          "link": 1106
         }
       ],
       "outputs": [
@@ -583,62 +583,6 @@
       ]
     },
     {
-      "id": 543,
-      "type": "PromptSchedule",
-      "pos": [
-        1308,
-        -994
-      ],
-      "size": {
-        "0": 367.4313659667969,
-        "1": 364.0000305175781
-      },
-      "flags": {},
-      "order": 47,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 996
-        }
-      ],
-      "outputs": [
-        {
-          "name": "POS",
-          "type": "CONDITIONING",
-          "links": [],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "NEG",
-          "type": "CONDITIONING",
-          "links": [
-            1010
-          ],
-          "shape": 3,
-          "slot_index": 1
-        }
-      ],
-      "title": "Negative Prompt",
-      "properties": {
-        "Node name for S&R": "PromptSchedule"
-      },
-      "widgets_values": [
-        "\"4\": \"\", \"36\": \"\", \"68\": \"\"",
-        120,
-        0,
-        false,
-        "",
-        "",
-        0,
-        0,
-        0,
-        0
-      ]
-    },
-    {
       "id": 544,
       "type": "ADE_MultivalDynamic",
       "pos": [
@@ -650,7 +594,7 @@
         "1": 54
       },
       "flags": {},
-      "order": 59,
+      "order": 60,
       "mode": 0,
       "inputs": [
         {
@@ -699,7 +643,7 @@
         26
       ],
       "flags": {},
-      "order": 43,
+      "order": 47,
       "mode": 0,
       "inputs": [
         {
@@ -875,7 +819,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 65,
+      "order": 66,
       "mode": 0,
       "inputs": [
         {
@@ -934,7 +878,7 @@
         26
       ],
       "flags": {},
-      "order": 64,
+      "order": 65,
       "mode": 0,
       "inputs": [
         {
@@ -980,7 +924,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 56,
+      "order": 57,
       "mode": 0,
       "inputs": [
         {
@@ -1061,7 +1005,7 @@
         "1": 82
       },
       "flags": {},
-      "order": 40,
+      "order": 42,
       "mode": 0,
       "inputs": [
         {
@@ -1101,7 +1045,7 @@
         "1": 182
       },
       "flags": {},
-      "order": 61,
+      "order": 62,
       "mode": 0,
       "inputs": [
         {
@@ -1168,7 +1112,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 52,
+      "order": 53,
       "mode": 0,
       "inputs": [
         {
@@ -1210,7 +1154,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 66,
+      "order": 67,
       "mode": 0,
       "inputs": [
         {
@@ -1325,7 +1269,7 @@
         "1": 140.00003051757812
       },
       "flags": {},
-      "order": 57,
+      "order": 58,
       "mode": 0,
       "inputs": [
         {
@@ -1465,7 +1409,7 @@
         1094
       ],
       "flags": {},
-      "order": 67,
+      "order": 68,
       "mode": 0,
       "inputs": [
         {
@@ -1509,7 +1453,7 @@
           "hidden": false,
           "paused": false,
           "params": {
-            "filename": "AD__00976.mp4",
+            "filename": "AD__00978.mp4",
             "subfolder": "steerable-motion",
             "type": "output",
             "format": "video/h264-mp4"
@@ -1531,7 +1475,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 55,
+      "order": 56,
       "mode": 0,
       "inputs": [
         {
@@ -1828,56 +1772,6 @@
       ]
     },
     {
-      "id": 461,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        -1327,
-        -381
-      ],
-      "size": {
-        "0": 210,
-        "1": 98
-      },
-      "flags": {},
-      "order": 24,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            896
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            893
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            1089
-          ],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "DreamShaper_6.31_BakedVae.safetensors"
-      ]
-    },
-    {
       "id": 604,
       "type": "ImageResize+",
       "pos": [
@@ -1891,7 +1785,7 @@
       "flags": {
         "collapsed": true
       },
-      "order": 48,
+      "order": 49,
       "mode": 0,
       "inputs": [
         {
@@ -1963,7 +1857,7 @@
         26
       ],
       "flags": {},
-      "order": 49,
+      "order": 50,
       "mode": 0,
       "inputs": [
         {
@@ -2012,7 +1906,7 @@
       "flags": {
         "pinned": false
       },
-      "order": 63,
+      "order": 64,
       "mode": 0,
       "inputs": [
         {
@@ -2127,7 +2021,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 25,
+      "order": 24,
       "mode": 4,
       "outputs": [
         {
@@ -2166,7 +2060,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 26,
+      "order": 25,
       "mode": 4,
       "outputs": [
         {
@@ -2205,7 +2099,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 27,
+      "order": 26,
       "mode": 4,
       "outputs": [
         {
@@ -2247,12 +2141,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        482.6034158849518,
-        133.46689474459754
-      ],
+      "size": {
+        "0": 482.6034240722656,
+        "1": 133.46688842773438
+      },
       "flags": {},
-      "order": 28,
+      "order": 27,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2282,12 +2176,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        458.4281852191757,
-        104.89824950299806
-      ],
+      "size": {
+        "0": 458.4281921386719,
+        "1": 104.89824676513672
+      },
       "flags": {},
-      "order": 29,
+      "order": 28,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2317,12 +2211,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        441.84912769515176,
-        100.49270580049267
-      ],
+      "size": {
+        "0": 441.84912109375,
+        "1": 100.49270629882812
+      },
       "flags": {},
-      "order": 30,
+      "order": 29,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2336,297 +2230,6 @@
       "color": "#223",
       "bgcolor": "#335",
       "shape": 1
-    },
-    {
-      "id": 582,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -981,
-        "1": -205,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        454.5255546150238,
-        113.72841745383857
-      ],
-      "flags": {},
-      "order": 31,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "### High detail mode  ⮕\n<br>\n\nThis makes the frames significantly more detailed by using two IPAs - but results in each frame consumes twice as much RAM.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 607,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -482,
-        "1": -122,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": [
-        454.97554031474147,
-        108.35885390791168
-      ],
-      "flags": {},
-      "order": 32,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "### Strength of adherence\n<br>\n\nSet this higher to improve adherence to your inputs. Set it too high and it'll cause artifacts. The best motion tends to result from lower settings.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 558,
-      "type": "BatchCreativeInterpolation",
-      "pos": [
-        -476,
-        -817
-      ],
-      "size": [
-        430.48668395418895,
-        678.876891249214
-      ],
-      "flags": {},
-      "order": 50,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "positive",
-          "type": "CONDITIONING",
-          "link": 1008
-        },
-        {
-          "name": "negative",
-          "type": "CONDITIONING",
-          "link": 1010
-        },
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 1057
-        },
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 1070
-        },
-        {
-          "name": "ipadapter",
-          "type": "IPADAPTER",
-          "link": 1012
-        },
-        {
-          "name": "clip_vision",
-          "type": "CLIP_VISION",
-          "link": 1013
-        },
-        {
-          "name": "base_ipa_advanced_settings",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "link": 1087
-        },
-        {
-          "name": "detail_ipa_advanced_settings",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "link": 1085
-        }
-      ],
-      "outputs": [
-        {
-          "name": "GRAPH",
-          "type": "IMAGE",
-          "links": [
-            1014
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "POSITIVE",
-          "type": "CONDITIONING",
-          "links": [
-            1015
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "NEGATIVE",
-          "type": "CONDITIONING",
-          "links": [
-            1016
-          ],
-          "shape": 3,
-          "slot_index": 2
-        },
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            1043
-          ],
-          "shape": 3,
-          "slot_index": 3
-        },
-        {
-          "name": "KEYFRAME_POSITIONS",
-          "type": "SPARSE_METHOD",
-          "links": [
-            1018
-          ],
-          "shape": 3,
-          "slot_index": 4
-        },
-        {
-          "name": "BATCH_SIZE",
-          "type": "INT",
-          "links": [
-            1019
-          ],
-          "shape": 3,
-          "slot_index": 5
-        },
-        {
-          "name": "SPARSECTRL_END_PERCENT",
-          "type": "FLOAT",
-          "links": [
-            1105
-          ],
-          "shape": 3,
-          "slot_index": 6
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "BatchCreativeInterpolation"
-      },
-      "widgets_values": [
-        "linear",
-        16,
-        "0,16,59",
-        "linear",
-        "0.9",
-        "1.0,1.0,1.0",
-        "linear",
-        "(0.0,0.9)",
-        "(0.3,0.4),(0.3,0.4)",
-        4,
-        true,
-        0.4
-      ]
-    },
-    {
-      "id": 594,
-      "type": "IpaConfiguration",
-      "pos": [
-        -542,
-        117
-      ],
-      "size": {
-        "0": 265.1364440917969,
-        "1": 306.6571350097656
-      },
-      "flags": {},
-      "order": 33,
-      "mode": 4,
-      "outputs": [
-        {
-          "name": "configuration",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "links": [
-            1085
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IpaConfiguration"
-      },
-      "widgets_values": [
-        0.3,
-        0.75,
-        "linear",
-        1,
-        "V only",
-        0,
-        false,
-        "fade",
-        0
-      ]
-    },
-    {
-      "id": 593,
-      "type": "IpaConfiguration",
-      "pos": [
-        -838,
-        120
-      ],
-      "size": {
-        "0": 267.9491882324219,
-        "1": 295.9013977050781
-      },
-      "flags": {
-        "collapsed": false
-      },
-      "order": 34,
-      "mode": 4,
-      "outputs": [
-        {
-          "name": "configuration",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "links": [
-            1087
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IpaConfiguration"
-      },
-      "widgets_values": [
-        0,
-        0.3,
-        "ease in-out",
-        1,
-        "V only",
-        0,
-        false,
-        "fade",
-        0
-      ]
     },
     {
       "id": 596,
@@ -2643,12 +2246,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        586.294634927789,
-        67.32426376968147
-      ],
+      "size": {
+        "0": 586.2946166992188,
+        "1": 67.32426452636719
+      },
       "flags": {},
-      "order": 35,
+      "order": 30,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2656,41 +2259,6 @@
       "properties": {},
       "widgets_values": [
         "If you can't see these nodes, you need to update the Steerable Moton node in Comfy Manager!",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 445,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -2846,
-        "1": -1396,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 646.619140625,
-        "1": 993.04736328125
-      },
-      "flags": {},
-      "order": 36,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Input the images that you want to use. The most important thing that will influence the quality and coherence of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n\nHowever, it probably won't be good for complex motion - other approaches like vid2vid are far more suitable for this.\n\n## If you're having problems:\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
         "markdown",
         ""
       ],
@@ -2718,7 +2286,7 @@
         "1": 103.94804382324219
       },
       "flags": {},
-      "order": 37,
+      "order": 31,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2726,41 +2294,6 @@
       "properties": {},
       "widgets_values": [
         "To color match to the original frame, plug the image into the color match node.",
-        "markdown",
-        ""
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 588,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": 1797,
-        "1": -126,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 220.1358642578125,
-        "1": 78.2089614868164
-      },
-      "flags": {},
-      "order": 38,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "title": "Note+ (mtb)",
-      "properties": {},
-      "widgets_values": [
-        "What else could you add to this workflow? 🤔",
         "markdown",
         ""
       ],
@@ -2783,12 +2316,12 @@
         "8": 0,
         "9": 0
       },
-      "size": [
-        726.9605975415097,
-        72.47819526220496
-      ],
+      "size": {
+        "0": 726.9605712890625,
+        "1": 72.47819519042969
+      },
       "flags": {},
-      "order": 39,
+      "order": 32,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2815,7 +2348,7 @@
         "1": 246
       },
       "flags": {},
-      "order": 51,
+      "order": 52,
       "mode": 0,
       "inputs": [
         {
@@ -2945,7 +2478,7 @@
         "1": 516.6347045898438
       },
       "flags": {},
-      "order": 53,
+      "order": 54,
       "mode": 0,
       "inputs": [
         {
@@ -2959,66 +2492,88 @@
       }
     },
     {
-      "id": 467,
-      "type": "ACN_SparseCtrlLoaderAdvanced",
-      "pos": [
-        2122,
-        -1061
-      ],
-      "size": [
-        252,
-        150
-      ],
-      "flags": {},
-      "order": 54,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "sparse_method",
-          "type": "SPARSE_METHOD",
-          "link": 1018,
-          "slot_index": 0
-        },
-        {
-          "name": "tk_optional",
-          "type": "TIMESTEP_KEYFRAME",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "CONTROL_NET",
-          "type": "CONTROL_NET",
-          "links": [
-            879
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ACN_SparseCtrlLoaderAdvanced"
+      "id": 582,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -973,
+        "1": -196,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
       },
+      "size": {
+        "0": 454.5255432128906,
+        "1": 113.7284164428711
+      },
+      "flags": {},
+      "order": 33,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
       "widgets_values": [
-        "v3_sd15_sparsectrl_rgb.ckpt",
-        true,
-        1.04,
-        1
-      ]
+        "### High detail mode  ⮕\n<br>\n\nThis makes the frames significantly more detailed by using two IPAs - but results in each frame consumes twice as much RAM.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 607,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -482,
+        "1": -122,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 454.9755554199219,
+        "1": 108.35885620117188
+      },
+      "flags": {},
+      "order": 34,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "### Strength of adherence\n<br>\n\nSet this higher to improve adherence to your inputs. Set it too high and it'll cause artifacts. The best motion tends to result from lower settings.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
     },
     {
       "id": 468,
       "type": "ACN_AdvancedControlNetApply",
       "pos": [
-        2422,
-        -1072
+        2436,
+        -1110
       ],
-      "size": [
-        285.6000061035156,
-        351.772705078125
-      ],
+      "size": {
+        "0": 285.6000061035156,
+        "1": 351.772705078125
+      },
       "flags": {},
-      "order": 60,
+      "order": 61,
       "mode": 0,
       "inputs": [
         {
@@ -3067,14 +2622,6 @@
           "name": "model_optional",
           "type": "MODEL",
           "link": null
-        },
-        {
-          "name": "end_percent",
-          "type": "FLOAT",
-          "link": 1105,
-          "widget": {
-            "name": "end_percent"
-          }
         }
       ],
       "outputs": [
@@ -3113,37 +2660,25 @@
       ]
     },
     {
-      "id": 470,
-      "type": "LoraLoader",
+      "id": 461,
+      "type": "CheckpointLoaderSimple",
       "pos": [
-        1853,
-        -1047
+        -1327,
+        -381
       ],
-      "size": [
-        210,
-        126
-      ],
+      "size": {
+        "0": 210,
+        "1": 98
+      },
       "flags": {},
-      "order": 42,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "model",
-          "type": "MODEL",
-          "link": 896
-        },
-        {
-          "name": "clip",
-          "type": "CLIP",
-          "link": 893
-        }
-      ],
+      "order": 35,
+      "mode": 0,
       "outputs": [
         {
           "name": "MODEL",
           "type": "MODEL",
           "links": [
-            1066
+            1107
           ],
           "shape": 3,
           "slot_index": 0
@@ -3152,35 +2687,469 @@
           "name": "CLIP",
           "type": "CLIP",
           "links": [
-            994,
-            996
+            1106,
+            1108
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            1089
+          ],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "DreamShaper_6.31_BakedVae.safetensors"
+      ]
+    },
+    {
+      "id": 543,
+      "type": "PromptSchedule",
+      "pos": [
+        1316,
+        -990
+      ],
+      "size": {
+        "0": 367.4313659667969,
+        "1": 364.0000305175781
+      },
+      "flags": {},
+      "order": 46,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "clip",
+          "type": "CLIP",
+          "link": 1108
+        }
+      ],
+      "outputs": [
+        {
+          "name": "POS",
+          "type": "CONDITIONING",
+          "links": [],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "NEG",
+          "type": "CONDITIONING",
+          "links": [
+            1010
           ],
           "shape": 3,
           "slot_index": 1
         }
       ],
+      "title": "Negative Prompt",
       "properties": {
-        "Node name for S&R": "LoraLoader"
+        "Node name for S&R": "PromptSchedule"
       },
       "widgets_values": [
-        "AnimateLCM_sd15_t2v_lora.safetensors",
-        1.1,
-        0.25
+        "\"4\": \"\", \"36\": \"\", \"68\": \"\"",
+        120,
+        0,
+        false,
+        "",
+        "",
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "id": 593,
+      "type": "IpaConfiguration",
+      "pos": [
+        -836,
+        135
+      ],
+      "size": {
+        "0": 267.9491882324219,
+        "1": 295.9013977050781
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 36,
+      "mode": 4,
+      "outputs": [
+        {
+          "name": "configuration",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "links": [
+            1087
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IpaConfiguration"
+      },
+      "widgets_values": [
+        0,
+        0.3,
+        "ease in-out",
+        1,
+        "V only",
+        0,
+        false,
+        "fade",
+        0
+      ]
+    },
+    {
+      "id": 594,
+      "type": "IpaConfiguration",
+      "pos": [
+        -537,
+        124
+      ],
+      "size": {
+        "0": 265.1364440917969,
+        "1": 306.6571350097656
+      },
+      "flags": {},
+      "order": 37,
+      "mode": 4,
+      "outputs": [
+        {
+          "name": "configuration",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "links": [
+            1085
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IpaConfiguration"
+      },
+      "widgets_values": [
+        0.3,
+        0.75,
+        "linear",
+        1,
+        "V only",
+        0,
+        false,
+        "fade",
+        0
+      ]
+    },
+    {
+      "id": 558,
+      "type": "BatchCreativeInterpolation",
+      "pos": [
+        -480,
+        -811
+      ],
+      "size": {
+        "0": 430.4866943359375,
+        "1": 678.8768920898438
+      },
+      "flags": {},
+      "order": 51,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "positive",
+          "type": "CONDITIONING",
+          "link": 1008
+        },
+        {
+          "name": "negative",
+          "type": "CONDITIONING",
+          "link": 1010
+        },
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1057
+        },
+        {
+          "name": "model",
+          "type": "MODEL",
+          "link": 1070
+        },
+        {
+          "name": "ipadapter",
+          "type": "IPADAPTER",
+          "link": 1012
+        },
+        {
+          "name": "clip_vision",
+          "type": "CLIP_VISION",
+          "link": 1013
+        },
+        {
+          "name": "base_ipa_advanced_settings",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "link": 1087
+        },
+        {
+          "name": "detail_ipa_advanced_settings",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "link": 1085
+        }
+      ],
+      "outputs": [
+        {
+          "name": "GRAPH",
+          "type": "IMAGE",
+          "links": [
+            1014
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "POSITIVE",
+          "type": "CONDITIONING",
+          "links": [
+            1015
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "NEGATIVE",
+          "type": "CONDITIONING",
+          "links": [
+            1016
+          ],
+          "shape": 3,
+          "slot_index": 2
+        },
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1043
+          ],
+          "shape": 3,
+          "slot_index": 3
+        },
+        {
+          "name": "KEYFRAME_POSITIONS",
+          "type": "SPARSE_METHOD",
+          "links": [
+            1018
+          ],
+          "shape": 3,
+          "slot_index": 4
+        },
+        {
+          "name": "BATCH_SIZE",
+          "type": "INT",
+          "links": [
+            1019
+          ],
+          "shape": 3,
+          "slot_index": 5
+        },
+        {
+          "name": "SPARSECTRL_END_PERCENT",
+          "type": "FLOAT",
+          "links": [],
+          "shape": 3,
+          "slot_index": 6
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "BatchCreativeInterpolation"
+      },
+      "widgets_values": [
+        "linear",
+        16,
+        "0,16,59",
+        "linear",
+        "0.9",
+        "1.0,1.0,1.0",
+        "linear",
+        "(0.0,0.9)",
+        "(0.3,0.4),(0.3,0.4)",
+        4,
+        true
+      ]
+    },
+    {
+      "id": 588,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 1797,
+        "1": -126,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        225.10308532719569,
+        164.3865546328808
+      ],
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "What else could you add to this workflow or node to do weird or interesting stuff? 🤔\n<br>\n<br>\nCome join us in [our Discord](https://discord.gg/UJf6aum7WZ) if you have something interesting.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 611,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 4487,
+        "1": -310,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        210,
+        109.56225473628581
+      ],
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "Make something amazing? Share it in the #art_sharing channel of [our Discord](https://discord.gg/UJf6aum7WZ).",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 445,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -2833,
+        "1": -1446,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        644.6599833578948,
+        1043.3939878941435
+      ],
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "# A brief guide\n\n<br>\n\n## Philosophy for getting the most from this:\n\n<br>\n\nThis isn’t a tool like text to video that will perform well out of the box - it’s more like a paint brush, an artistic tool that you need to figure out how to get the best from. \n\n<br>\n\nThrough trial and error, you'll need to build an understanding of how the motion and settings work, what its limitations are, which inputs work best with it, etc.\n\n<br>\n\nIf you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.\n\n<br>\n\n## How to use this:\n<br> \n1.Input the images that you want to use. The most important thing that will influence the quality and coherence of your creation is the input images.\n\n<br> \n\n2.Try the basic settings to start. Based on the resulting generation, try to understand what happened - you can learn about the settings and observe the graphs to the right.\n\n<br>\n\n3.Tweak the settings until you achieve your desired effect. \n\n<br>\n\n## What this will &amp; won't be suitable for:\n<br>\nI believe that this will be good for a wide range of storytelling-driven and abstract motion.\n<br>\n<br>\nHowever, it probably won't be good for realistic motion - other approaches like vid2vid are far more suitable for this.\n<br>\n<br>\n## If you're having problems:\n\n\n<br>\n\nFirst, download the latest version of this workflow from [here](https://raw.githubusercontent.com/peteromallet/steerable-motion/main/demo/creative_interpolation_example.json) and get the latest version of the node from Comfy Manager.\n\n<br>\n\nIf that doesn't work, drop into [our Discord](https://discord.gg/V72vk8T67n) and share your problem and I'll try to help ASAP.\n\n<br>\n\n\n## Want to join a community of people who are pushing open source models to their technical and artistic limits?\n\n<br>\n\nYou're welcome to join [our Discord](https://discord.gg/UJf6aum7WZ).\n\n<br>\n\nPlease share anything you generate in the steerable-motion channel.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
+    },
+    {
+      "id": 467,
+      "type": "ACN_SparseCtrlLoaderAdvanced",
+      "pos": [
+        1818,
+        -1021
+      ],
+      "size": {
+        "0": 252,
+        "1": 150
+      },
+      "flags": {},
+      "order": 55,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "sparse_method",
+          "type": "SPARSE_METHOD",
+          "link": 1018,
+          "slot_index": 0
+        },
+        {
+          "name": "tk_optional",
+          "type": "TIMESTEP_KEYFRAME",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "CONTROL_NET",
+          "type": "CONTROL_NET",
+          "links": [
+            879
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ACN_SparseCtrlLoaderAdvanced"
+      },
+      "widgets_values": [
+        "v3_sd15_sparsectrl_rgb.ckpt",
+        true,
+        1.04,
+        1
       ]
     },
     {
       "id": 469,
       "type": "ACN_SparseCtrlRGBPreprocessor",
       "pos": [
-        1926,
-        -808
+        1837,
+        -755
       ],
       "size": {
         "0": 312.9380187988281,
         "1": 66
       },
       "flags": {},
-      "order": 58,
+      "order": 59,
       "mode": 0,
       "inputs": [
         {
@@ -3213,6 +3182,41 @@
       "properties": {
         "Node name for S&R": "ACN_SparseCtrlRGBPreprocessor"
       }
+    },
+    {
+      "id": 610,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": 2111,
+        "1": -1110,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": [
+        273.7473192106654,
+        263.6470368414382
+      ],
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "title": "Note+ (mtb)",
+      "properties": {},
+      "widgets_values": [
+        "## Tweak Sparse Ctrl end_percent to improve adherence  ⮕\n<br>\n Though the motion tends to be smoother on lower settings, increasing `end_steps` with improve adherence to the input images. Increasing it above 0.6 tends to cause issues.",
+        "markdown",
+        ""
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
     }
   ],
   "links": [
@@ -3231,38 +3235,6 @@
       468,
       2,
       "CONTROL_NET"
-    ],
-    [
-      893,
-      461,
-      1,
-      470,
-      1,
-      "CLIP"
-    ],
-    [
-      896,
-      461,
-      0,
-      470,
-      0,
-      "MODEL"
-    ],
-    [
-      994,
-      470,
-      1,
-      541,
-      0,
-      "CLIP"
-    ],
-    [
-      996,
-      470,
-      1,
-      543,
-      0,
-      "CLIP"
     ],
     [
       998,
@@ -3561,14 +3533,6 @@
       "IMAGE"
     ],
     [
-      1066,
-      470,
-      0,
-      581,
-      0,
-      "MODEL"
-    ],
-    [
       1068,
       561,
       0,
@@ -3729,12 +3693,28 @@
       "*"
     ],
     [
-      1105,
-      558,
-      6,
-      468,
-      9,
-      "FLOAT"
+      1106,
+      461,
+      1,
+      541,
+      0,
+      "CLIP"
+    ],
+    [
+      1107,
+      461,
+      0,
+      581,
+      0,
+      "MODEL"
+    ],
+    [
+      1108,
+      461,
+      1,
+      543,
+      0,
+      "CLIP"
     ]
   ],
   "groups": [
