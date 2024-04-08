@@ -37,7 +37,8 @@ class BatchCreativeInterpolationNode:
                 "linear_strength_value": ("STRING", {"multiline": False, "default": "(0.3,0.4)"}),
                 "dynamic_strength_values": ("STRING", {"multiline": True, "default": "(0.0,1.0),(0.0,1.0),(0.0,1.0),(0.0,1.0)"}),                                                                                                                                            
                 "buffer": ("INT", {"default": 4, "min": 1, "max": 16, "step": 1}),       
-                "high_detail_mode": ("BOOLEAN", {"default": True}),                                                                                     
+                "high_detail_mode": ("BOOLEAN", {"default": True}),
+                "input_image_adherence": ("FLOAT", {"default": 0.4, "min": 0.0, "max": 1.0, "step": 0.01}),                                                                            
             },
             "optional": {
                 "base_ipa_advanced_settings": ("ADVANCED_IPA_SETTINGS",),
@@ -45,8 +46,8 @@ class BatchCreativeInterpolationNode:
             }
         }
 
-    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT")    
-    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "FLOAT")
+    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "SPARSECTRL_END_PERCENT")
     FUNCTION = "combined_function"
 
     CATEGORY = "Steerable-Motion"
@@ -56,7 +57,8 @@ class BatchCreativeInterpolationNode:
                           type_of_key_frame_influence,linear_key_frame_influence_value,
                           dynamic_key_frame_influence_values,type_of_strength_distribution,
                           linear_strength_value,dynamic_strength_values,
-                          buffer, high_detail_mode,base_ipa_advanced_settings=None,detail_ipa_advanced_settings=None):
+                          buffer, high_detail_mode,input_image_adherence, 
+                          base_ipa_advanced_settings=None,detail_ipa_advanced_settings=None):
                 
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
@@ -104,18 +106,20 @@ class BatchCreativeInterpolationNode:
             ipadapter_weights = ipadapter_weights if ipadapter_weights is not None else []
 
             max_length = max(len(cn_frame_numbers), len(ipadapter_frame_numbers))
-            label_counter = 1 if buffer < 0 else 0
             for i in range(max_length):
                 if i < len(cn_frame_numbers):
-                    label = 'cn_strength_buffer' if (i == 0 and buffer > 0) else f'cn_strength_{label_counter}'
+                    if buffer > 0:
+                        label = 'starting_buffer' if i == 0 else ('ending_buffer' if i == len(cn_frame_numbers)-1 else f'cn_strength_{i}')
+                    else:
+                        label = f'cn_strength_{i}'
                     plt.plot(cn_frame_numbers[i], cn_weights[i], marker='o', color=colors[i % len(colors)], label=label)
 
                 if i < len(ipadapter_frame_numbers):
-                    label = 'ipa_strength_buffer' if (i == 0 and buffer > 0) else f'ipa_strength_{label_counter}'
+                    if buffer > 0:
+                        label = 'starting_buffer' if i == 0 else ('ending_buffer' if i == len(ipadapter_frame_numbers)-1 else f'image_{i}')
+                    else:
+                        label = f'ipa_strength_{i}'
                     plt.plot(ipadapter_frame_numbers[i], ipadapter_weights[i], marker='x', linestyle='--', color=colors[i % len(colors)], label=label)
-
-                if label_counter == 0 or buffer < 0 or i > 0:
-                    label_counter += 1
 
             plt.legend()
 
@@ -134,8 +138,7 @@ class BatchCreativeInterpolationNode:
             img_tensor = img_tensor.unsqueeze(0)
             img_tensor = img_tensor.permute([0, 2, 3, 1])
 
-            return img_tensor,                    
-        
+            return img_tensor,
         def extract_strength_values(type_of_key_frame_influence, dynamic_key_frame_influence_values, keyframe_positions, linear_key_frame_influence_value):
 
             if type_of_key_frame_influence == "dynamic":
@@ -467,7 +470,9 @@ class BatchCreativeInterpolationNode:
         
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
 
-        return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position
+        sparsectrl_end_percent = input_image_adherence / 1.4
+
+        return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, sparsectrl_end_percent
 
 class IpaConfigurationNode:
     WEIGHT_TYPES = ["linear", "ease in", "ease out", 'ease in-out', 'reverse in-out', 'weak input', 'weak output', 'weak middle', 'strong middle']
