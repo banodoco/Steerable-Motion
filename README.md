@@ -7,9 +7,8 @@ Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is
 ## Installation
 
 1. If you haven't already, install [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Comfy Manager](https://github.com/ltdrdata/ComfyUI-Manager) - you can find instructions on their pages.
-2. Search "Steerable Motion" in Comfy Manager and download the node.
-3. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI.
-4. When the workflow opens, download the dependent nodes by pressing "Install Missing Custom Nodes" in Comfy Manager. Search and download the required models from Comfy Manager also - make sure that the models you download have the same name as the ones in the workflow - or you're confident that they're the same.
+2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI.
+3. When the workflow opens, download the dependent nodes by pressing "Install Missing Custom Nodes" in Comfy Manager. Search and download the required models from Comfy Manager also - make sure that the models you download have the same name as the ones in the workflow - or you're confident that they're the same.
 
 ## Usage
 
@@ -38,11 +37,11 @@ It won't work for everything but if you can figure out how to wield it, this app
 
 I believe that that are endless ways to expand upon and extend the ideas in this node.
 
-For example, you can use Ostiris' composition IPA to provide additional structure to the generation:
+In an example included in the workflow, you can use [Ostris' Composition IPA](https://huggingface.co/ostris/ip-composition-adapter) to provide  structure to the generation:
 
 ![IPA Structure](https://github.com/banodoco/steerable-motion/blob/main/demo/ipa_structure.gif)
 
-Additionally, in [this example by Superbeasts.ai](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json), you can see how he uses depth maps to create a smoother motion effect.
+Additionally, in [this example by Superbeasts.ai](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json), you can see how he uses depth maps to control the motion in different layers to create a smoother motion effect. There are endless possibilities!
 
 
 ## Want to give feedback, or join a community who are pushing open source models to their artistic and technical limits?
