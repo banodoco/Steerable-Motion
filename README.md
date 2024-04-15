@@ -1,10 +1,10 @@
 # Steerable Motion, a ComfyUI custom node for steering videos with batches of images
 
-Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is to feature the best quality and most precise and powerful methods for steering motion with images as video models evolve.	This node is best used via [Dough](https://github.com/banodoco/dough) - a creative tool which simplifies the settings and provides a nice creative flow.
+Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is to feature the best quality and most precise and powerful methods for steering motion with images as video models evolve.	This node is best used via [Dough](https://github.com/banodoco/dough) - a creative tool which simplifies the settings and provides a nice creative flow - or in Discord - by joining this channel.
 
 ![Main example](https://github.com/banodoco/steerable-motion/blob/main/demo/main_example.gif)
 
-## Installation
+## Installation in Comfy
 
 1. If you haven't already, install [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Comfy Manager](https://github.com/ltdrdata/ComfyUI-Manager) - you can find instructions on their pages.
 2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI.
