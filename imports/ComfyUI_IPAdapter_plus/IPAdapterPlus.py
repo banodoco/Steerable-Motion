@@ -597,7 +597,7 @@ class IPAdapterSimple:
 
         return (ipadapter_execute(model.clone(), ipadapter['ipadapter']['model'], ipadapter['clipvision']['model'], **ipa_args), )
 
-class IPAdapterAdvanced:
+class IPAdapterAdvancedImport:
     def __init__(self):
         self.unfold_batch = False
 
@@ -672,7 +672,7 @@ class IPAdapterAdvanced:
 
         return (ipadapter_execute(model.clone(), ipadapter_model, clip_vision, **ipa_args), )
 
-class IPAdapterBatch(IPAdapterAdvanced):
+class IPAdapterBatch(IPAdapterAdvancedImport):
     def __init__(self):
         self.unfold_batch = True
 
@@ -696,7 +696,7 @@ class IPAdapterBatch(IPAdapterAdvanced):
             }
         }
 
-class IPAdapterStyleComposition(IPAdapterAdvanced):
+class IPAdapterStyleComposition(IPAdapterAdvancedImport):
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -748,7 +748,7 @@ class IPAdapterStyleCompositionBatch(IPAdapterStyleComposition):
             }
         }
 
-class IPAdapterFaceID(IPAdapterAdvanced):
+class IPAdapterFaceID(IPAdapterAdvancedImport):
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -778,7 +778,7 @@ class IPAAdapterFaceIDBatch(IPAdapterFaceID):
     def __init__(self):
         self.unfold_batch = True
 
-class IPAdapterTiled:
+class IPAdapterTiledImport:
     def __init__(self):
         self.unfold_batch = False
 
@@ -913,7 +913,7 @@ class IPAdapterTiled:
 
         return (model, torch.cat(tiles), torch.cat(masks), )
 
-class IPAdapterTiledBatch(IPAdapterTiled):
+class IPAdapterTiledBatch(IPAdapterTiledImport):
     def __init__(self):
         self.unfold_batch = True
 
@@ -989,7 +989,7 @@ class IPAdapterEmbeds:
 
         return (ipadapter_execute(model.clone(), ipadapter_model, clip_vision, **ipa_args), )
 
-class IPAdapterMS(IPAdapterAdvanced):
+class IPAdapterMS(IPAdapterAdvancedImport):
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -1119,7 +1119,7 @@ class IPAdapterCombineEmbeds:
 
         return (embeds, )
 
-class IPAdapterNoise:
+class IPAdapterNoiseImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -1180,7 +1180,7 @@ class IPAdapterNoise:
 
         return (noise, )
 
-class PrepImageForClipVision:
+class PrepImageForClipVisionImport:
     @classmethod
     def INPUT_TYPES(s):
         return {"required": {
@@ -1345,70 +1345,3 @@ class IPAdapterWeights:
             weights = [0.0]
 
         return (weights, )
-
-"""
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- Register
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-"""
-NODE_CLASS_MAPPINGS = {
-    # Main Apply Nodes
-    "IPAdapter": IPAdapterSimple,
-    "IPAdapterAdvanced": IPAdapterAdvanced,
-    "IPAdapterBatch": IPAdapterBatch,
-    "IPAdapterFaceID": IPAdapterFaceID,
-    "IPAAdapterFaceIDBatch": IPAAdapterFaceIDBatch,
-    "IPAdapterTiled": IPAdapterTiled,
-    "IPAdapterTiledBatch": IPAdapterTiledBatch,
-    "IPAdapterEmbeds": IPAdapterEmbeds,
-    "IPAdapterStyleComposition": IPAdapterStyleComposition,
-    "IPAdapterStyleCompositionBatch": IPAdapterStyleCompositionBatch,
-    "IPAdapterMS": IPAdapterMS,
-
-    # Loaders
-    "IPAdapterUnifiedLoader": IPAdapterUnifiedLoader,
-    "IPAdapterUnifiedLoaderFaceID": IPAdapterUnifiedLoaderFaceID,
-    "IPAdapterModelLoader": IPAdapterModelLoader,
-    "IPAdapterInsightFaceLoader": IPAdapterInsightFaceLoader,
-    "IPAdapterUnifiedLoaderCommunity": IPAdapterUnifiedLoaderCommunity,
-
-    # Helpers
-    "IPAdapterEncoder": IPAdapterEncoder,
-    "IPAdapterCombineEmbeds": IPAdapterCombineEmbeds,
-    "IPAdapterNoise": IPAdapterNoise,
-    "PrepImageForClipVision": PrepImageForClipVision,
-    "IPAdapterSaveEmbeds": IPAdapterSaveEmbeds,
-    "IPAdapterLoadEmbeds": IPAdapterLoadEmbeds,
-    "IPAdapterWeights": IPAdapterWeights,
-}
-
-NODE_DISPLAY_NAME_MAPPINGS = {
-    # Main Apply Nodes
-    "IPAdapter": "IPAdapter",
-    "IPAdapterAdvanced": "IPAdapter Advanced",
-    "IPAdapterBatch": "IPAdapter Batch (Adv.)",
-    "IPAdapterFaceID": "IPAdapter FaceID",
-    "IPAAdapterFaceIDBatch": "IPAdapter FaceID Batch",
-    "IPAdapterTiled": "IPAdapter Tiled",
-    "IPAdapterTiledBatch": "IPAdapter Tiled Batch",
-    "IPAdapterEmbeds": "IPAdapter Embeds",
-    "IPAdapterStyleComposition": "IPAdapter Style & Composition SDXL",
-    "IPAdapterStyleCompositionBatch": "IPAdapter Style & Composition Batch SDXL",
-    "IPAdapterMS": "IPAdapter Mad Scientist",
-
-    # Loaders
-    "IPAdapterUnifiedLoader": "IPAdapter Unified Loader",
-    "IPAdapterUnifiedLoaderFaceID": "IPAdapter Unified Loader FaceID",
-    "IPAdapterModelLoader": "IPAdapter Model Loader",
-    "IPAdapterInsightFaceLoader": "IPAdapter InsightFace Loader",
-    "IPAdapterUnifiedLoaderCommunity": "IPAdapter Unified Loader Community",
-
-    # Helpers
-    "IPAdapterEncoder": "IPAdapter Encoder",
-    "IPAdapterCombineEmbeds": "IPAdapter Combine Embeds",
-    "IPAdapterNoise": "IPAdapter Noise",
-    "PrepImageForClipVision": "Prep Image For ClipVision",
-    "IPAdapterSaveEmbeds": "IPAdapter Save Embeds",
-    "IPAdapterLoadEmbeds": "IPAdapter Load Embeds",
-    "IPAdapterWeights": "IPAdapter Weights",
-}
