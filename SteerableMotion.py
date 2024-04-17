@@ -52,11 +52,12 @@ class BatchCreativeInterpolationNode:
     CATEGORY = "Steerable-Motion"
 
     def combined_function(self,positive,negative,images,model,ipadapter,clip_vision,
-                          type_of_frame_distribution,linear_frame_distribution_value, dynamic_frame_distribution_values, 
-                          type_of_key_frame_influence,linear_key_frame_influence_value,
+                          type_of_frame_distribution,linear_frame_distribution_value, 
+                          dynamic_frame_distribution_values, type_of_key_frame_influence,linear_key_frame_influence_value,
                           dynamic_key_frame_influence_values,type_of_strength_distribution,
                           linear_strength_value,dynamic_strength_values,
-                          buffer, high_detail_mode,base_ipa_advanced_settings=None,detail_ipa_advanced_settings=None):
+                          buffer, high_detail_mode,base_ipa_advanced_settings=None,
+                          detail_ipa_advanced_settings=None):
                 
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
@@ -462,7 +463,7 @@ class BatchCreativeInterpolationNode:
                 frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
-            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
+            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, base_ipa_advanced_settings["ipa_weight"])    
 
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
@@ -480,7 +481,7 @@ class BatchCreativeInterpolationNode:
                 negative_noise = None
 
             ipadapter_application = IPAdapterBatchImport()
-            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=prepped_image, weight=weight_batch*base_ipa_advanced_settings["ipa_weight"], weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"])                
+            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=prepped_image, weight=weight_batch, weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"])                
 
             if high_detail_mode:
                 if detail_ipa_advanced_settings["ipa_noise_strength"] > 0:
@@ -494,7 +495,7 @@ class BatchCreativeInterpolationNode:
                     negative_noise = None
         
                 tiled_ipa_application = IPAdapterTiledBatchImport()
-                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=weight_batch*base_ipa_advanced_settings["ipa_weight"], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"])
+                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=weight_batch, weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"])
 
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
