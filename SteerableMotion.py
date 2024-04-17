@@ -8,7 +8,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import matplotlib.pyplot as plt
 # Local application/library specific imports
-from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
+from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
 
@@ -99,6 +99,21 @@ class BatchCreativeInterpolationNode:
             masks_tensor = torch.stack(masks, dim=0)
 
             return masks_tensor
+        
+        def create_weight_batch(last_key_frame_position, weights, frames):
+
+            # Map frames to their corresponding reversed weights for easy lookup
+            frame_to_weight = {frame: weights[i] for i, frame in enumerate(frames)}
+
+            # Create weights for each frame up to last_key_frame_position
+            weights = []
+            for frame_number in range(last_key_frame_position):
+                # Determine the strength of the weight
+                strength = frame_to_weight.get(frame_number, 0.0)
+
+                weights.append(strength)
+
+            return weights
 
         def plot_weight_comparison(cn_frame_numbers, cn_weights, ipadapter_frame_numbers, ipadapter_weights, buffer):
             plt.figure(figsize=(12, 8))
@@ -452,7 +467,7 @@ class BatchCreativeInterpolationNode:
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
                                         
-            mask = create_mask_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)       
+            weight_batch = create_weight_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)
 
             if base_ipa_advanced_settings["ipa_noise_strength"] > 0:
                 if base_ipa_advanced_settings["use_image_for_noise"]:
@@ -464,8 +479,8 @@ class BatchCreativeInterpolationNode:
             else:
                 negative_noise = None
 
-            ipadapter_application = IPAdapterAdvancedImport()
-            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=prepped_image, weight=base_ipa_advanced_settings["ipa_weight"], weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision, attn_mask=mask,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"])                
+            ipadapter_application = IPAdapterBatchImport()
+            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=prepped_image, weight=weight_batch*base_ipa_advanced_settings["ipa_weight"], weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"])                
 
             if high_detail_mode:
                 if detail_ipa_advanced_settings["ipa_noise_strength"] > 0:
@@ -478,8 +493,8 @@ class BatchCreativeInterpolationNode:
                 else:
                     negative_noise = None
         
-                tiled_ipa_application = IPAdapterTiledImport()
-                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=detail_ipa_advanced_settings["ipa_weight"], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision, attn_mask=mask,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"])
+                tiled_ipa_application = IPAdapterTiledBatchImport()
+                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=image.unsqueeze(0), weight=weight_batch*base_ipa_advanced_settings["ipa_weight"], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"])
 
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
