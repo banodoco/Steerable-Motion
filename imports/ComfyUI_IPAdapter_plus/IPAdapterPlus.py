@@ -672,7 +672,7 @@ class IPAdapterAdvancedImport:
 
         return (ipadapter_execute(model.clone(), ipadapter_model, clip_vision, **ipa_args), )
 
-class IPAdapterBatch(IPAdapterAdvancedImport):
+class IPAdapterBatchImport(IPAdapterAdvancedImport):
     def __init__(self):
         self.unfold_batch = True
 
@@ -913,7 +913,7 @@ class IPAdapterTiledImport:
 
         return (model, torch.cat(tiles), torch.cat(masks), )
 
-class IPAdapterTiledBatch(IPAdapterTiledImport):
+class IPAdapterTiledBatchImport(IPAdapterTiledImport):
     def __init__(self):
         self.unfold_batch = True
 
