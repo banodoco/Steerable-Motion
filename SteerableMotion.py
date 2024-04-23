@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 # Local application/library specific imports
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
+import gc
 
 
 class BatchCreativeInterpolationNode:
@@ -379,10 +380,11 @@ class BatchCreativeInterpolationNode:
             keyframe_position = keyframe_positions[i]                                    
             interpolation = "ease-in-out"
             # strength_from = strength_to = 1.0
-                                        
+            image_index = 0    
             if i == 0: # buffer                
                 
                 image = images[0]
+                image_index = 0
                 strength_from = strength_to = strength_values[0][1]                    
 
                 batch_index_from = 0
@@ -393,6 +395,7 @@ class BatchCreativeInterpolationNode:
 
                 # GET IMAGE AND KEYFRAME INFLUENCE VALUES              
                 image = images[i-1]                
+                image_index = i-1
                 key_frame_influence_from, key_frame_influence_to = key_frame_influence_values[i-1]
                 start_strength, mid_strength, end_strength = strength_values[i-1]
                                 
@@ -408,6 +411,7 @@ class BatchCreativeInterpolationNode:
 
                 # GET IMAGE AND KEYFRAME INFLUENCE VALUES
                 image = images[i-1]
+                image_index = i - 1
                 key_frame_influence_from,key_frame_influence_to = key_frame_influence_values[i-1]       
                 start_strength, mid_strength, end_strength = strength_values[i-1]
                 if len(keyframe_positions) == 4:
@@ -426,6 +430,7 @@ class BatchCreativeInterpolationNode:
             elif i == len(keyframe_positions) - 1: # buffer
 
                 image = images[i-2]
+                image_index = i - 2
                 strength_from = strength_to = strength_values[i-2][1]
 
                 if len(keyframe_positions) == 4:
@@ -440,7 +445,8 @@ class BatchCreativeInterpolationNode:
             else:  # middle images
 
                 # GET IMAGE AND KEYFRAME INFLUENCE VALUES
-                image = images[i-1]   
+                image = images[i-1]
+                image_index = i - 1   
                 key_frame_influence_from,key_frame_influence_to = key_frame_influence_values[i-1]             
                 start_strength, mid_strength, end_strength = strength_values[i-1]
                 keyframe_position = keyframe_positions[i]
@@ -463,6 +469,69 @@ class BatchCreativeInterpolationNode:
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
             ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
+
+            print(f'i {i} image index {image_index} ====')
+            # print(f"frame numbers {frame_numbers}")
+            # print(f"weights {weights}")
+            print(f"frame numbers {ipa_frame_numbers}")
+            print(f"weights {ipa_weights}")
+            print("------")
+
+            # class IPBin:
+                
+            #     def __init__(self):
+            #         self.indicies = []
+            #         self.image_schedule = []
+            #         self.weight_schedule = []
+            #         self.imageBatch = []
+
+            #     def length(self):
+            #         return len(self.indicies)
+                
+            #     def add(self, image, image_index, frame_numbers, weights):
+            #         # Search for image index, if it isn't there add the image
+            #         try:
+            #             index = self.indicies.index(image_index)
+            #         except ValueError:
+            #             self.imageBatch.append(image)
+            #             self.indicies.append(image_index)
+            #             index = len(self.indicies) - 1
+            #         self.image_schedule.extend([index] * (frame_numbers[-1] - len(self.image_schedule)))
+            #         self.weight_schedule.extend([0] * (frame_numbers[0] - len(self.weight_schedule)))
+            #         self.weight_schedule.extend(weights)
+        
+
+            # # Start with one bin
+            # bins = [IPBin()]
+            # active_index = -1
+            # # Find a bin that we can fit the next image into
+            # for i, bin in bins:
+            #     if bin.length() <= ipa_frame_numbers[0]:
+            #         active_index = i
+            #         break1
+            # # If we didn't find a suitable bin, add a new one
+            # if active_index == -1:
+            #     bins.append(IPBin())
+            #     active_index = len(bins) - 1
+            
+            # bins[active_index].add(image, image_index, ipa_frame_numbers, ipa_weights)
+
+            # active_image_schedule = image_schedule_1
+            # # Choose active image_schedule
+            # if len(image_schedule_1) == 0 or image_index == image_indicies_1[-1]:
+            #     active_image_schedule = image_schedule_1
+            # elif image_index == image_schedule_2[-1]:
+            #     active_image_schedule = image_schedule_2
+            # elif ipa_frame_numbers[0] >= len(image_schedule_1):
+            #     active_image_schedule = image_schedule_1
+            # elif ipa_frame_numbers[0] >= len(image_schedule_2):
+            #     active_image_schedule = image_schedule_2
+            # else: 
+            #     raise ValueError("This shouldn't happen!")
+            # # Fill the gaps
+
+            # # Add image and weights
+
 
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)

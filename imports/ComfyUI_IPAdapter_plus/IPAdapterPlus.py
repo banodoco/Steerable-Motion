@@ -191,8 +191,12 @@ def ipadapter_execute(model,
     if image is not None and image.shape[1] != image.shape[2]:
         print("\033[33mINFO: the IPAdapter reference image is not a square, CLIPImageProcessor will resize and crop it at the center. If the main focus of the picture is not in the middle the result might not be what you are expecting.\033[0m")
 
-    if isinstance(weight, list):
-        weight = torch.tensor(weight).unsqueeze(-1).unsqueeze(-1).to(device, dtype=dtype) if unfold_batch else weight[0]           
+    weight = [1, 2, 6, 7, 3, 4]
+    if isinstance(weight, list) and isinstance(weight[0], list):
+        weight = [torch.tensor(w).unsqueeze(-1).unsqueeze(-1).to(device, dtype=dtype) for w in weight]
+    elif isinstance(weight, list):
+        weight = torch.tensor(weight).unsqueeze(-1).unsqueeze(-1).to(device, dtype=dtype) if unfold_batch else weight[0]
+    print(weight)
 
     # special weight types
     if layer_weights is not None and layer_weights != '':
