@@ -374,11 +374,13 @@ class BatchCreativeInterpolationNode:
                 self.weight_schedule = []
                 self.imageBatch = []
                 self.bigImageBatch = []
+                self.noiseBatch = []
+                self.bigNoiseBatch = []
 
             def length(self):
                 return len(self.image_schedule)
             
-            def add(self, image, big_image, image_index, frame_numbers, weights, general_weight):
+            def add(self, image, big_image, noise, big_noise, image_index, frame_numbers, weights):
                 # Map frames to their corresponding reversed weights for easy lookup
                 frame_to_weight = {frame: weights[i] for i, frame in enumerate(frame_numbers)}
                 # Search for image index, if it isn't there add the image
@@ -387,12 +389,14 @@ class BatchCreativeInterpolationNode:
                 except ValueError:
                     self.imageBatch.append(image)
                     self.bigImageBatch.append(big_image)
+                    if noise is not None: self.noiseBatch.append(noise) 
+                    if big_noise is not None: self.bigNoiseBatch.append(big_noise)
                     self.indicies.append(image_index)
                     index = self.indicies.index(image_index)
                 
                 self.image_schedule.extend([index] * (frame_numbers[-1] + 1 - len(self.image_schedule)))
                 self.weight_schedule.extend([0] * (frame_numbers[0] - len(self.weight_schedule)))
-                self.weight_schedule.extend(general_weight * frame_to_weight[frame] for frame in range(frame_numbers[0], frame_numbers[-1] + 1))
+                self.weight_schedule.extend(frame_to_weight[frame] for frame in range(frame_numbers[0], frame_numbers[-1] + 1))
 
         # CREATE LISTS FOR WEIGHTS AND FRAME NUMBERS
         all_cn_frame_numbers = []
@@ -506,6 +510,26 @@ class BatchCreativeInterpolationNode:
 
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
+            
+            if base_ipa_advanced_settings["ipa_noise_strength"] > 0:
+                if base_ipa_advanced_settings["use_image_for_noise"]:
+                    noise_image = prepped_image
+                else:
+                    noise_image = None
+                ipa_noise = IPAdapterNoiseImport()
+                negative_noise, = ipa_noise.make_noise(type=base_ipa_advanced_settings["type_of_noise"], strength=base_ipa_advanced_settings["ipa_noise_strength"], blur=base_ipa_advanced_settings["noise_blur"], image_optional=noise_image)
+            else:
+                negative_noise = None
+
+            if high_detail_mode and detail_ipa_advanced_settings["ipa_noise_strength"] > 0:
+                if detail_ipa_advanced_settings["use_image_for_noise"]:
+                    noise_image = image.unsqueeze(0)
+                else:
+                    noise_image = None
+                ipa_noise = IPAdapterNoiseImport()
+                big_negative_noise, = ipa_noise.make_noise(type=detail_ipa_advanced_settings["type_of_noise"], strength=detail_ipa_advanced_settings["ipa_noise_strength"], blur=detail_ipa_advanced_settings["noise_blur"], image_optional=noise_image)                    
+            else:
+                big_negative_noise = None
 
             active_index = -1
             # Find a bin that we can fit the next image into
@@ -518,51 +542,26 @@ class BatchCreativeInterpolationNode:
                 bins.append(IPBin())
                 active_index = len(bins) - 1
             # Add the image to the bin
-            bins[active_index].add(prepped_image, image.unsqueeze(0), image_index, ipa_frame_numbers, ipa_weights, base_ipa_advanced_settings["ipa_weight"])
+            bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
 
             for i, bin in enumerate(bins):
                 print(f"{i} schedule {bin.image_schedule}")
                 print(f"{i} weights  {bin.weight_schedule}")
                 i += 1
                             
-            # weight_batch = create_weight_batch(last_key_frame_position, ipa_weights, ipa_frame_numbers)
-            # print(f"weight batch {weight_batch}")
-
-            
-
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
         
-        # if base_ipa_advanced_settings["ipa_noise_strength"] > 0:
-        #         if base_ipa_advanced_settings["use_image_for_noise"]:
-        #             noise_image = prepped_image
-        #         else:
-        #             noise_image = None
-        #         ipa_noise = IPAdapterNoiseImport()
-        #         negative_noise, = ipa_noise.make_noise(type=base_ipa_advanced_settings["type_of_noise"], strength=base_ipa_advanced_settings["ipa_noise_strength"], blur=base_ipa_advanced_settings["noise_blur"], image_optional=noise_image)
-        # else:
-        #     negative_noise = None
-        negative_noise = None
         for i, bin in enumerate(bins):
             ipadapter_application = IPAdapterBatchImport()
-            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=torch.cat(bin.imageBatch, dim=0), weight=bin.weight_schedule, weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"], image_schedule=bin.image_schedule)                
-
-        if high_detail_mode:
-            # if detail_ipa_advanced_settings["ipa_noise_strength"] > 0:
-            #     if detail_ipa_advanced_settings["use_image_for_noise"]:
-            #         noise_image = image.unsqueeze(0)
-            #     else:
-            #         noise_image = None
-            #     ipa_noise = IPAdapterNoiseImport()
-            #     negative_noise, = ipa_noise.make_noise(type=detail_ipa_advanced_settings["type_of_noise"], strength=detail_ipa_advanced_settings["ipa_noise_strength"], blur=detail_ipa_advanced_settings["noise_blur"], image_optional=noise_image)                    
-            # else:
-            #     negative_noise = None
-            negative_noise = None
-            tiled_ipa_application = IPAdapterTiledBatchImport()
-            model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=torch.cat(bin.bigImageBatch, dim=0), weight=bin.weight_schedule, weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"], image_schedule=bin.image_schedule)
+            negative_noise = torch.cat(bin.noiseBatch, dim=0) if len(bin.noiseBatch) > 0 else None
+            model, = ipadapter_application.apply_ipadapter(model=model, ipadapter=ipadapter, image=torch.cat(bin.imageBatch, dim=0), weight=[x * base_ipa_advanced_settings["ipa_weight"] for x in bin.weight_schedule], weight_type=base_ipa_advanced_settings["ipa_weight_type"], start_at=base_ipa_advanced_settings["ipa_starts_at"], end_at=base_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,image_negative=negative_noise,embeds_scaling=base_ipa_advanced_settings["ipa_embeds_scaling"], image_schedule=bin.image_schedule)                
+            if high_detail_mode:
+                tiled_ipa_application = IPAdapterTiledBatchImport()
+                negative_noise = torch.cat(bin.bigNoiseBatch, dim=0) if len(bin.bigNoiseBatch) > 0 else None
+                model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=torch.cat(bin.bigImageBatch, dim=0), weight=[x * detail_ipa_advanced_settings["ipa_weight"] for x in bin.weight_schedule], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"], image_schedule=bin.image_schedule)
 
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
-
         return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, buffer
 
 class IpaConfigurationNode:
