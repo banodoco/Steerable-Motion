@@ -820,7 +820,7 @@ class IPAdapterTiledImport:
     FUNCTION = "apply_tiled"
     CATEGORY = "ipadapter/tiled"
 
-    def apply_tiled(self, model, ipadapter, image, weight, weight_type, start_at, end_at, sharpening, combine_embeds="concat", image_negative=None, attn_mask=None, clip_vision=None, embeds_scaling='V only'):
+    def apply_tiled(self, model, ipadapter, image, weight, weight_type, start_at, end_at, sharpening, combine_embeds="concat", image_negative=None, attn_mask=None, clip_vision=None, embeds_scaling='V only', image_schedule=None):
         # 1. Select the models
         if 'ipadapter' in ipadapter:
             ipadapter_model = ipadapter['ipadapter']['model']
@@ -918,7 +918,9 @@ class IPAdapterTiledImport:
                 "attn_mask": masks[i],
                 "unfold_batch": self.unfold_batch,
                 "embeds_scaling": embeds_scaling,
+                "image_schedule": image_schedule,
             }
+            
             # apply the ipadapter to the model without cloning it
             model = ipadapter_execute(model, ipadapter_model, clip_vision, **ipa_args)
 
