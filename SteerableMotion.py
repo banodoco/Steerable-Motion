@@ -51,11 +51,12 @@ class BatchCreativeInterpolationNode:
     CATEGORY = "Steerable-Motion"
 
     def combined_function(self,positive,negative,images,model,ipadapter,clip_vision,
-                          type_of_frame_distribution,linear_frame_distribution_value, dynamic_frame_distribution_values, 
-                          type_of_key_frame_influence,linear_key_frame_influence_value,
+                          type_of_frame_distribution,linear_frame_distribution_value, 
+                          dynamic_frame_distribution_values, type_of_key_frame_influence,linear_key_frame_influence_value,
                           dynamic_key_frame_influence_values,type_of_strength_distribution,
                           linear_strength_value,dynamic_strength_values,
-                          buffer, high_detail_mode,base_ipa_advanced_settings=None,detail_ipa_advanced_settings=None):
+                          buffer, high_detail_mode,base_ipa_advanced_settings=None,
+                          detail_ipa_advanced_settings=None):
                 
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
@@ -499,7 +500,7 @@ class BatchCreativeInterpolationNode:
                 frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
-            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
+            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, base_ipa_advanced_settings["ipa_weight"])    
 
             print(f'i {i} image index {image_index} ====')
             # print(f"frame numbers {frame_numbers}")
