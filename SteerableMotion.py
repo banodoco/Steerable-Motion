@@ -508,6 +508,7 @@ class BatchCreativeInterpolationNode:
             print(f"weights {ipa_weights}")
             print("------")
 
+            # Prepare images and noise
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
             
@@ -531,6 +532,7 @@ class BatchCreativeInterpolationNode:
             else:
                 big_negative_noise = None
 
+            # Fill up bins with image frames. Bins will automatically be created when needed but all the frames should be able to be packed into two bins
             active_index = -1
             # Find a bin that we can fit the next image into
             for i, bin in enumerate(bins):
@@ -541,6 +543,7 @@ class BatchCreativeInterpolationNode:
             if active_index == -1:
                 bins.append(IPBin())
                 active_index = len(bins) - 1
+
             # Add the image to the bin
             bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
 
@@ -552,6 +555,7 @@ class BatchCreativeInterpolationNode:
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
         
+        # Go through the bins and create IPAdapters for them
         for i, bin in enumerate(bins):
             ipadapter_application = IPAdapterBatchImport()
             negative_noise = torch.cat(bin.noiseBatch, dim=0) if len(bin.noiseBatch) > 0 else None
