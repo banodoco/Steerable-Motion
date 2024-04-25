@@ -502,12 +502,12 @@ class BatchCreativeInterpolationNode:
             # PROCESS WEIGHTS
             ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, base_ipa_advanced_settings["ipa_weight"])    
 
-            print(f'i {i} image index {image_index} ====')
-            # print(f"frame numbers {frame_numbers}")
-            # print(f"weights {weights}")
-            print(f"frame numbers {ipa_frame_numbers}")
-            print(f"weights {ipa_weights}")
-            print("------")
+            # print(f'i {i} image index {image_index} ====')
+            # # print(f"frame numbers {frame_numbers}")
+            # # print(f"weights {weights}")
+            # print(f"frame numbers {ipa_frame_numbers}")
+            # print(f"weights {ipa_weights}")
+            # print("------")
 
             # Prepare images and noise
             prepare_for_clip_vision = PrepImageForClipVisionImport()
@@ -548,10 +548,10 @@ class BatchCreativeInterpolationNode:
             # Add the image to the bin
             bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
 
-            for i, bin in enumerate(bins):
-                print(f"{i} schedule {bin.image_schedule}")
-                print(f"{i} weights  {bin.weight_schedule}")
-                i += 1
+            # for i, bin in enumerate(bins):
+            #     print(f"{i} schedule {bin.image_schedule}")
+            #     print(f"{i} weights  {bin.weight_schedule}")
+            #     i += 1
                             
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
