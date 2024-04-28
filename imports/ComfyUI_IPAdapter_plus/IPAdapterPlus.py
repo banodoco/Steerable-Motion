@@ -142,7 +142,11 @@ def set_model_patch_replace(model, patch_kwargs, key):
     if key not in to["patches_replace"]["attn2"]:
         to["patches_replace"]["attn2"][key] = CrossAttentionPatchImport(**patch_kwargs)
     else:
-        to["patches_replace"]["attn2"][key].set_new_condition(**patch_kwargs)
+        if isinstance(to["patches_replace"]["attn2"][key], CrossAttentionPatchImport):
+            to["patches_replace"]["attn2"][key].set_new_condition(**patch_kwargs)
+        else:
+            to["patches_replace"]["attn2"][key] = CrossAttentionPatchImport.from_cross_attention_patch(to["patches_replace"]["attn2"][key])
+            to["patches_replace"]["attn2"][key].set_new_condition(**patch_kwargs)
 
 def ipadapter_execute(model,
                       ipadapter,
