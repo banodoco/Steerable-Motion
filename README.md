@@ -7,7 +7,7 @@ Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is
 ## Installation in Comfy
 
 1. If you haven't already, install [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Comfy Manager](https://github.com/ltdrdata/ComfyUI-Manager) - you can find instructions on their pages.
-2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI.
+2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI - or you can use one of the workflows others in the community made below.
 3. When the workflow opens, download the dependent nodes by pressing "Install Missing Custom Nodes" in Comfy Manager. Search and download the required models from Comfy Manager also - make sure that the models you download have the same name as the ones in the workflow - or you're confident that they're the same.
 
 ## Usage
