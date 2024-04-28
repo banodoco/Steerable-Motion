@@ -33,16 +33,23 @@ Through trial and error, you'll need to build an understanding of how the motion
 
 It won't work for everything but if you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.
 
-## Want to help explore new ways to use this and expand the capabilities?
+## 2 examples of workflows others have built on top of this:
 
-I believe that that are endless ways to expand upon and extend the ideas in this node.
+The workflow I shared is just one way to use this - below are two other workflows people in our community have created on top of this node:
 
-In an example included in the workflow, you can use [Ostris' Composition IPA](https://huggingface.co/ostris/ip-composition-adapter) to provide  structure to the generation:
+### Looped LCM by @idgallagher
 
-![IPA Structure](https://github.com/banodoco/steerable-motion/blob/main/demo/ipa_structure.gif)
+First, [@idgallagher](https://twitter.com/idgallagher) uses LCM and different settings to achieve a really interesting realistic motion effect. You can grab it [here](https://github.com/IDGallagher/storage/blob/main/chiff_distilled_sm.json) and see an example output here:
 
-Additionally, in [this example by Superbeasts.ai](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json), you can see how he uses depth maps to control the motion in different layers to create a smoother motion effect. There are endless possibilities!
+![Flipping Sigmas](https://github.com/banodoco/steerable-motion/blob/main/demo/flipping_sigmas.gif)
 
+### Smooth & Deep by @Superbeasts.ai:
+
+Next, [Superbeasts.ai](https://www.instagram.com/superbeasts) uses depth maps to control the motion in different layers - creating a smoother motion effect. You can grab this workflow [here](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json) and see an example of it in action here:
+
+![Superbeasts Example](https://github.com/banodoco/steerable-motion/blob/main/superbeasts.gif)
+
+I believe that that there are endless ways to expand upon and extend the ideas in this node - if you do anything cool, please share!
 
 ## Want to give feedback, or join a community who are pushing open source models to their artistic and technical limits?
 
