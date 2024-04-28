@@ -25,6 +25,26 @@ class CrossAttentionPatchImport:
         self.k_key = str(self.number*2+1) + "_to_k_ip"
         self.v_key = str(self.number*2+1) + "_to_v_ip"
 
+    @classmethod
+    def from_cross_attention_patch(cls, patch):
+        instance = cls(ipadapter = patch.ipadapters[0])
+        instance.weights = patch.weights
+        instance.ipadapters = patch.ipadapters
+        instance.conds = patch.conds
+        instance.conds_alt = patch.conds_alt
+        instance.unconds = patch.unconds
+        instance.weight_types = patch.weight_types
+        instance.masks = patch.masks
+        instance.sigma_starts = patch.sigma_starts
+        instance.sigma_ends = patch.sigma_ends
+        instance.unfold_batch = patch.unfold_batch
+        instance.embeds_scaling = patch.embeds_scaling
+        instance.number = patch.number
+        instance.layers = patch.layers
+        instance.k_key = patch.k_key
+        instance.v_key = patch.v_key
+        return instance
+    
     def set_new_condition(self, ipadapter=None, number=0, weight=1.0, cond=None, cond_alt=None, uncond=None, weight_type="linear", mask=None, sigma_start=0.0, sigma_end=1.0, unfold_batch=False, image_schedule=None, embeds_scaling='V only'):
         self.weights.append(weight)
         self.ipadapters.append(ipadapter)

@@ -500,7 +500,7 @@ class BatchCreativeInterpolationNode:
                 frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
-            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, base_ipa_advanced_settings["ipa_weight"])    
+            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
 
             # print(f'i {i} image index {image_index} ====')
             # # print(f"frame numbers {frame_numbers}")
@@ -533,20 +533,21 @@ class BatchCreativeInterpolationNode:
             else:
                 big_negative_noise = None
 
-            # Fill up bins with image frames. Bins will automatically be created when needed but all the frames should be able to be packed into two bins
-            active_index = -1
-            # Find a bin that we can fit the next image into
-            for i, bin in enumerate(bins):
-                if bin.length() <= ipa_frame_numbers[0]:
-                    active_index = i
-                    break
-            # If we didn't find a suitable bin, add a new one
-            if active_index == -1:
-                bins.append(IPBin())
-                active_index = len(bins) - 1
+            if len(ipa_frame_numbers) > 0:
+                # Fill up bins with image frames. Bins will automatically be created when needed but all the frames should be able to be packed into two bins
+                active_index = -1
+                # Find a bin that we can fit the next image into
+                for i, bin in enumerate(bins):
+                    if bin.length() <= ipa_frame_numbers[0]:
+                        active_index = i
+                        break
+                # If we didn't find a suitable bin, add a new one
+                if active_index == -1:
+                    bins.append(IPBin())
+                    active_index = len(bins) - 1
 
-            # Add the image to the bin
-            bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
+                # Add the image to the bin
+                bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
 
             # for i, bin in enumerate(bins):
             #     print(f"{i} schedule {bin.image_schedule}")
