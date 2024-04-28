@@ -47,7 +47,7 @@ First, [@idgallagher](https://twitter.com/idgallagher) uses LCM and different se
 
 Next, [Superbeasts.ai](https://www.instagram.com/superbeasts) uses depth maps to control the motion in different layers - creating a smoother motion effect. You can grab this workflow [here](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/SuperBeasts-POM-SmoothBatchCreative-V1.3.json) and see an example of it in action here:
 
-![Superbeasts Example](https://github.com/banodoco/steerable-motion/blob/main/superbeasts.gif)
+![Superbeasts Example](https://github.com/banodoco/steerable-motion/blob/main/demo/superbeasts.gif)
 
 I believe that that there are endless ways to expand upon and extend the ideas in this node - if you do anything cool, please share!
 
