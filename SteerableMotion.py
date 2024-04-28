@@ -500,7 +500,7 @@ class BatchCreativeInterpolationNode:
                 frame_numbers = np.concatenate([first_half_frame_numbers, second_half_frame_numbers])
                                                                                                                                                                                                                    
             # PROCESS WEIGHTS
-            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, base_ipa_advanced_settings["ipa_weight"])    
+            ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
 
             # print(f'i {i} image index {image_index} ====')
             # # print(f"frame numbers {frame_numbers}")
