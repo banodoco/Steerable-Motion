@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 # Local application/library specific imports
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
+import matplotlib
 
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -57,7 +58,10 @@ class BatchCreativeInterpolationNode:
                           linear_strength_value,dynamic_strength_values,
                           buffer, high_detail_mode,base_ipa_advanced_settings=None,
                           detail_ipa_advanced_settings=None):
-                
+        # set the matplotlib backend to 'Agg' to prevent crash on macOS
+        # 'Agg' is a non-interactive backend that can be used in a non-main thread
+        matplotlib.use('Agg')
+
         def get_keyframe_positions(type_of_frame_distribution, dynamic_frame_distribution_values, images, linear_frame_distribution_value):
             if type_of_frame_distribution == "dynamic":
                 # Check if the input is a string or a list
