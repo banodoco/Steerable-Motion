@@ -1,6 +1,6 @@
 {
   "last_node_id": 644,
-  "last_link_id": 1186,
+  "last_link_id": 1187,
   "nodes": [
     {
       "id": 570,
@@ -220,7 +220,7 @@
         "1": 364.0000305175781
       },
       "flags": {},
-      "order": 44,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
@@ -311,51 +311,6 @@
         2
       ],
       "shape": 2
-    },
-    {
-      "id": 590,
-      "type": "Reroute",
-      "pos": [
-        -1254.6671467749666,
-        -53.53277086071343
-      ],
-      "size": [
-        75,
-        26
-      ],
-      "flags": {},
-      "order": 43,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 1176,
-          "slot_index": 0
-        }
-      ],
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            1079,
-            1080
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": true,
-        "horizontal": false,
-        "ttNbgOverride": {
-          "color": "#223",
-          "bgcolor": "#335",
-          "groupcolor": "#88A"
-        }
-      },
-      "color": "#223",
-      "bgcolor": "#335"
     },
     {
       "id": 603,
@@ -583,7 +538,7 @@
         "1": 364.0000305175781
       },
       "flags": {},
-      "order": 45,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
@@ -1229,53 +1184,6 @@
       ]
     },
     {
-      "id": 576,
-      "type": "Reroute",
-      "pos": [
-        -1149,
-        -1278
-      ],
-      "size": [
-        82,
-        26
-      ],
-      "flags": {},
-      "order": 49,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "",
-          "type": "*",
-          "link": 1104,
-          "slot_index": 0
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1058,
-            1096,
-            1131,
-            1186
-          ],
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "showOutputText": true,
-        "horizontal": false,
-        "ttNbgOverride": {
-          "color": "#223",
-          "bgcolor": "#335",
-          "groupcolor": "#88A"
-        }
-      },
-      "color": "#223",
-      "bgcolor": "#335"
-    },
-    {
       "id": 342,
       "type": "ADE_AnimateDiffUniformContextOptions",
       "pos": [
@@ -1521,10 +1429,10 @@
         1100.56631612947,
         -531.765364103103
       ],
-      "size": [
-        249.44232177734375,
-        314.00001525878906
-      ],
+      "size": {
+        "0": 249.44232177734375,
+        "1": 314
+      },
       "flags": {},
       "order": 17,
       "mode": 4,
@@ -1794,113 +1702,6 @@
       ]
     },
     {
-      "id": 568,
-      "type": "ImpactMakeImageBatch",
-      "pos": [
-        -1300,
-        -1140
-      ],
-      "size": {
-        "0": 140,
-        "1": 266
-      },
-      "flags": {
-        "collapsed": false
-      },
-      "order": 46,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image1",
-          "type": "IMAGE",
-          "link": 1049
-        },
-        {
-          "name": "image2",
-          "type": "IMAGE",
-          "link": 1050
-        },
-        {
-          "name": "image3",
-          "type": "IMAGE",
-          "link": 1051
-        },
-        {
-          "name": "image4",
-          "type": "IMAGE",
-          "link": 1052
-        },
-        {
-          "name": "image5",
-          "type": "IMAGE",
-          "link": 1053,
-          "slot_index": 4
-        },
-        {
-          "name": "image6",
-          "type": "IMAGE",
-          "link": 1054
-        },
-        {
-          "name": "image7",
-          "type": "IMAGE",
-          "link": 1055,
-          "slot_index": 6
-        },
-        {
-          "name": "image8",
-          "type": "IMAGE",
-          "link": 1056,
-          "slot_index": 7
-        },
-        {
-          "name": "image9",
-          "type": "IMAGE",
-          "link": null,
-          "slot_index": 8
-        },
-        {
-          "name": "image10",
-          "type": "IMAGE",
-          "link": null,
-          "slot_index": 9
-        },
-        {
-          "name": "image11",
-          "type": "IMAGE",
-          "link": null,
-          "slot_index": 10
-        },
-        {
-          "name": "image12",
-          "type": "IMAGE",
-          "link": null,
-          "slot_index": 11
-        },
-        {
-          "name": "image13",
-          "type": "IMAGE",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1181
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImpactMakeImageBatch"
-      },
-      "color": "#222",
-      "bgcolor": "#000"
-    },
-    {
       "id": 610,
       "type": "Note Plus (mtb)",
       "pos": {
@@ -1969,38 +1770,6 @@
       ]
     },
     {
-      "id": 458,
-      "type": "VAELoader",
-      "pos": [
-        -1334,
-        -200
-      ],
-      "size": {
-        "0": 210,
-        "1": 99.132568359375
-      },
-      "flags": {},
-      "order": 23,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [
-            1176
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VAELoader"
-      },
-      "widgets_values": [
-        "vae-ft-mse-840000-ema-pruned.safetensors"
-      ]
-    },
-    {
       "id": 583,
       "type": "HighRes-Fix Script",
       "pos": [
@@ -2012,7 +1781,7 @@
         250
       ],
       "flags": {},
-      "order": 24,
+      "order": 23,
       "mode": 4,
       "inputs": [
         {
@@ -2077,7 +1846,7 @@
         "1": 160
       },
       "flags": {},
-      "order": 25,
+      "order": 24,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2093,148 +1862,6 @@
       "shape": 1
     },
     {
-      "id": 464,
-      "type": "ADE_EmptyLatentImageLarge",
-      "pos": [
-        -1357,
-        -484
-      ],
-      "size": {
-        "0": 310.79998779296875,
-        "1": 74
-      },
-      "flags": {
-        "collapsed": true
-      },
-      "order": 56,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "width",
-          "type": "INT",
-          "link": 1183,
-          "widget": {
-            "name": "width"
-          },
-          "slot_index": 0
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": 1184,
-          "widget": {
-            "name": "height"
-          }
-        },
-        {
-          "name": "batch_size",
-          "type": "INT",
-          "link": 1137,
-          "widget": {
-            "name": "batch_size"
-          },
-          "slot_index": 2
-        }
-      ],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            876,
-            1006,
-            1022
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_EmptyLatentImageLarge"
-      },
-      "widgets_values": [
-        512,
-        512,
-        52
-      ],
-      "color": "#232",
-      "bgcolor": "#353"
-    },
-    {
-      "id": 604,
-      "type": "ImageResize+",
-      "pos": [
-        -1340,
-        -1253
-      ],
-      "size": {
-        "0": 315,
-        "1": 218
-      },
-      "flags": {
-        "collapsed": true
-      },
-      "order": 48,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 1181
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "link": 1182,
-          "widget": {
-            "name": "width"
-          }
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "link": 1185,
-          "widget": {
-            "name": "height"
-          }
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1104
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "width",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        },
-        {
-          "name": "height",
-          "type": "INT",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ImageResize+"
-      },
-      "widgets_values": [
-        512,
-        512,
-        "nearest",
-        false,
-        "always",
-        0
-      ]
-    },
-    {
       "id": 369,
       "type": "IPAdapterModelLoader",
       "pos": [
@@ -2248,7 +1875,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 26,
+      "order": 25,
       "mode": 0,
       "outputs": [
         {
@@ -2288,7 +1915,7 @@
         "1": 410
       },
       "flags": {},
-      "order": 27,
+      "order": 26,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2302,55 +1929,6 @@
       "color": "#223",
       "bgcolor": "#335",
       "shape": 1
-    },
-    {
-      "id": 461,
-      "type": "CheckpointLoaderSimple",
-      "pos": [
-        -1327,
-        -364
-      ],
-      "size": {
-        "0": 210,
-        "1": 98
-      },
-      "flags": {},
-      "order": 28,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "MODEL",
-          "type": "MODEL",
-          "links": [
-            1107
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "CLIP",
-          "type": "CLIP",
-          "links": [
-            1106,
-            1108
-          ],
-          "shape": 3,
-          "slot_index": 1
-        },
-        {
-          "name": "VAE",
-          "type": "VAE",
-          "links": [],
-          "shape": 3,
-          "slot_index": 2
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "CheckpointLoaderSimple"
-      },
-      "widgets_values": [
-        "Realistic_Vision_V5.0.safetensors"
-      ]
     },
     {
       "id": 446,
@@ -2372,7 +1950,7 @@
         "1": 410
       },
       "flags": {},
-      "order": 29,
+      "order": 27,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2407,7 +1985,7 @@
         "1": 70
       },
       "flags": {},
-      "order": 30,
+      "order": 28,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2442,7 +2020,7 @@
         "1": 130
       },
       "flags": {},
-      "order": 31,
+      "order": 29,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -2456,147 +2034,6 @@
       "color": "#223",
       "bgcolor": "#335",
       "shape": 1
-    },
-    {
-      "id": 596,
-      "type": "Note Plus (mtb)",
-      "pos": {
-        "0": -842,
-        "1": 438,
-        "2": 0,
-        "3": 0,
-        "4": 0,
-        "5": 0,
-        "6": 0,
-        "7": 0,
-        "8": 0,
-        "9": 0
-      },
-      "size": {
-        "0": 590,
-        "1": 70
-      },
-      "flags": {},
-      "order": 32,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [],
-      "properties": {},
-      "widgets_values": [
-        "If you can't see these nodes, you need to update the Steerable Moton node in Comfy Manager!",
-        "markdown",
-        "",
-        "one_dark"
-      ],
-      "color": "#223",
-      "bgcolor": "#335",
-      "shape": 1
-    },
-    {
-      "id": 593,
-      "type": "IpaConfiguration",
-      "pos": [
-        -869,
-        93
-      ],
-      "size": {
-        "0": 267.9491882324219,
-        "1": 295.9013977050781
-      },
-      "flags": {
-        "collapsed": false
-      },
-      "order": 33,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "configuration",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "links": [
-            1127
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IpaConfiguration"
-      },
-      "widgets_values": [
-        0,
-        0.3,
-        "ease in-out",
-        1,
-        "V only",
-        0,
-        false,
-        "dissolve",
-        0
-      ]
-    },
-    {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        5232,
-        -1118
-      ],
-      "size": [
-        800,
-        1693.375
-      ],
-      "flags": {},
-      "order": 70,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 1031
-        },
-        {
-          "name": "audio",
-          "type": "VHS_AUDIO",
-          "link": null
-        },
-        {
-          "name": "meta_batch",
-          "type": "VHS_BatchManager",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Filenames",
-          "type": "VHS_FILENAMES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 16,
-        "loop_count": 0,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pix_fmt": "yuv420p",
-        "crf": 20,
-        "save_metadata": true,
-        "pingpong": false,
-        "save_output": true,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__01437.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
     },
     {
       "id": 548,
@@ -2649,46 +2086,6 @@
       "widgets_values": [
         "0:(1.25)",
         true
-      ]
-    },
-    {
-      "id": 594,
-      "type": "IpaConfiguration",
-      "pos": [
-        -544,
-        103
-      ],
-      "size": {
-        "0": 258.1965637207031,
-        "1": 286.34881591796875
-      },
-      "flags": {},
-      "order": 34,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "configuration",
-          "type": "ADVANCED_IPA_SETTINGS",
-          "links": [
-            1126
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "IpaConfiguration"
-      },
-      "widgets_values": [
-        0,
-        1,
-        "strong middle",
-        0.7000000000000001,
-        "V only",
-        0.75,
-        true,
-        "fade",
-        0
       ]
     },
     {
@@ -2932,7 +2329,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 35,
+      "order": 30,
       "mode": 0,
       "outputs": [
         {
@@ -2971,7 +2368,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 36,
+      "order": 31,
       "mode": 0,
       "outputs": [
         {
@@ -3010,7 +2407,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 37,
+      "order": 32,
       "mode": 0,
       "outputs": [
         {
@@ -3049,7 +2446,7 @@
         "1": 314.0000915527344
       },
       "flags": {},
-      "order": 38,
+      "order": 33,
       "mode": 0,
       "outputs": [
         {
@@ -3074,76 +2471,6 @@
       "widgets_values": [
         "2024-05-02_16-50-19_1385.png",
         "image"
-      ]
-    },
-    {
-      "id": 640,
-      "type": "Int Input [Dream]",
-      "pos": [
-        -1292,
-        -769
-      ],
-      "size": {
-        "0": 210,
-        "1": 58
-      },
-      "flags": {
-        "collapsed": true
-      },
-      "order": 39,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [
-            1182,
-            1183
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Int Input [Dream]"
-      },
-      "widgets_values": [
-        512
-      ]
-    },
-    {
-      "id": 642,
-      "type": "Int Input [Dream]",
-      "pos": [
-        -1342,
-        -682
-      ],
-      "size": {
-        "0": 210,
-        "1": 58
-      },
-      "flags": {
-        "collapsed": false
-      },
-      "order": 40,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "INT",
-          "type": "INT",
-          "links": [
-            1184,
-            1185
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "Int Input [Dream]"
-      },
-      "widgets_values": [
-        912
       ]
     },
     {
@@ -3360,6 +2687,681 @@
         0,
         0.3
       ]
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        5242,
+        -1662
+      ],
+      "size": [
+        800,
+        1693.375
+      ],
+      "flags": {},
+      "order": 70,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1031
+        },
+        {
+          "name": "audio",
+          "type": "VHS_AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "type": "VHS_BatchManager",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 289,
+        "loop_count": 0,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 20,
+        "save_metadata": true,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__01437.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
+    },
+    {
+      "id": 640,
+      "type": "Int Input [Dream]",
+      "pos": [
+        -1355,
+        -1247
+      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 34,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            1182,
+            1183
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "title": "Width",
+      "properties": {
+        "Node name for S&R": "Int Input [Dream]"
+      },
+      "widgets_values": [
+        512
+      ]
+    },
+    {
+      "id": 642,
+      "type": "Int Input [Dream]",
+      "pos": [
+        -1346,
+        -1131
+      ],
+      "size": [
+        210,
+        58
+      ],
+      "flags": {
+        "collapsed": false
+      },
+      "order": 35,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "INT",
+          "type": "INT",
+          "links": [
+            1185,
+            1187
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "title": "Height",
+      "properties": {
+        "Node name for S&R": "Int Input [Dream]"
+      },
+      "widgets_values": [
+        512
+      ]
+    },
+    {
+      "id": 568,
+      "type": "ImpactMakeImageBatch",
+      "pos": [
+        -1282,
+        -517
+      ],
+      "size": {
+        "0": 140,
+        "1": 266
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 43,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image1",
+          "type": "IMAGE",
+          "link": 1049
+        },
+        {
+          "name": "image2",
+          "type": "IMAGE",
+          "link": 1050
+        },
+        {
+          "name": "image3",
+          "type": "IMAGE",
+          "link": 1051
+        },
+        {
+          "name": "image4",
+          "type": "IMAGE",
+          "link": 1052
+        },
+        {
+          "name": "image5",
+          "type": "IMAGE",
+          "link": 1053,
+          "slot_index": 4
+        },
+        {
+          "name": "image6",
+          "type": "IMAGE",
+          "link": 1054
+        },
+        {
+          "name": "image7",
+          "type": "IMAGE",
+          "link": 1055,
+          "slot_index": 6
+        },
+        {
+          "name": "image8",
+          "type": "IMAGE",
+          "link": 1056,
+          "slot_index": 7
+        },
+        {
+          "name": "image9",
+          "type": "IMAGE",
+          "link": null,
+          "slot_index": 8
+        },
+        {
+          "name": "image10",
+          "type": "IMAGE",
+          "link": null,
+          "slot_index": 9
+        },
+        {
+          "name": "image11",
+          "type": "IMAGE",
+          "link": null,
+          "slot_index": 10
+        },
+        {
+          "name": "image12",
+          "type": "IMAGE",
+          "link": null,
+          "slot_index": 11
+        },
+        {
+          "name": "image13",
+          "type": "IMAGE",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1181
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImpactMakeImageBatch"
+      },
+      "color": "#222",
+      "bgcolor": "#000"
+    },
+    {
+      "id": 604,
+      "type": "ImageResize+",
+      "pos": [
+        -1312,
+        -655
+      ],
+      "size": {
+        "0": 315,
+        "1": 218
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 48,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1181
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 1182,
+          "widget": {
+            "name": "width"
+          }
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 1185,
+          "widget": {
+            "name": "height"
+          }
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1104
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "width",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageResize+"
+      },
+      "widgets_values": [
+        512,
+        512,
+        "nearest",
+        false,
+        "always",
+        0
+      ]
+    },
+    {
+      "id": 576,
+      "type": "Reroute",
+      "pos": [
+        -1154,
+        -635
+      ],
+      "size": [
+        82,
+        26
+      ],
+      "flags": {},
+      "order": 49,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 1104,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1058,
+            1096,
+            1131,
+            1186
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false,
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 458,
+      "type": "VAELoader",
+      "pos": [
+        -1334,
+        -841
+      ],
+      "size": {
+        "0": 210,
+        "1": 99.132568359375
+      },
+      "flags": {},
+      "order": 36,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            1176
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VAELoader"
+      },
+      "widgets_values": [
+        "vae-ft-mse-840000-ema-pruned.safetensors"
+      ]
+    },
+    {
+      "id": 461,
+      "type": "CheckpointLoaderSimple",
+      "pos": [
+        -1336,
+        -997
+      ],
+      "size": {
+        "0": 210,
+        "1": 98
+      },
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "MODEL",
+          "type": "MODEL",
+          "links": [
+            1107
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "CLIP",
+          "type": "CLIP",
+          "links": [
+            1106,
+            1108
+          ],
+          "shape": 3,
+          "slot_index": 1
+        },
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [],
+          "shape": 3,
+          "slot_index": 2
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "CheckpointLoaderSimple"
+      },
+      "widgets_values": [
+        "Realistic_Vision_V5.0.safetensors"
+      ]
+    },
+    {
+      "id": 590,
+      "type": "Reroute",
+      "pos": [
+        -1265,
+        -91
+      ],
+      "size": [
+        75,
+        26
+      ],
+      "flags": {},
+      "order": 44,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "",
+          "type": "*",
+          "link": 1176,
+          "slot_index": 0
+        }
+      ],
+      "outputs": [
+        {
+          "name": "VAE",
+          "type": "VAE",
+          "links": [
+            1079,
+            1080
+          ],
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "showOutputText": true,
+        "horizontal": false,
+        "ttNbgOverride": {
+          "color": "#223",
+          "bgcolor": "#335",
+          "groupcolor": "#88A"
+        }
+      },
+      "color": "#223",
+      "bgcolor": "#335"
+    },
+    {
+      "id": 464,
+      "type": "ADE_EmptyLatentImageLarge",
+      "pos": [
+        -1337,
+        -158
+      ],
+      "size": {
+        "0": 310.79998779296875,
+        "1": 74
+      },
+      "flags": {
+        "collapsed": true
+      },
+      "order": 56,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "link": 1183,
+          "widget": {
+            "name": "width"
+          },
+          "slot_index": 0
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "link": 1187,
+          "widget": {
+            "name": "height"
+          }
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "link": 1137,
+          "widget": {
+            "name": "batch_size"
+          },
+          "slot_index": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            876,
+            1006,
+            1022
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_EmptyLatentImageLarge"
+      },
+      "widgets_values": [
+        512,
+        512,
+        52
+      ],
+      "color": "#232",
+      "bgcolor": "#353"
+    },
+    {
+      "id": 593,
+      "type": "IpaConfiguration",
+      "pos": [
+        -868,
+        121
+      ],
+      "size": {
+        "0": 267.9491882324219,
+        "1": 295.9013977050781
+      },
+      "flags": {
+        "collapsed": false
+      },
+      "order": 38,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "configuration",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "links": [
+            1127
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IpaConfiguration"
+      },
+      "widgets_values": [
+        0,
+        0.3,
+        "ease in-out",
+        1,
+        "V only",
+        0,
+        false,
+        "dissolve",
+        0
+      ]
+    },
+    {
+      "id": 594,
+      "type": "IpaConfiguration",
+      "pos": [
+        -544,
+        125
+      ],
+      "size": {
+        "0": 258.1965637207031,
+        "1": 286.34881591796875
+      },
+      "flags": {},
+      "order": 39,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "configuration",
+          "type": "ADVANCED_IPA_SETTINGS",
+          "links": [
+            1126
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "IpaConfiguration"
+      },
+      "widgets_values": [
+        0,
+        1,
+        "strong middle",
+        0.7000000000000001,
+        "V only",
+        0.75,
+        true,
+        "fade",
+        0
+      ]
+    },
+    {
+      "id": 596,
+      "type": "Note Plus (mtb)",
+      "pos": {
+        "0": -847,
+        "1": 453,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 0,
+        "6": 0,
+        "7": 0,
+        "8": 0,
+        "9": 0
+      },
+      "size": {
+        "0": 590,
+        "1": 70
+      },
+      "flags": {},
+      "order": 40,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [],
+      "properties": {},
+      "widgets_values": [
+        "If you can't see these nodes, you need to update the Steerable Moton node in Comfy Manager!",
+        "markdown",
+        "",
+        "one_dark"
+      ],
+      "color": "#223",
+      "bgcolor": "#335",
+      "shape": 1
     }
   ],
   "links": [
@@ -3884,14 +3886,6 @@
       "INT"
     ],
     [
-      1184,
-      642,
-      0,
-      464,
-      1,
-      "INT"
-    ],
-    [
       1185,
       642,
       0,
@@ -3906,6 +3900,14 @@
       389,
       0,
       "IMAGE"
+    ],
+    [
+      1187,
+      642,
+      0,
+      464,
+      1,
+      "INT"
     ]
   ],
   "groups": [
