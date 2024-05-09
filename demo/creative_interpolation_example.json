@@ -220,7 +220,7 @@
         "1": 364.0000305175781
       },
       "flags": {},
-      "order": 45,
+      "order": 44,
       "mode": 0,
       "inputs": [
         {
@@ -538,7 +538,7 @@
         "1": 364.0000305175781
       },
       "flags": {},
-      "order": 46,
+      "order": 45,
       "mode": 0,
       "inputs": [
         {
@@ -1669,7 +1669,7 @@
       ],
       "size": {
         "0": 210,
-        "1": 107.56318664550781
+        "1": 178
       },
       "flags": {},
       "order": 42,
@@ -1698,7 +1698,10 @@
       "widgets_values": [
         "LANCZOS",
         "top",
-        0
+        0,
+        0.5,
+        20,
+        50
       ]
     },
     {
@@ -2253,46 +2256,6 @@
       }
     },
     {
-      "id": 536,
-      "type": "ADE_AnimateDiffLoRALoader",
-      "pos": [
-        2435,
-        -537
-      ],
-      "size": {
-        "0": 308.66558837890625,
-        "1": 82
-      },
-      "flags": {},
-      "order": 41,
-      "mode": 4,
-      "inputs": [
-        {
-          "name": "prev_motion_lora",
-          "type": "MOTION_LORA",
-          "link": 1007
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MOTION_LORA",
-          "type": "MOTION_LORA",
-          "links": [
-            1004
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoRALoader"
-      },
-      "widgets_values": [
-        "300_zooming_in_temporal_unet.safetensors",
-        0.4
-      ]
-    },
-    {
       "id": 436,
       "type": "PreviewImage",
       "pos": [
@@ -2316,162 +2279,6 @@
       "properties": {
         "Node name for S&R": "PreviewImage"
       }
-    },
-    {
-      "id": 569,
-      "type": "LoadImage",
-      "pos": [
-        -2114,
-        -1389
-      ],
-      "size": {
-        "0": 315,
-        "1": 314.0000915527344
-      },
-      "flags": {},
-      "order": 30,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1049
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2024-05-02_16-55-16_8182.png",
-        "image"
-      ]
-    },
-    {
-      "id": 571,
-      "type": "LoadImage",
-      "pos": [
-        -1756,
-        -1402
-      ],
-      "size": {
-        "0": 315,
-        "1": 314.0000915527344
-      },
-      "flags": {},
-      "order": 31,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1050
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2024-05-02_16-54-20_9331.png",
-        "image"
-      ]
-    },
-    {
-      "id": 572,
-      "type": "LoadImage",
-      "pos": [
-        -2099,
-        -1029
-      ],
-      "size": {
-        "0": 315,
-        "1": 314.0000915527344
-      },
-      "flags": {},
-      "order": 32,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1051
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2024-05-02_16-49-59_2367.png",
-        "image"
-      ]
-    },
-    {
-      "id": 573,
-      "type": "LoadImage",
-      "pos": [
-        -1770,
-        -1030
-      ],
-      "size": {
-        "0": 315,
-        "1": 314.0000915527344
-      },
-      "flags": {},
-      "order": 33,
-      "mode": 0,
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            1052
-          ],
-          "shape": 3,
-          "slot_index": 0
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "2024-05-02_16-50-19_1385.png",
-        "image"
-      ]
     },
     {
       "id": 207,
@@ -2689,70 +2496,6 @@
       ]
     },
     {
-      "id": 281,
-      "type": "VHS_VideoCombine",
-      "pos": [
-        5242,
-        -1662
-      ],
-      "size": [
-        800,
-        1693.375
-      ],
-      "flags": {},
-      "order": 70,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 1031
-        },
-        {
-          "name": "audio",
-          "type": "VHS_AUDIO",
-          "link": null
-        },
-        {
-          "name": "meta_batch",
-          "type": "VHS_BatchManager",
-          "link": null
-        }
-      ],
-      "outputs": [
-        {
-          "name": "Filenames",
-          "type": "VHS_FILENAMES",
-          "links": null,
-          "shape": 3
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "VHS_VideoCombine"
-      },
-      "widgets_values": {
-        "frame_rate": 289,
-        "loop_count": 0,
-        "filename_prefix": "steerable-motion/AD_",
-        "format": "video/h264-mp4",
-        "pix_fmt": "yuv420p",
-        "crf": 20,
-        "save_metadata": true,
-        "pingpong": false,
-        "save_output": true,
-        "videopreview": {
-          "hidden": false,
-          "paused": false,
-          "params": {
-            "filename": "AD__01437.mp4",
-            "subfolder": "steerable-motion",
-            "type": "output",
-            "format": "video/h264-mp4"
-          }
-        }
-      }
-    },
-    {
       "id": 640,
       "type": "Int Input [Dream]",
       "pos": [
@@ -2766,7 +2509,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 34,
+      "order": 30,
       "mode": 0,
       "outputs": [
         {
@@ -2795,14 +2538,14 @@
         -1346,
         -1131
       ],
-      "size": [
-        210,
-        58
-      ],
+      "size": {
+        "0": 210,
+        "1": 58
+      },
       "flags": {
         "collapsed": false
       },
-      "order": 35,
+      "order": 31,
       "mode": 0,
       "outputs": [
         {
@@ -2838,7 +2581,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 43,
+      "order": 46,
       "mode": 0,
       "inputs": [
         {
@@ -3064,7 +2807,7 @@
         "1": 99.132568359375
       },
       "flags": {},
-      "order": 36,
+      "order": 32,
       "mode": 0,
       "outputs": [
         {
@@ -3096,7 +2839,7 @@
         "1": 98
       },
       "flags": {},
-      "order": 37,
+      "order": 33,
       "mode": 0,
       "outputs": [
         {
@@ -3145,7 +2888,7 @@
         26
       ],
       "flags": {},
-      "order": 44,
+      "order": 43,
       "mode": 0,
       "inputs": [
         {
@@ -3260,7 +3003,7 @@
       "flags": {
         "collapsed": false
       },
-      "order": 38,
+      "order": 34,
       "mode": 0,
       "outputs": [
         {
@@ -3300,7 +3043,7 @@
         "1": 286.34881591796875
       },
       "flags": {},
-      "order": 39,
+      "order": 35,
       "mode": 0,
       "outputs": [
         {
@@ -3348,7 +3091,7 @@
         "1": 70
       },
       "flags": {},
-      "order": 40,
+      "order": 36,
       "mode": 0,
       "inputs": [],
       "outputs": [],
@@ -3362,6 +3105,266 @@
       "color": "#223",
       "bgcolor": "#335",
       "shape": 1
+    },
+    {
+      "id": 536,
+      "type": "ADE_AnimateDiffLoRALoader",
+      "pos": [
+        2435,
+        -537
+      ],
+      "size": {
+        "0": 308.66558837890625,
+        "1": 82
+      },
+      "flags": {},
+      "order": 41,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "prev_motion_lora",
+          "type": "MOTION_LORA",
+          "link": 1007
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MOTION_LORA",
+          "type": "MOTION_LORA",
+          "links": [
+            1004
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoRALoader"
+      },
+      "widgets_values": [
+        "2024-05-06/23-36-25/good_body_movement_1/900_good_body_movement_1_r64_temporal_unet.safetensors",
+        0.4
+      ]
+    },
+    {
+      "id": 569,
+      "type": "LoadImage",
+      "pos": [
+        -2114,
+        -1389
+      ],
+      "size": {
+        "0": 315,
+        "1": 314.0000915527344
+      },
+      "flags": {},
+      "order": 37,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1049
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boris_far.png",
+        "image"
+      ]
+    },
+    {
+      "id": 571,
+      "type": "LoadImage",
+      "pos": [
+        -1756,
+        -1402
+      ],
+      "size": {
+        "0": 315,
+        "1": 314.0000915527344
+      },
+      "flags": {},
+      "order": 38,
+      "mode": 0,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1050
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "boris_close.png",
+        "image"
+      ]
+    },
+    {
+      "id": 572,
+      "type": "LoadImage",
+      "pos": [
+        -2099,
+        -1029
+      ],
+      "size": {
+        "0": 315,
+        "1": 314.0000915527344
+      },
+      "flags": {},
+      "order": 39,
+      "mode": 4,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1051
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2024-05-02_16-49-59_2367.png",
+        "image"
+      ]
+    },
+    {
+      "id": 573,
+      "type": "LoadImage",
+      "pos": [
+        -1770,
+        -1030
+      ],
+      "size": {
+        "0": 315,
+        "1": 314.0000915527344
+      },
+      "flags": {},
+      "order": 40,
+      "mode": 4,
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1052
+          ],
+          "shape": 3,
+          "slot_index": 0
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "2024-05-02_16-50-19_1385.png",
+        "image"
+      ]
+    },
+    {
+      "id": 281,
+      "type": "VHS_VideoCombine",
+      "pos": [
+        5242,
+        -1662
+      ],
+      "size": [
+        800,
+        1084
+      ],
+      "flags": {},
+      "order": 70,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 1031
+        },
+        {
+          "name": "audio",
+          "type": "VHS_AUDIO",
+          "link": null
+        },
+        {
+          "name": "meta_batch",
+          "type": "VHS_BatchManager",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filenames",
+          "type": "VHS_FILENAMES",
+          "links": null,
+          "shape": 3
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "VHS_VideoCombine"
+      },
+      "widgets_values": {
+        "frame_rate": 16,
+        "loop_count": 0,
+        "filename_prefix": "steerable-motion/AD_",
+        "format": "video/h264-mp4",
+        "pix_fmt": "yuv420p",
+        "crf": 20,
+        "save_metadata": true,
+        "pingpong": false,
+        "save_output": true,
+        "videopreview": {
+          "hidden": false,
+          "paused": false,
+          "params": {
+            "filename": "AD__01475.mp4",
+            "subfolder": "steerable-motion",
+            "type": "output",
+            "format": "video/h264-mp4"
+          }
+        }
+      }
     }
   ],
   "links": [
