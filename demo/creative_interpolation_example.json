@@ -3107,46 +3107,6 @@
       "shape": 1
     },
     {
-      "id": 536,
-      "type": "ADE_AnimateDiffLoRALoader",
-      "pos": [
-        2435,
-        -537
-      ],
-      "size": {
-        "0": 308.66558837890625,
-        "1": 82
-      },
-      "flags": {},
-      "order": 41,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "prev_motion_lora",
-          "type": "MOTION_LORA",
-          "link": 1007
-        }
-      ],
-      "outputs": [
-        {
-          "name": "MOTION_LORA",
-          "type": "MOTION_LORA",
-          "links": [
-            1004
-          ],
-          "shape": 3,
-          "slot_index": 0
-        }
-      ],
-      "properties": {
-        "Node name for S&R": "ADE_AnimateDiffLoRALoader"
-      },
-      "widgets_values": [
-        "2024-05-06/23-36-25/good_body_movement_1/900_good_body_movement_1_r64_temporal_unet.safetensors",
-        0.4
-      ]
-    },
-    {
       "id": 569,
       "type": "LoadImage",
       "pos": [
@@ -3365,6 +3325,46 @@
           }
         }
       }
+    },
+    {
+      "id": 536,
+      "type": "ADE_AnimateDiffLoRALoader",
+      "pos": [
+        2435,
+        -537
+      ],
+      "size": {
+        "0": 308.66558837890625,
+        "1": 82
+      },
+      "flags": {},
+      "order": 41,
+      "mode": 4,
+      "inputs": [
+        {
+          "name": "prev_motion_lora",
+          "type": "MOTION_LORA",
+          "link": 1007
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MOTION_LORA",
+          "type": "MOTION_LORA",
+          "links": [
+            1004
+          ],
+          "shape": 3,
+          "slot_index": 0
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ADE_AnimateDiffLoRALoader"
+      },
+      "widgets_values": [
+        "2024-05-06/23-36-25/good_body_movement_1/900_good_body_movement_1_r64_temporal_unet.safetensors",
+        0.4
+      ]
     }
   ],
   "links": [
