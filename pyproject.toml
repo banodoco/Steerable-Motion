@@ -1,6 +1,6 @@
 [project]
 name = "steerable-motion"
-description = ""
+description = "Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is to feature the best methods for steering motion with images as video models evolve."
 version = "1.0.0"
 license = "LICENSE"
 dependencies = ["matplotlib"]
