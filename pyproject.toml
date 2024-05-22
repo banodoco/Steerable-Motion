@@ -1,0 +1,15 @@
+[project]
+name = "steerable-motion"
+description = ""
+version = "1.0.0"
+license = "LICENSE"
+dependencies = ["matplotlib"]
+
+[project.urls]
+Repository = "https://github.com/banodoco/steerable-motion"
+#  Used by Comfy Registry https://comfyregistry.org
+
+[tool.comfy]
+PublisherId = ""
+DisplayName = "steerable-motion"
+Icon = ""
