@@ -570,7 +570,7 @@ class BatchCreativeInterpolationNode:
 # from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
 
-class DropFramesByIndex:
+class ReplaceAndInterpolateFramesNode:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -583,10 +583,10 @@ class DropFramesByIndex:
 
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
-    FUNCTION = "drop_frames_by_index"
+    FUNCTION = "replace_and_interpolate_frames"
     CATEGORY = "Steerable-Motion"
 
-    def drop_frames_by_index(self, images: torch.Tensor, frames_to_drop: str):
+    def replace_and_interpolate_frames(self, images: torch.Tensor, frames_to_drop: str):
         if isinstance(frames_to_drop, str):
             frames_to_drop = eval(frames_to_drop)
 
@@ -658,11 +658,11 @@ class IpaConfigurationNode:
 NODE_CLASS_MAPPINGS = {
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
     "IpaConfiguration": IpaConfigurationNode,
-    "DropFramesByIndex": DropFramesByIndex,
+    "ReplaceAndInterpolateFrames": ReplaceAndInterpolateFramesNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {    
     "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅢🅜",
     "IpaConfiguration": "IPA Configuration  🎞️🅢🅜",
-    "DropFramesByIndex": "Drop Frames By Index 🎞️🅢🅜",
+    "ReplaceAndInterpolateFrames": "Replace and Interpolate Frames 🎞️🅢🅜",
 }
