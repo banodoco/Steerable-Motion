@@ -80,7 +80,7 @@ from torch import nn
 from torch.nn import functional as F
 
 
-class SubTreeExtractor(nn.Module):
+class SubTreeExtractorImport(nn.Module):
     """Extracts a hierarchical set of features from an image.
 
     This is a conventional, hierarchical image feature extractor, that extracts
@@ -121,13 +121,13 @@ class SubTreeExtractor(nn.Module):
         return pyramid
 
 
-class FeatureExtractor(nn.Module):
+class FeatureExtractorImport(nn.Module):
     """Extracts features from an image pyramid using a cascaded architecture.
     """
 
     def __init__(self, in_channels=3, channels=64, sub_levels=4):
         super().__init__()
-        self.extract_sublevels = SubTreeExtractor(in_channels, channels, sub_levels)
+        self.extract_sublevels = SubTreeExtractorImport(in_channels, channels, sub_levels)
         self.sub_levels = sub_levels
 
     def forward(self, image_pyramid: List[torch.Tensor]) -> List[torch.Tensor]:
@@ -216,7 +216,7 @@ def get_channels_at_level(level, filters):
     return (sum(filters << i for i in range(level)) + channels + flows) * n_images
 
 
-class Fusion(nn.Module):
+class FusionImport(nn.Module):
     """The decoder."""
 
     def __init__(self, n_layers=4, specialized_layers=3, filters=64):
@@ -373,7 +373,7 @@ from torch import nn
 
 
 
-class Interpolator(nn.Module):
+class InterpolatorImport(nn.Module):
     def __init__(
             self,
             pyramid_levels=7,
@@ -388,9 +388,9 @@ class Interpolator(nn.Module):
         self.pyramid_levels = pyramid_levels
         self.fusion_pyramid_levels = fusion_pyramid_levels
 
-        self.extract = FeatureExtractor(3, filters, sub_levels)
-        self.predict_flow = PyramidFlowEstimator(filters, flow_convs, flow_filters)
-        self.fuse = Fusion(sub_levels, specialized_levels, filters)
+        self.extract = FeatureExtractorImport(3, filters, sub_levels)
+        self.predict_flow = PyramidFlowEstimatorImport(filters, flow_convs, flow_filters)
+        self.fuse = FusionImport(sub_levels, specialized_levels, filters)
 
     def shuffle_images(self, x0, x1):
         return [
@@ -497,7 +497,7 @@ from torch.nn import functional as F
 
 
 
-class FlowEstimator(nn.Module):
+class FlowEstimatorImport(nn.Module):
     """Small-receptive field predictor for computing the flow between two images.
 
     This is used to compute the residual flow fields in PyramidFlowEstimator.
@@ -513,7 +513,7 @@ class FlowEstimator(nn.Module):
     """
 
     def __init__(self, in_channels: int, num_convs: int, num_filters: int):
-        super(FlowEstimator, self).__init__()
+        super(FlowEstimatorImport, self).__init__()
 
         self._convs = nn.ModuleList()
         for i in range(num_convs):
@@ -543,20 +543,20 @@ class FlowEstimator(nn.Module):
         return net
 
 
-class PyramidFlowEstimator(nn.Module):
+class PyramidFlowEstimatorImport(nn.Module):
     """Predicts optical flow by coarse-to-fine refinement.
     """
 
     def __init__(self, filters: int = 64,
                  flow_convs: tuple = (3, 3, 3, 3),
                  flow_filters: tuple = (32, 64, 128, 256)):
-        super(PyramidFlowEstimator, self).__init__()
+        super(PyramidFlowEstimatorImport, self).__init__()
 
         in_channels = filters << 1
         predictors = []
         for i in range(len(flow_convs)):
             predictors.append(
-                FlowEstimator(
+                FlowEstimatorImport(
                     in_channels=in_channels,
                     num_convs=flow_convs[i],
                     num_filters=flow_filters[i]))

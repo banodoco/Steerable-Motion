@@ -3,7 +3,7 @@ from comfy.model_management import get_torch_device, soft_empty_cache
 import bisect
 import numpy as np
 import typing
-from vfi_utils import InterpolationStateListImport, load_file_from_github_release, preprocess_frames, postprocess_frames
+from import_vfi_utils import InterpolationStateListImport, load_file_from_github_release, preprocess_frames, postprocess_frames
 import pathlib
 import gc
 
