@@ -45,8 +45,8 @@ class BatchCreativeInterpolationNode:
             }
         }
 
-    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "INT")    
-    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "BUFFER")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "INT", "STRING")
+    RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "BUFFER","FRAMES_TO_DROP")
     FUNCTION = "combined_function"
 
     CATEGORY = "Steerable-Motion"
@@ -506,14 +506,7 @@ class BatchCreativeInterpolationNode:
             # PROCESS WEIGHTS
             ipa_frame_numbers, ipa_weights = process_weights(frame_numbers, weights, 1.0)    
 
-            # print(f'i {i} image index {image_index} ====')
-            # # print(f"frame numbers {frame_numbers}")
-            # # print(f"weights {weights}")
-            # print(f"frame numbers {ipa_frame_numbers}")
-            # print(f"weights {ipa_weights}")
-            # print("------")
-
-            # Prepare images and noise
+  
             prepare_for_clip_vision = PrepImageForClipVisionImport()
             prepped_image, = prepare_for_clip_vision.prep_image(image=image.unsqueeze(0), interpolation="LANCZOS", crop_position="pad", sharpening=0.1)
             
@@ -552,12 +545,7 @@ class BatchCreativeInterpolationNode:
 
                 # Add the image to the bin
                 bins[active_index].add(prepped_image, image.unsqueeze(0), negative_noise, big_negative_noise, image_index, ipa_frame_numbers, ipa_weights)
-
-            # for i, bin in enumerate(bins):
-            #     print(f"{i} schedule {bin.image_schedule}")
-            #     print(f"{i} weights  {bin.weight_schedule}")
-            #     i += 1
-                            
+  
             all_ipa_frame_numbers.append(ipa_frame_numbers)
             all_ipa_weights.append(ipa_weights)
         
@@ -572,7 +560,45 @@ class BatchCreativeInterpolationNode:
                 model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=torch.cat(bin.bigImageBatch, dim=0), weight=[x * detail_ipa_advanced_settings["ipa_weight"] for x in bin.weight_schedule], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"], encode_batch_size=1, image_schedule=bin.image_schedule)
 
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
-        return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, buffer
+        return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, buffer, shifted_keyframes_position
+
+
+class DropFramesByIndex:
+
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "images": ("IMAGE", ),
+                "frames_to_drop": ("STRING", {"multiline": True, "default": "[8, 16, 24]"}),
+            },
+            "optional": {}
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("image",)
+    FUNCTION = "drop_frames_by_index"
+
+    CATEGORY = "Steerable-Motion"
+
+    def drop_frames_by_index(self, images: torch.Tensor, frames_to_drop: str):
+        # Convert the string of frame indices to a list of integers
+        print(frames_to_drop)
+        print(type(frames_to_drop))
+
+        if isinstance(frames_to_drop, str):
+            frames_to_drop = eval(frames_to_drop)
+
+        # Sort and reverse the list of frames to drop to avoid index out of range error when removing
+        frames_to_drop = sorted(frames_to_drop, reverse=True)
+
+        # Drop the frames by index
+        for index in frames_to_drop:
+            if index < images.shape[0]:
+                images = torch.cat((images[:index], images[index+1:]))
+        
+        return (images,)
+        
 
 class IpaConfigurationNode:
     WEIGHT_TYPES = ["linear", "ease in", "ease out", 'ease in-out', 'reverse in-out', 'weak input', 'weak output', 'weak middle', 'strong middle']
@@ -618,9 +644,11 @@ class IpaConfigurationNode:
 NODE_CLASS_MAPPINGS = {
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
     "IpaConfiguration": IpaConfigurationNode,
+    "DropFramesByIndex": DropFramesByIndex,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {    
     "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅢🅜",
     "IpaConfiguration": "IPA Configuration  🎞️🅢🅜",
+    "DropFramesByIndex": "Drop Frames By Index 🎞️🅢🅜",
 }
