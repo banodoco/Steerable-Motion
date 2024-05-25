@@ -570,7 +570,7 @@ class BatchCreativeInterpolationNode:
 # from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
 
-class ReplaceAndInterpolateFramesNode:
+class RemoveAndInterpolateFramesNode:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -658,11 +658,11 @@ class IpaConfigurationNode:
 NODE_CLASS_MAPPINGS = {
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
     "IpaConfiguration": IpaConfigurationNode,
-    "ReplaceAndInterpolateFrames": ReplaceAndInterpolateFramesNode,
+    "RemoveAndInterpolateFrames": RemoveAndInterpolateFramesNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {    
     "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅢🅜",
     "IpaConfiguration": "IPA Configuration  🎞️🅢🅜",
-    "ReplaceAndInterpolateFrames": "Replace and Interpolate Frames 🎞️🅢🅜",
+    "RemoveAndInterpolateFrames": "Remove and Interpolate Frames 🎞️🅢🅜",
 }
