@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 import matplotlib
+import gc
 
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -563,8 +564,12 @@ class BatchCreativeInterpolationNode:
         return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, buffer, shifted_keyframes_position
 
 
-class DropFramesByIndex:
+# import the class FILM_VFI from ComfyUI-Frame-Interpolation/vfi_models/film/__init__.py
+from .imports.ComfyUI_Frame_Interpolation.vfi_models.film import FILM_VFI
+# from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
+
+class DropFramesByIndex:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -578,25 +583,33 @@ class DropFramesByIndex:
     RETURN_TYPES = ("IMAGE",)
     RETURN_NAMES = ("image",)
     FUNCTION = "drop_frames_by_index"
-
     CATEGORY = "Steerable-Motion"
 
     def drop_frames_by_index(self, images: torch.Tensor, frames_to_drop: str):
-        # Convert the string of frame indices to a list of integers
-        print(frames_to_drop)
-        print(type(frames_to_drop))
-
         if isinstance(frames_to_drop, str):
             frames_to_drop = eval(frames_to_drop)
 
-        # Sort and reverse the list of frames to drop to avoid index out of range error when removing
         frames_to_drop = sorted(frames_to_drop, reverse=True)
-
-        # Drop the frames by index
-        for index in frames_to_drop:
-            if index < images.shape[0]:
-                images = torch.cat((images[:index], images[index+1:]))
         
+        # Create instance of FILM_VFI within the function
+        film_vfi = FILM_VFI()  # Assuming FILM_VFI does not require any special setup
+
+        for index in frames_to_drop:
+            if 0 < index < images.shape[0] - 1:
+                # Extract the two surrounding frames
+                batch = images[index-1:index+2:2]
+
+                # Process through FILM_VFI
+                interpolated_frames = film_vfi.vfi(
+                    ckpt_name='film_net_fp32.pt', 
+                    frames=batch, 
+                    clear_cache_after_n_frames=10, 
+                    multiplier=2
+                )[0]  # Assuming vfi returns a tuple and the first element is the interpolated frames
+
+                # Replace the original frames at the location
+                images = torch.cat((images[:index-1], interpolated_frames, images[index+2:]))
+
         return (images,)
         
 
