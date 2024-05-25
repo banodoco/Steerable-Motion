@@ -24,7 +24,7 @@ else:
     raise Exception("config.yaml file is neccessary, plz recreate the config file by downloading it from https://github.com/Fannovel16/ComfyUI-Frame-Interpolation")
 DEVICE = get_torch_device()
 
-class InterpolationStateList():
+class InterpolationStateListImport():
 
     def __init__(self, frame_indices: typing.List[int], is_skip_list: bool):
         self.frame_indices = frame_indices
@@ -35,7 +35,7 @@ class InterpolationStateList():
         return self.is_skip_list and is_frame_in_list or not self.is_skip_list and not is_frame_in_list
     
 
-class MakeInterpolationStateList:
+class MakeInterpolationStateListImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -52,7 +52,7 @@ class MakeInterpolationStateList:
     def create_options(self, frame_indices: str, is_skip_list: bool):
         frame_indices_list = [int(item) for item in frame_indices.split(',')]
         
-        interpolation_state_list = InterpolationStateList(
+        interpolation_state_list = InterpolationStateListImport(
             frame_indices=frame_indices_list,
             is_skip_list=is_skip_list,
         )
@@ -127,7 +127,7 @@ def _generic_frame_loop(
         multiplier: typing.Union[typing.SupportsInt, typing.List],
         return_middle_frame_function,
         *return_middle_frame_function_args,
-        interpolation_states: InterpolationStateList = None,
+        interpolation_states: InterpolationStateListImport = None,
         use_timestep=True,
         dtype=torch.float16,
         final_logging=True):
@@ -213,7 +213,7 @@ def generic_frame_loop(
         multiplier: typing.Union[typing.SupportsInt, typing.List],
         return_middle_frame_function,
         *return_middle_frame_function_args,
-        interpolation_states: InterpolationStateList = None,
+        interpolation_states: InterpolationStateListImport = None,
         use_timestep=True,
         dtype=torch.float32):
 
@@ -255,7 +255,7 @@ def generic_frame_loop(
         return output_frames
     raise NotImplementedError(f"multipiler of {type(multiplier)}")
 
-class FloatToInt:
+class FloatToIntImport:
     @classmethod
     def INPUT_TYPES(s):
         return {

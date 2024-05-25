@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 # Local application/library specific imports
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
+from .imports.ComfyUI_Frame_Interpolation.vfi_models.film import FILM_VFIImport
 import matplotlib
 import gc
 
@@ -565,7 +566,7 @@ class BatchCreativeInterpolationNode:
 
 
 # import the class FILM_VFI from ComfyUI-Frame-Interpolation/vfi_models/film/__init__.py
-from .imports.ComfyUI_Frame_Interpolation.vfi_models.film import FILM_VFI
+
 # from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 
 
@@ -592,7 +593,7 @@ class DropFramesByIndex:
         frames_to_drop = sorted(frames_to_drop, reverse=True)
         
         # Create instance of FILM_VFI within the function
-        film_vfi = FILM_VFI()  # Assuming FILM_VFI does not require any special setup
+        film_vfi = FILM_VFIImport()  # Assuming FILM_VFI does not require any special setup
 
         for index in frames_to_drop:
             if 0 < index < images.shape[0] - 1:

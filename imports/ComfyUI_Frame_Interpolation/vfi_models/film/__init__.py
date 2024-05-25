@@ -3,7 +3,7 @@ from comfy.model_management import get_torch_device, soft_empty_cache
 import bisect
 import numpy as np
 import typing
-from vfi_utils import InterpolationStateList, load_file_from_github_release, preprocess_frames, postprocess_frames
+from vfi_utils import InterpolationStateListImport, load_file_from_github_release, preprocess_frames, postprocess_frames
 import pathlib
 import gc
 
@@ -41,7 +41,7 @@ def inference(model, img_batch_1, img_batch_2, inter_frames):
 
     return [tensor.flip(0) for tensor in results]
 
-class FILM_VFI:
+class FILM_VFIImport:
     @classmethod
     def INPUT_TYPES(s):
         return {
@@ -66,7 +66,7 @@ class FILM_VFI:
         frames: torch.Tensor,
         clear_cache_after_n_frames = 10,
         multiplier: typing.SupportsInt = 2,
-        optional_interpolation_states: InterpolationStateList = None,
+        optional_interpolation_states: InterpolationStateListImport = None,
         **kwargs
     ):
         interpolation_states = optional_interpolation_states
