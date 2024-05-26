@@ -7,7 +7,7 @@ Steerable Motion is a ComfyUI node for batch creative interpolation. Our goal is
 ## Installation in Comfy
 
 1. If you haven't already, install [ComfyUI](https://github.com/comfyanonymous/ComfyUI) and [Comfy Manager](https://github.com/ltdrdata/ComfyUI-Manager) - you can find instructions on their pages.
-2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/creative_interpolation_example.json) and drop it into ComfyUI - or you can use one of the workflows others in the community made below.
+2. Download [this workflow](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_smooth-n-steady.json) and drop it into ComfyUI - or you can use one of the workflows others in the community made below.
 3. When the workflow opens, download the dependent nodes by pressing "Install Missing Custom Nodes" in Comfy Manager. Search and download the required models from Comfy Manager also - make sure that the models you download have the same name as the ones in the workflow - or you're confident that they're the same.
 
 ## Usage
@@ -33,9 +33,23 @@ Through trial and error, you'll need to build an understanding of how the motion
 
 It won't work for everything but if you can figure out how to wield it, this approach can provide enough control for you to make beautiful things that match your imagination precisely.
 
-## 2 examples of workflows others have built on top of this:
+## 5 basic workflows to get started
 
-The workflow I shared is just one way to use this - below are two other workflows people in our community have created on top of this node:
+Below are 5 basic workflows - each with their own weird and unique characteristics - all with differing levels of adherence and different types of motion - most of the changes come from tweaking the IPA configuration and switching out base models:
+
+- [Smooth n' Steady](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_smooth-n-steady.json): tends to have nice smooth motion - good starting point
+- [Rad Attack](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_rad-attack.json): probably the best for realistic motion
+- [Slurshy Realistiche](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_slurshy-realistiche.json): moves in a slightly realistic manner but is a little bit slurshy
+- [Chocky Realistiche](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_chocky-realistiche.json): realistic-ish but very blocky
+- [Liquidy Loop](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_liquidy_loop.json): smooth and liquidy
+
+You can see each in acton below:
+
+![basic workflows](https://github.com/banodoco/steerable-motion/blob/main/demo/basic_workflows.gif)
+
+## 2 examples of things others have built on top of this:
+
+The workflows I share above are just basic examples of it in action - below are two other workflows people in our community have created on top of this node that leverage the same underlying mechanism in creative and interesting ways:
 
 ### Looped LCM by @idgallagher
 
