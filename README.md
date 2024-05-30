@@ -41,7 +41,7 @@ Below are 5 basic workflows - each with their own weird and unique characteristi
 - [Rad Attack](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_rad-attack.json): probably the best for realistic motion
 - [Slurshy Realistiche](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_slurshy-realistiche.json): moves in a slightly realistic manner but is a little bit slurshy
 - [Chocky Realistiche](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_chocky-realistiche.json): realistic-ish but very blocky
-- [Liquidy Loop](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_liquidy_loop.json): smooth and liquidy
+- [Liquidy Loop](https://raw.githubusercontent.com/banodoco/steerable-motion/main/demo/steerable-motion_liquidy-loop.json): smooth and liquidy
 
 You can see each in acton below:
 
