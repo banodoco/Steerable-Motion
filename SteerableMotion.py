@@ -9,7 +9,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 # Local application/library specific imports
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
-from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
 from .imports.ComfyUI_Frame_Interpolation.vfi_models.film import FILM_VFIImport
 import matplotlib
 import gc
@@ -47,7 +46,7 @@ class BatchCreativeInterpolationNode:
             }
         }
 
-    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","SPARSE_METHOD","INT", "INT", "STRING")
+    RETURN_TYPES = ("IMAGE","CONDITIONING","CONDITIONING","MODEL","STRING","INT", "INT", "STRING")
     RETURN_NAMES = ("GRAPH","POSITIVE","NEGATIVE","MODEL","KEYFRAME_POSITIONS","BATCH_SIZE", "BUFFER","FRAMES_TO_DROP")
     FUNCTION = "combined_function"
 
@@ -299,11 +298,6 @@ class BatchCreativeInterpolationNode:
         shifted_keyframes_position = [position + buffer - 2 for position in keyframe_positions]
         shifted_keyframe_positions_string = ','.join(str(pos) for pos in shifted_keyframes_position)        
         
-        # GET SPARSE INDEXES
-        sparseindexmethod = SparseIndexMethodNodeImport()        
-        sparse_indexes, = sparseindexmethod.get_method(shifted_keyframe_positions_string)
-        
-        # ADD BUFFER TO KEYFRAME POSITIONS
         if buffer > 0:
             # add front buffer
             keyframe_positions = [position + buffer - 1 for position in keyframe_positions]
@@ -562,13 +556,7 @@ class BatchCreativeInterpolationNode:
                 model, *_ = tiled_ipa_application.apply_tiled(model=model, ipadapter=ipadapter, image=torch.cat(bin.bigImageBatch, dim=0), weight=[x * detail_ipa_advanced_settings["ipa_weight"] for x in bin.weight_schedule], weight_type=detail_ipa_advanced_settings["ipa_weight_type"], start_at=detail_ipa_advanced_settings["ipa_starts_at"], end_at=detail_ipa_advanced_settings["ipa_ends_at"], clip_vision=clip_vision,sharpening=0.1,image_negative=negative_noise,embeds_scaling=detail_ipa_advanced_settings["ipa_embeds_scaling"], encode_batch_size=1, image_schedule=bin.image_schedule)
 
         comparison_diagram, = plot_weight_comparison(all_cn_frame_numbers, all_cn_weights, all_ipa_frame_numbers, all_ipa_weights, buffer)
-        return comparison_diagram, positive, negative, model, sparse_indexes, last_key_frame_position, buffer, shifted_keyframes_position
-
-
-# import the class FILM_VFI from ComfyUI-Frame-Interpolation/vfi_models/film/__init__.py
-
-# from .imports.AdvancedControlNet.nodes_sparsectrl import SparseIndexMethodNodeImport
-
+        return comparison_diagram, positive, negative, model, shifted_keyframe_positions_string, last_key_frame_position, buffer, shifted_keyframes_position
 
 class RemoveAndInterpolateFramesNode:
     @classmethod
