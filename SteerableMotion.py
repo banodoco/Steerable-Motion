@@ -1,17 +1,27 @@
 # Standard library imports
 from ast import literal_eval
 from io import BytesIO
-import numpy as np
+import logging
+import math
+import gc
+
 # Third-party library imports
+import numpy as np
 import torch
 import torchvision.transforms as transforms
 from PIL import Image
+import matplotlib
 import matplotlib.pyplot as plt
+
 # Local application/library specific imports
 from .imports.ComfyUI_IPAdapter_plus.IPAdapterPlus import IPAdapterBatchImport, IPAdapterTiledBatchImport, IPAdapterTiledImport, PrepImageForClipVisionImport, IPAdapterAdvancedImport, IPAdapterNoiseImport
 from .imports.ComfyUI_Frame_Interpolation.vfi_models.film import FILM_VFIImport
-import matplotlib
-import gc
+from comfy.utils import common_upscale
+
+try:
+    from .utils import log # If your .utils has a log object
+except ImportError:
+    log = logging.getLogger(__name__) # Fallback to standard logging
 
 class BatchCreativeInterpolationNode:
     @classmethod
@@ -642,15 +652,373 @@ class IpaConfigurationNode:
             "noise_blur": noise_blur,
         },
 
+class VideoFrameExtractorAndMaskGenerator:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "input_video_frames": ("IMAGE", {"tooltip": "Input video frames (IMAGE batch) to extract from."}),
+                "total_output_frames": ("INT", {"default": 81, "min": 1, "max": 10000, "step": 4, "tooltip": "Total number of frames for the output guidance video and masks. Must satisfy: (frames - 1) divisible by 4."}),
+                "frame_selection_string": ("STRING", {"default": "0, 10:20", "multiline": False, "tooltip": "Comma-separated integers or ranges (e.g., 0, 5, 10:15, 20) of frames to extract from input video. Takes precedence over depth_frames."}),
+                "empty_frame_fill_level": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Grayscale level (0.0 black, 1.0 white) for frames not explicitly selected or filled by depth."}),
+            },
+            "optional": {
+                "depth_video_frames": ("IMAGE", {"tooltip": "Optional depth frames (IMAGE batch). Placed if the slot is not already filled by frame_selection_string."}),
+                "master_inpaint_mask": ("MASK", {"tooltip": "Optional master inpaint mask. If provided, it defines the entire output mask, overriding masks for selected/depth frames."}),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK",)
+    RETURN_NAMES = ("guidance_video_frames", "guidance_frame_masks",)
+    FUNCTION = "extract_frames_and_generate_masks"
+    CATEGORY = "Steerable-Motion"
+    DESCRIPTION = "Extracts/places frames from input/depth video into a new guidance video and generates corresponding masks. frame_selection_string takes precedence over depth frames."
+
+    def _parse_frame_selection_string(self, selection_string, max_frame_index_from_input):
+        selected_frame_indices = set()
+        selection_parts = selection_string.split(',')
+        for part in selection_parts:
+            part = part.strip()
+            if not part:
+                continue
+            if ':' in part:
+                try:
+                    start_str, end_str = part.split(':')
+                    start_frame = int(start_str)
+                    end_frame = int(end_str)
+                    if start_frame < 0 or end_frame < 0:
+                        log.warning(f"Frame indices cannot be negative in '{part}'. Skipping.")
+                        continue
+                    if start_frame > end_frame:
+                        log.warning(f"Range start {start_frame} is greater than end {end_frame} in '{part}'. Swapping.")
+                        start_frame, end_frame = end_frame, start_frame
+                    
+                    for frame_idx in range(start_frame, end_frame + 1): # Inclusive range
+                        if 0 <= frame_idx <= max_frame_index_from_input:
+                            selected_frame_indices.add(frame_idx)
+                        else:
+                            log.warning(f"Frame index {frame_idx} from range '{part}' is out of bounds for input video (0-{max_frame_index_from_input}). Skipping this specific index.")
+                except ValueError:
+                    log.error(f"Invalid range format '{part}'. Skipping.")
+            else:
+                try:
+                    frame_idx = int(part)
+                    if frame_idx < 0:
+                        log.warning(f"Frame index {frame_idx} cannot be negative. Skipping.")
+                        continue
+                    if 0 <= frame_idx <= max_frame_index_from_input:
+                        selected_frame_indices.add(frame_idx)
+                    else:
+                        log.warning(f"Frame index {frame_idx} is out of bounds for input video (0-{max_frame_index_from_input}). Skipping.")
+                except ValueError:
+                    log.error(f"Invalid frame index '{part}'. Skipping.")
+        return sorted(list(selected_frame_indices))
+
+    def extract_frames_and_generate_masks(self, input_video_frames, total_output_frames, frame_selection_string, empty_frame_fill_level, depth_video_frames=None, master_inpaint_mask=None):
+        # Convert string parameter to integer
+        total_output_frames = int(total_output_frames)
+        if (total_output_frames - 1) % 4 != 0:
+            raise ValueError("total_output_frames must satisfy (frames - 1) divisible by 4")
+        
+        if input_video_frames is None or input_video_frames.shape[0] == 0:
+            log.error("Input video_frames is empty. Cannot proceed.")
+            dummy_height, dummy_width, dummy_channels = 64, 64, 3
+            return (torch.zeros((total_output_frames, dummy_height, dummy_width, dummy_channels), dtype=torch.float32),
+                    torch.ones((total_output_frames, dummy_height, dummy_width), dtype=torch.float32))
+
+        device = input_video_frames.device
+        dtype = input_video_frames.dtype
+
+        batch_size_input, frame_height, frame_width, num_channels = input_video_frames.shape
+        max_input_frame_index = batch_size_input - 1
+
+        # Initialize guidance video with empty_frame_fill_level
+        guidance_video_output = torch.ones((total_output_frames, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
+        # Initialize base masks: 1 for unknown/inpaint, 0 for known
+        base_frame_masks = torch.ones((total_output_frames, frame_height, frame_width), device=device, dtype=dtype)
+
+        # 1. Process frame_selection_string (highest priority)
+        selected_input_frame_indices = self._parse_frame_selection_string(frame_selection_string, max_input_frame_index)
+        log.info(f"Frames selected by 'frame_selection_string': {selected_input_frame_indices}")
+        for input_frame_index in selected_input_frame_indices:
+            # The selected_input_frame_indices are indices from the *input_video*.
+            # We place them at the *same index* in the output guidance_video if that index is valid.
+            target_output_frame_index = input_frame_index
+            if target_output_frame_index < total_output_frames:
+                guidance_video_output[target_output_frame_index] = input_video_frames[input_frame_index].clone()
+                base_frame_masks[target_output_frame_index] = 0.0 # This frame is now known and prioritized
+                log.debug(f"Placed frame {input_frame_index} from input_video_frames into guidance_video at index {target_output_frame_index}.")
+            else:
+                log.warning(f"Selected frame index {input_frame_index} from input video maps to target index {target_output_frame_index}, which is >= total_output_frames ({total_output_frames}). It won't be placed.")
+
+        # 2. Process depth_video_frames (second priority)
+        if depth_video_frames is not None and depth_video_frames.shape[0] > 0:
+            log.info(f"Processing {depth_video_frames.shape[0]} depth_video_frames.")
+            processed_depth_frames = depth_video_frames.clone().to(device=device, dtype=dtype)
+
+            # Resize depth_video_frames if their dimensions don't match input_video_frames
+            if processed_depth_frames.shape[1:] != (frame_height, frame_width, num_channels):
+                log.info(f"Resizing depth_video_frames from {processed_depth_frames.shape[1:]} to {(frame_height, frame_width, num_channels)} to match input_video_frames.")
+                resized_depth_frame_list = []
+                for frame_idx in range(processed_depth_frames.shape[0]):
+                    # common_upscale expects (B, C, H, W) or (B, H, W)
+                    # IMAGE is (B,H,W,C), so permute, upscale, permute back
+                    frame_to_resize = processed_depth_frames[frame_idx:frame_idx+1].permute(0, 3, 1, 2) # (1, C, H_depth, W_depth)
+                    resized_frame = common_upscale(frame_to_resize, frame_width, frame_height, "lanczos", "disabled") # (1, C, H, W)
+                    resized_depth_frame_list.append(resized_frame.permute(0, 2, 3, 1)) # (1, H, W, C)
+                processed_depth_frames = torch.cat(resized_depth_frame_list, dim=0)
+            
+            num_depth_frames_to_place = min(processed_depth_frames.shape[0], total_output_frames)
+            for frame_idx in range(num_depth_frames_to_place):
+                # Check if this slot in guidance_video is still an "empty" placeholder
+                # (i.e., its mask is still 1.0, meaning not filled by frame_selection_string)
+                if base_frame_masks[frame_idx].mean() > 0.99: # Check if it's still (mostly) 1.0
+                    guidance_video_output[frame_idx] = processed_depth_frames[frame_idx].clone()
+                    # Keep mask as 1.0 for depth frames (inpaint area) - don't set to 0.0
+                    log.debug(f"Placed frame {frame_idx} from depth_video_frames into guidance_video at index {frame_idx} (keeping as inpaint area).")
+                else:
+                    log.debug(f"Skipping depth_frame {frame_idx} as guidance_video index {frame_idx} was already filled by frame_selection_string.")
+        else:
+            log.info("No depth_video_frames provided or depth_video_frames is empty.")
+
+        # 3. Handle optional master_inpaint_mask (this will override base_frame_masks if provided)
+        final_frame_masks = base_frame_masks
+        if master_inpaint_mask is not None:
+            log.info("Processing provided master_inpaint_mask. This will override masks derived from frame/depth selection.")
+            processed_master_mask = master_inpaint_mask.clone().to(device=device, dtype=dtype)
+
+            if processed_master_mask.shape[1:] != (frame_height, frame_width):
+                log.info(f"Resizing master_inpaint_mask from {processed_master_mask.shape[1:]} to {(frame_height, frame_width)}.")
+                processed_master_mask = common_upscale(
+                    processed_master_mask.unsqueeze(1),
+                    frame_width, frame_height, "nearest-exact", "disabled"
+                ).squeeze(1)
+
+            if processed_master_mask.shape[0] != total_output_frames:
+                log.info(f"Adjusting master_inpaint_mask frame count from {processed_master_mask.shape[0]} to {total_output_frames}.")
+                if processed_master_mask.shape[0] == 0:
+                    log.error("Received an empty master_inpaint_mask after processing. Using base masks.")
+                elif processed_master_mask.shape[0] < total_output_frames:
+                    num_mask_repeats = (total_output_frames + processed_master_mask.shape[0] - 1) // processed_master_mask.shape[0]
+                    processed_master_mask = processed_master_mask.repeat(num_mask_repeats, 1, 1)[:total_output_frames]
+                else:
+                    processed_master_mask = processed_master_mask[:total_output_frames]
+            
+            final_frame_masks = processed_master_mask
+
+        return (guidance_video_output.cpu().float(), final_frame_masks.cpu().float())
+
+class VideoContinuationGenerator:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "input_video_frames": ("IMAGE", {"tooltip": "Input video frames to create continuation from."}),
+                "total_output_frames": ("INT", {"default": 81, "min": 1, "max": 81, "step": 4, "tooltip": "Total number of frames for the output continuation video. Must satisfy: (frames - 1) divisible by 4."}),
+                "overlap_frames": ("INT", {"default": 3, "min": 1, "max": 50, "step": 1, "tooltip": "Number of frames from the end of input video to use as overlap at the start."}),
+                "empty_frame_fill_level": ("FLOAT", {"default": 0.5, "min": 0.0, "max": 1.0, "step": 0.01, "tooltip": "Grayscale level (0.0 black, 1.0 white) for empty continuation frames."}),
+            },
+            "optional": {
+                "end_frame": ("IMAGE", {"tooltip": "Optional single frame to place at the end of the continuation video."}),
+                "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
+                "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE", "MASK",)
+    RETURN_NAMES = ("continuation_video_frames", "continuation_frame_masks",)
+    FUNCTION = "generate_continuation_video"
+    CATEGORY = "Steerable-Motion"
+    DESCRIPTION = "Creates a continuation video by placing overlap frames from the end of input video at the start, with optional end frame."
+
+    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None):
+        # 1. Validation and Setup
+        total_output_frames = int(total_output_frames)
+        if (total_output_frames - 1) % 4 != 0:
+            raise ValueError("total_output_frames must satisfy (frames - 1) divisible by 4")
+        
+        if input_video_frames is None or input_video_frames.shape[0] == 0:
+            log.error("Input video_frames is empty. Cannot proceed.")
+            dummy_height, dummy_width, dummy_channels = 64, 64, 3
+            return (torch.zeros((total_output_frames, dummy_height, dummy_width, dummy_channels), dtype=torch.float32),
+                    torch.ones((total_output_frames, dummy_height, dummy_width), dtype=torch.float32))
+
+        device = input_video_frames.device
+        dtype = input_video_frames.dtype
+        batch_size_input, frame_height, frame_width, num_channels = input_video_frames.shape
+
+        # 2. Prepare Start Frames (from overlap)
+        actual_overlap_frames = min(overlap_frames, batch_size_input, total_output_frames)
+        if actual_overlap_frames < overlap_frames:
+            log.warning(f"Requested {overlap_frames} overlap frames but input video only has {batch_size_input} frames or total output is smaller. Using {actual_overlap_frames} instead.")
+        
+        overlap_start_idx = batch_size_input - actual_overlap_frames
+        start_frames_part = input_video_frames[overlap_start_idx : overlap_start_idx + actual_overlap_frames].clone()
+
+        # 3. Prepare End Frame
+        end_frame_part = torch.empty((0, frame_height, frame_width, num_channels), device=device, dtype=dtype)
+        num_end_frames = 0
+        if end_frame is not None and end_frame.shape[0] > 0 and total_output_frames > actual_overlap_frames:
+            num_end_frames = 1
+            end_frame_processed = end_frame[0].clone().to(device=device, dtype=dtype)
+            
+            if end_frame_processed.shape != (frame_height, frame_width, num_channels):
+                log.info(f"Resizing end_frame from {end_frame_processed.shape} to {(frame_height, frame_width, num_channels)}.")
+                frame_to_resize = end_frame_processed.unsqueeze(0).permute(0, 3, 1, 2)
+                resized_frame = common_upscale(frame_to_resize, frame_width, frame_height, "lanczos", "disabled")
+                end_frame_processed = resized_frame.permute(0, 2, 3, 1).squeeze(0)
+            
+            end_frame_part = end_frame_processed.unsqueeze(0)
+
+        # 4. Prepare Middle Frames
+        num_middle_frames = total_output_frames - actual_overlap_frames - num_end_frames
+        middle_frames_part = torch.empty((0, frame_height, frame_width, num_channels), device=device, dtype=dtype)
+
+        if num_middle_frames > 0:
+            if control_images is not None:
+                log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames.")
+                control_images_resized = common_upscale(control_images.movedim(-1, 1), frame_width, frame_height, "lanczos", "disabled").movedim(1, -1)
+                
+                if control_images_resized.shape[0] < num_middle_frames:
+                    log.warning(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, less than needed ({num_middle_frames}). Padding with 'empty_frame_fill_level'.")
+                    padding_needed = num_middle_frames - control_images_resized.shape[0]
+                    padding = torch.ones((padding_needed, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
+                    middle_frames_part = torch.cat([control_images_resized, padding], dim=0)
+                else:
+                    if control_images_resized.shape[0] > num_middle_frames:
+                        log.info(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, more than needed ({num_middle_frames}). Using the first {num_middle_frames}.")
+                    middle_frames_part = control_images_resized[:num_middle_frames].clone()
+            else:
+                log.info(f"No 'control_images', filling {num_middle_frames} middle frames with level {empty_frame_fill_level}.")
+                middle_frames_part = torch.ones((num_middle_frames, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
+        
+        # 5. Assemble Final Video
+        continuation_video_output = torch.cat([start_frames_part, middle_frames_part, end_frame_part], dim=0)
+        
+        # 6. Create Mask
+        continuation_frame_masks = torch.ones((total_output_frames, frame_height, frame_width), device=device, dtype=dtype)
+        if actual_overlap_frames > 0:
+            continuation_frame_masks[0:actual_overlap_frames] = 0.0
+        if num_end_frames > 0:
+            continuation_frame_masks[-num_end_frames:] = 0.0
+
+        # 7. Handle optional inpaint_mask override
+        if inpaint_mask is not None:
+            log.info("Processing provided 'inpaint_mask', which will override the automatically generated mask.")
+            processed_mask = common_upscale(inpaint_mask.unsqueeze(1), frame_width, frame_height, "nearest-exact", "disabled").squeeze(1).to(device)
+            
+            if processed_mask.shape[0] != total_output_frames:
+                log.info(f"Adjusting inpaint_mask frame count from {processed_mask.shape[0]} to {total_output_frames}.")
+                if processed_mask.shape[0] < total_output_frames:
+                    num_repeats = (total_output_frames + processed_mask.shape[0] - 1) // processed_mask.shape[0]
+                    processed_mask = processed_mask.repeat(num_repeats, 1, 1)[:total_output_frames]
+                else:
+                    processed_mask = processed_mask[:total_output_frames]
+            
+            continuation_frame_masks = processed_mask.to(dtype=dtype)
+
+        log.info(f"Generated continuation video. Start: {actual_overlap_frames} frames, Middle: {num_middle_frames} frames, End: {num_end_frames} frames.")
+        
+        return (continuation_video_output.cpu().float(), continuation_frame_masks.cpu().float())
+
+class WanInputFrameNumber:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "frame_number": ("INT", {"default": 81, "min": 1, "max": 10000, "step": 4, "tooltip": "Frame number where (frames - 1) is divisible by 4."}),
+            },
+        }
+
+    RETURN_TYPES = ("INT",)
+    RETURN_NAMES = ("frame_number",)
+    FUNCTION = "get_frame_number"
+    CATEGORY = "Steerable-Motion"
+    DESCRIPTION = "Outputs a frame number that satisfies the WAN constraint: (frames - 1) divisible by 4."
+
+    def get_frame_number(self, frame_number):
+        frame_number = int(frame_number)
+        if (frame_number - 1) % 4 != 0:
+            raise ValueError("frame_number must satisfy (frame_number - 1) divisible by 4")
+        return (frame_number,)
+
+class WanVideoBlenderNode:
+    @classmethod
+    def INPUT_TYPES(s):
+        return {
+            "required": {
+                "overlap_frames": ("INT", {"default": 10, "min": 1, "max": 1000, "step": 1}),
+                "video_1": ("IMAGE",),
+                "video_2": ("IMAGE",),
+            },
+        }
+
+    RETURN_TYPES = ("IMAGE",)
+    RETURN_NAMES = ("blended_video_frames",)
+    FUNCTION = "blend_videos"
+    CATEGORY = "Steerable-Motion"
+    DESCRIPTION = "Blends two input videos with a cross-fade. The resolution of the second clip is resized to match the first."
+
+    def _resize_video(self, video, target_height, target_width):
+        """Resize a batch of frames (B,H,W,C) to (target_height,target_width) using Lanczos."""
+        if video.shape[1] == target_height and video.shape[2] == target_width:
+            return video
+        # (B, H, W, C) -> (B, C, H, W)
+        video_permuted = video.permute(0, 3, 1, 2)
+        resized = common_upscale(video_permuted, target_width, target_height, "lanczos", "disabled")  # (B, C, H, W)
+        return resized.permute(0, 2, 3, 1)
+
+    def _cross_fade(self, tail, head, overlap_frames):
+        """Blend two tensors of shape (overlap_frames,H,W,C) using linear alpha."""
+        device, dtype = tail.device, tail.dtype
+        alphas = torch.linspace(0, 1, overlap_frames, device=device, dtype=dtype).view(-1, 1, 1, 1)
+        blended = tail * (1 - alphas) + head * alphas
+        return blended
+
+    def blend_videos(self, overlap_frames, video_1, video_2):
+        if video_1 is None or video_2 is None:
+            raise ValueError("Both video_1 and video_2 are required.")
+
+        # Reference dimensions and properties from first video
+        ref_h, ref_w = video_1.shape[1:3]
+        
+        # Ensure second video matches size
+        video_2_resized = self._resize_video(video_2, ref_h, ref_w)
+
+        if video_1.shape[0] < overlap_frames or video_2_resized.shape[0] < overlap_frames:
+            raise ValueError(f"One of the videos is shorter than overlap_frames={overlap_frames}.")
+
+        # Extract segments for blending
+        tail = video_1[-overlap_frames:]
+        head = video_2_resized[:overlap_frames]
+        blended = self._cross_fade(tail, head, overlap_frames)
+
+        # Assemble new timeline
+        final_video = torch.cat([
+            video_1[:-overlap_frames],
+            blended,
+            video_2_resized[overlap_frames:]
+        ], dim=0)
+
+        return (final_video.cpu().float(),)
+
 # NODE MAPPING
 NODE_CLASS_MAPPINGS = {
     "BatchCreativeInterpolation": BatchCreativeInterpolationNode,
     "IpaConfiguration": IpaConfigurationNode,
     "RemoveAndInterpolateFrames": RemoveAndInterpolateFramesNode,
+    "VideoFrameExtractorAndMaskGenerator": VideoFrameExtractorAndMaskGenerator,
+    "VideoContinuationGenerator": VideoContinuationGenerator,
+    "WanInputFrameNumber": WanInputFrameNumber,
+    "WanVideoBlender": WanVideoBlenderNode,
 }
 
 NODE_DISPLAY_NAME_MAPPINGS = {    
     "BatchCreativeInterpolation": "Batch Creative Interpolation 🎞️🅢🅜",
-    "IpaConfiguration": "IPA Configuration  🎞️🅢🅜",
+    "IpaConfiguration": "IP-Adapter Configuration 🎞️🅢🅜",
     "RemoveAndInterpolateFrames": "Remove and Interpolate Frames 🎞️🅢🅜",
+    "VideoFrameExtractorAndMaskGenerator": "Video Frame Extractor & Mask Generator 🎞️🅢🅜",
+    "VideoContinuationGenerator": "Video Continuation Generator 🎞️🅢🅜",
+    "WanInputFrameNumber": "WAN Input Frame Number 🎞️🅢🅜",
+    "WanVideoBlender": "WAN Video Blender 🎞️🅢🅜",
 }
