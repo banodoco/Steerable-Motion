@@ -822,6 +822,7 @@ class VideoContinuationGenerator:
                 "end_frame": ("IMAGE", {"tooltip": "Optional single frame to place at the end of the continuation video."}),
                 "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
                 "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
+                "when_to_start_control_frames": (["beginning", "after overlap_frames"], {"default": "after overlap_frames", "tooltip": "If at beginning, control frames won't actually be active until after the context, but after that they'll continue on from after the overlap_frames number. If after overlap_frames, the first control frame will be placed after the context is over."}),
             },
         }
 
@@ -831,7 +832,7 @@ class VideoContinuationGenerator:
     CATEGORY = "Steerable-Motion"
     DESCRIPTION = "Creates a continuation video by placing overlap frames from the end of input video at the start, with optional end frame."
 
-    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None):
+    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, when_to_start_control_frames="after overlap_frames"):
         # 1. Validation and Setup
         total_output_frames = int(total_output_frames)
         if (total_output_frames - 1) % 4 != 0:
@@ -876,18 +877,30 @@ class VideoContinuationGenerator:
 
         if num_middle_frames > 0:
             if control_images is not None:
-                log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames.")
+                log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames with '{when_to_start_control_frames}' mode.")
                 control_images_resized = common_upscale(control_images.movedim(-1, 1), frame_width, frame_height, "lanczos", "disabled").movedim(1, -1)
                 
-                if control_images_resized.shape[0] < num_middle_frames:
-                    log.warning(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, less than needed ({num_middle_frames}). Padding with 'empty_frame_fill_level'.")
-                    padding_needed = num_middle_frames - control_images_resized.shape[0]
-                    padding = torch.ones((padding_needed, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
-                    middle_frames_part = torch.cat([control_images_resized, padding], dim=0)
-                else:
-                    if control_images_resized.shape[0] > num_middle_frames:
-                        log.info(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, more than needed ({num_middle_frames}). Using the first {num_middle_frames}.")
-                    middle_frames_part = control_images_resized[:num_middle_frames].clone()
+                if when_to_start_control_frames == "beginning":
+                    # Start from the beginning of control_images, regardless of overlap
+                    if control_images_resized.shape[0] < num_middle_frames:
+                        log.warning(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, less than needed ({num_middle_frames}). Padding with 'empty_frame_fill_level'.")
+                        padding_needed = num_middle_frames - control_images_resized.shape[0]
+                        padding = torch.ones((padding_needed, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
+                        middle_frames_part = torch.cat([control_images_resized, padding], dim=0)
+                    else:
+                        middle_frames_part = control_images_resized[:num_middle_frames].clone()
+                else:  # "after overlap_frames"
+                    # Skip potential duplicate frames that overlap with the start section
+                    duplicate_count = min(actual_overlap_frames, control_images_resized.shape[0])
+                    available_after_dup = control_images_resized.shape[0] - duplicate_count
+                    if available_after_dup < num_middle_frames:
+                        log.info(f"After removing {duplicate_count} overlapping frames, only {available_after_dup} control frames remain; padding {num_middle_frames - available_after_dup} frames with 'empty_frame_fill_level'.")
+                        selected_control = control_images_resized[duplicate_count:]
+                        padding_needed = num_middle_frames - selected_control.shape[0]
+                        padding = torch.ones((padding_needed, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
+                        middle_frames_part = torch.cat([selected_control, padding], dim=0)
+                    else:
+                        middle_frames_part = control_images_resized[duplicate_count:duplicate_count + num_middle_frames].clone()
             else:
                 log.info(f"No 'control_images', filling {num_middle_frames} middle frames with level {empty_frame_fill_level}.")
                 middle_frames_part = torch.ones((num_middle_frames, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
