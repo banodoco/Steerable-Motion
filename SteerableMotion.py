@@ -822,8 +822,7 @@ class VideoContinuationGenerator:
                 "end_frame": ("IMAGE", {"tooltip": "Optional single frame to place at the end of the continuation video."}),
                 "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
                 "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
-                "when_to_start_control_frames": (["beginning", "after overlap_frames"], {"default": "after overlap_frames", "tooltip": "If at beginning, control frames won't actually be active until after the context, but after that they'll continue on from after the overlap_frames number. If after overlap_frames, the first control frame will be placed after the context is over."}),
-                "when_to_start_masks": (["beginning", "after overlap_frames"], {"default": "after overlap_frames", "tooltip": "Controls when mask generation begins. If at beginning, masks start from frame 0. If after overlap_frames, masks start after the overlap period to match control frame timing."}),
+                "continuation_mode": (["Generate new content", "Stitch to existing sequence"], {"default": "Generate new content", "tooltip": "Choose 'Generate new content' if your control images are only for the new section. Choose 'Stitch to existing sequence' if your control images represent the full, final timeline."}),
             },
         }
 
@@ -833,7 +832,7 @@ class VideoContinuationGenerator:
     CATEGORY = "Steerable-Motion"
     DESCRIPTION = "Creates a continuation video by placing overlap frames from the end of input video at the start, with optional end frame."
 
-    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, when_to_start_control_frames="after overlap_frames", when_to_start_masks="after overlap_frames"):
+    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, continuation_mode="Generate new content"):
         # 1. Validation and Setup
         total_output_frames = int(total_output_frames)
         if (total_output_frames - 1) % 4 != 0:
@@ -878,11 +877,11 @@ class VideoContinuationGenerator:
 
         if num_middle_frames > 0:
             if control_images is not None:
-                log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames with '{when_to_start_control_frames}' mode.")
+                log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames with '{continuation_mode}' mode.")
                 control_images_resized = common_upscale(control_images.movedim(-1, 1), frame_width, frame_height, "lanczos", "disabled").movedim(1, -1)
                 
-                if when_to_start_control_frames == "beginning":
-                    # Start from the beginning of control_images, regardless of overlap
+                if continuation_mode == "Generate new content":
+                    # Use control frames from the beginning of the sequence (C0, C1, C2...)
                     if control_images_resized.shape[0] < num_middle_frames:
                         log.warning(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, less than needed ({num_middle_frames}). Padding with 'empty_frame_fill_level'.")
                         padding_needed = num_middle_frames - control_images_resized.shape[0]
@@ -890,12 +889,12 @@ class VideoContinuationGenerator:
                         middle_frames_part = torch.cat([control_images_resized, padding], dim=0)
                     else:
                         middle_frames_part = control_images_resized[:num_middle_frames].clone()
-                else:  # "after overlap_frames"
-                    # Skip potential duplicate frames that overlap with the start section
+                else:  # "Stitch to existing sequence"
+                    # Skip the first overlap_frames control images to avoid duplication
                     duplicate_count = min(actual_overlap_frames, control_images_resized.shape[0])
                     available_after_dup = control_images_resized.shape[0] - duplicate_count
                     if available_after_dup < num_middle_frames:
-                        log.info(f"After removing {duplicate_count} overlapping frames, only {available_after_dup} control frames remain; padding {num_middle_frames - available_after_dup} frames with 'empty_frame_fill_level'.")
+                        log.info(f"After skipping {duplicate_count} control frames, only {available_after_dup} remain; padding {num_middle_frames - available_after_dup} frames with 'empty_frame_fill_level'.")
                         selected_control = control_images_resized[duplicate_count:]
                         padding_needed = num_middle_frames - selected_control.shape[0]
                         padding = torch.ones((padding_needed, frame_height, frame_width, num_channels), device=device, dtype=dtype) * empty_frame_fill_level
@@ -912,14 +911,14 @@ class VideoContinuationGenerator:
         # 6. Create Mask
         continuation_frame_masks = torch.ones((total_output_frames, frame_height, frame_width), device=device, dtype=dtype)
         
-        # Apply mask logic based on when_to_start_masks parameter
-        if when_to_start_masks == "beginning":
+        # Apply mask logic based on continuation_mode parameter
+        if continuation_mode == "Generate new content":
             # Set known frames (overlap and end) to 0.0, rest stay as 1.0 (inpaint)
             if actual_overlap_frames > 0:
                 continuation_frame_masks[0:actual_overlap_frames] = 0.0
             if num_end_frames > 0:
                 continuation_frame_masks[-num_end_frames:] = 0.0
-        else:  # "after overlap_frames"
+        else:  # "Stitch to existing sequence"
             # Set known frames (overlap and end) to 0.0, but also set middle section based on control frame logic
             if actual_overlap_frames > 0:
                 continuation_frame_masks[0:actual_overlap_frames] = 0.0
