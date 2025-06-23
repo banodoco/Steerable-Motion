@@ -822,8 +822,8 @@ class VideoContinuationGenerator:
                 "end_frame": ("IMAGE", {"tooltip": "Optional single frame to place at the end of the continuation video."}),
                 "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
                 "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
-                "when_to_start_control_frames": (["beginning_of_generation", "after_overlap_frames"], {"default": "beginning_of_generation", "tooltip": "Aligns control frames with the start of the output (frame 0). Overlap frames from the input video will take priority, so control frames will become visible starting after the overlap period."}),
-                "when_to_start_masks": (["beginning_of_generation", "after_overlap_frames"], {"default": "beginning_of_generation", "tooltip": "Aligns masks with the start of the output (frame 0). 'after_overlap_frames' starts masks after the overlap period."}),
+                "when_to_start_control_frames": (["beginning_of_generation", "after_overlap_frames"], {"default": "beginning_of_generation", "tooltip": "If beginning_of_generation is selected, aligns control frames with the start of the output (frame 0). Overlap frames from the input video will take priority, so control frames will become visible starting after the overlap period. If after_overlap_frames is selected, control frames will start being placed after the overlap frames from the input video."}),
+                "when_to_start_masks": (["beginning_of_generation", "after_overlap_frames"], {"default": "beginning_of_generation", "tooltip": "If beginning_of_generation is selected, aligns masks with the start of the output (frame 0). If after_overlap_frames is selected, masks will start being placed after the overlap frames from the input video."}),
             },
         }
 
