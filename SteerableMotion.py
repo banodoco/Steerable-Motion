@@ -822,8 +822,8 @@ class VideoContinuationGenerator:
                 "end_frame": ("IMAGE", {"tooltip": "Optional single frame to place at the end of the continuation video."}),
                 "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
                 "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
-                "how_to_use_control_images": (["start_sequence_at_beginning_but_prioritise_input_frames", "start_sequence_after_overlap_frames_prioritise_input_frames"], {"default": "start_sequence_at_beginning_but_prioritise_input_frames", "tooltip": "If start_sequence_at_beginning_but_prioritise_input_frames is selected, control images align with frame 0 but input overlap frames take priority, so control images become visible after the overlap period. If start_sequence_after_overlap_frames_prioritise_input_frames is selected, control images start being placed after the overlap frames from the input video."}),
-                "how_to_use_inpaint_masks": (["start_sequence_at_beginning_but_prioritise_input_frames", "start_sequence_after_overlap_frames_prioritise_input_frames"], {"default": "start_sequence_at_beginning_but_prioritise_input_frames", "tooltip": "If start_sequence_at_beginning_but_prioritise_input_frames is selected, inpaint masks align with frame 0 but preserve input overlap frames as known. If start_sequence_after_overlap_frames_prioritise_input_frames is selected, inpaint masks only affect frames after the overlap period."}),
+                "how_to_use_control_images": (["start_sequence_at_beginning_and_prioritise_input_frames", "start_sequence_after_overlap_frames_and_prioritise_input_frames"], {"default": "start_sequence_at_beginning_and_prioritise_input_frames", "tooltip": "If start_sequence_at_beginning_and_prioritise_input_frames is selected, control images align with frame 0 but input overlap frames take priority, so control images become visible after the overlap period. If start_sequence_after_overlap_frames_and_prioritise_input_frames is selected, control images start being placed after the overlap frames from the input video."}),
+                "how_to_use_inpaint_masks": (["start_sequence_at_beginning_and_prioritise_input_frames", "start_sequence_after_overlap_frames_and_prioritise_input_frames"], {"default": "start_sequence_at_beginning_and_prioritise_input_frames", "tooltip": "If start_sequence_at_beginning_and_prioritise_input_frames is selected, inpaint masks align with frame 0 but preserve input overlap frames as known. If start_sequence_after_overlap_frames_and_prioritise_input_frames is selected, inpaint masks only affect frames after the overlap period."}),
             },
         }
 
@@ -833,7 +833,7 @@ class VideoContinuationGenerator:
     CATEGORY = "Steerable-Motion"
     DESCRIPTION = "Creates a continuation video by placing overlap frames from the end of input video at the start, with optional end frame."
 
-    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, how_to_use_control_images="start_sequence_at_beginning_but_prioritise_input_frames", how_to_use_inpaint_masks="start_sequence_at_beginning_but_prioritise_input_frames"):
+    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, how_to_use_control_images="start_sequence_at_beginning_and_prioritise_input_frames", how_to_use_inpaint_masks="start_sequence_at_beginning_and_prioritise_input_frames"):
         # 1. Validation and Setup
         total_output_frames = int(total_output_frames)
         if (total_output_frames - 1) % 4 != 0:
@@ -881,7 +881,7 @@ class VideoContinuationGenerator:
                 log.info(f"Using 'control_images' to fill the {num_middle_frames} middle frames with '{how_to_use_control_images}' mode.")
                 control_images_resized = common_upscale(control_images.movedim(-1, 1), frame_width, frame_height, "lanczos", "disabled").movedim(1, -1)
                 
-                if how_to_use_control_images == "start_sequence_at_beginning_but_prioritise_input_frames":
+                if how_to_use_control_images == "start_sequence_at_beginning_and_prioritise_input_frames":
                     # Skip the first overlap_frames control images to avoid duplication
                     duplicate_count = min(actual_overlap_frames, control_images_resized.shape[0])
                     available_after_dup = control_images_resized.shape[0] - duplicate_count
@@ -893,7 +893,7 @@ class VideoContinuationGenerator:
                         middle_frames_part = torch.cat([selected_control, padding], dim=0)
                     else:
                         middle_frames_part = control_images_resized[duplicate_count:duplicate_count + num_middle_frames].clone()
-                else:  # "start_sequence_after_overlap_frames_prioritise_input_frames"
+                else:  # "start_sequence_after_overlap_frames_and_prioritise_input_frames"
                     # Use control frames from the beginning of the sequence (C0, C1, C2...)
                     if control_images_resized.shape[0] < num_middle_frames:
                         log.warning(f"Provided 'control_images' have {control_images_resized.shape[0]} frames, less than needed ({num_middle_frames}). Padding with 'empty_frame_fill_level'.")
@@ -913,7 +913,7 @@ class VideoContinuationGenerator:
         continuation_frame_masks = torch.ones((total_output_frames, frame_height, frame_width), device=device, dtype=dtype)
         
         # Apply mask logic based on how_to_use_inpaint_masks parameter
-        if how_to_use_inpaint_masks == "start_sequence_at_beginning_but_prioritise_input_frames":
+        if how_to_use_inpaint_masks == "start_sequence_at_beginning_and_prioritise_input_frames":
             # Set known frames (overlap and end) to 0.0, but also set middle section based on control frame logic
             if actual_overlap_frames > 0:
                 continuation_frame_masks[0:actual_overlap_frames] = 0.0
@@ -929,7 +929,7 @@ class VideoContinuationGenerator:
                     middle_start = actual_overlap_frames
                     middle_end = middle_start + num_middle_frames
                     continuation_frame_masks[middle_start:middle_end] = 0.0
-        else:  # "start_sequence_after_overlap_frames_prioritise_input_frames"
+        else:  # "start_sequence_after_overlap_frames_and_prioritise_input_frames"
             # Set known frames (overlap and end) to 0.0, rest stay as 1.0 (inpaint)
             if actual_overlap_frames > 0:
                 continuation_frame_masks[0:actual_overlap_frames] = 0.0
@@ -950,13 +950,13 @@ class VideoContinuationGenerator:
                     processed_mask = processed_mask[:total_output_frames]
             
             # Apply how_to_use_inpaint_masks logic to the provided mask
-            if how_to_use_inpaint_masks == "start_sequence_at_beginning_but_prioritise_input_frames":
+            if how_to_use_inpaint_masks == "start_sequence_at_beginning_and_prioritise_input_frames":
                 # Use the provided mask as-is, but preserve known frames (overlap and end)
                 if actual_overlap_frames > 0:
                     processed_mask[0:actual_overlap_frames] = 0.0  # Keep overlap frames as known
                 if num_end_frames > 0:
                     processed_mask[-num_end_frames:] = 0.0  # Keep end frame as known
-            else:  # "start_sequence_after_overlap_frames_prioritise_input_frames"
+            else:  # "start_sequence_after_overlap_frames_and_prioritise_input_frames"
                 # Only apply the provided mask after overlap frames
                 if actual_overlap_frames > 0:
                     processed_mask[0:actual_overlap_frames] = 0.0  # Keep overlap frames as known
