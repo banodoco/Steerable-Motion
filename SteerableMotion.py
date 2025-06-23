@@ -823,6 +823,7 @@ class VideoContinuationGenerator:
                 "control_images": ("IMAGE", {"tooltip": "Optional control images to fill the empty frames."}),
                 "inpaint_mask": ("MASK", {"tooltip": "Optional inpaint mask to use for the empty frames, overriding the default mask."}),
                 "when_to_start_control_frames": (["beginning", "after overlap_frames"], {"default": "after overlap_frames", "tooltip": "If at beginning, control frames won't actually be active until after the context, but after that they'll continue on from after the overlap_frames number. If after overlap_frames, the first control frame will be placed after the context is over."}),
+                "when_to_start_masks": (["beginning", "after overlap_frames"], {"default": "after overlap_frames", "tooltip": "Controls when mask generation begins. If at beginning, masks start from frame 0. If after overlap_frames, masks start after the overlap period to match control frame timing."}),
             },
         }
 
@@ -832,7 +833,7 @@ class VideoContinuationGenerator:
     CATEGORY = "Steerable-Motion"
     DESCRIPTION = "Creates a continuation video by placing overlap frames from the end of input video at the start, with optional end frame."
 
-    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, when_to_start_control_frames="after overlap_frames"):
+    def generate_continuation_video(self, input_video_frames, total_output_frames, overlap_frames, empty_frame_fill_level, end_frame=None, control_images=None, inpaint_mask=None, when_to_start_control_frames="after overlap_frames", when_to_start_masks="after overlap_frames"):
         # 1. Validation and Setup
         total_output_frames = int(total_output_frames)
         if (total_output_frames - 1) % 4 != 0:
@@ -910,10 +911,30 @@ class VideoContinuationGenerator:
         
         # 6. Create Mask
         continuation_frame_masks = torch.ones((total_output_frames, frame_height, frame_width), device=device, dtype=dtype)
-        if actual_overlap_frames > 0:
-            continuation_frame_masks[0:actual_overlap_frames] = 0.0
-        if num_end_frames > 0:
-            continuation_frame_masks[-num_end_frames:] = 0.0
+        
+        # Apply mask logic based on when_to_start_masks parameter
+        if when_to_start_masks == "beginning":
+            # Set known frames (overlap and end) to 0.0, rest stay as 1.0 (inpaint)
+            if actual_overlap_frames > 0:
+                continuation_frame_masks[0:actual_overlap_frames] = 0.0
+            if num_end_frames > 0:
+                continuation_frame_masks[-num_end_frames:] = 0.0
+        else:  # "after overlap_frames"
+            # Set known frames (overlap and end) to 0.0, but also set middle section based on control frame logic
+            if actual_overlap_frames > 0:
+                continuation_frame_masks[0:actual_overlap_frames] = 0.0
+            if num_end_frames > 0:
+                continuation_frame_masks[-num_end_frames:] = 0.0
+            
+            # For middle section, follow the same logic as control frames
+            if control_images is not None and num_middle_frames > 0:
+                duplicate_count = min(actual_overlap_frames, control_images.shape[0])
+                available_after_dup = control_images.shape[0] - duplicate_count
+                if available_after_dup >= num_middle_frames:
+                    # If we have enough control frames after skipping, set those middle frames as known (0.0)
+                    middle_start = actual_overlap_frames
+                    middle_end = middle_start + num_middle_frames
+                    continuation_frame_masks[middle_start:middle_end] = 0.0
 
         # 7. Handle optional inpaint_mask override
         if inpaint_mask is not None:
