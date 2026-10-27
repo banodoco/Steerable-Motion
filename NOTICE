@@ -1,0 +1,21 @@
+Steerable Motion
+https://github.com/banodoco/Steerable-Motion
+
+First-party material is licensed under the Apache License, Version 2.0.
+Third-party material retains its original license and attribution.
+
+This repository includes code from:
+
+- ComfyUI IPAdapter Plus by cubiq
+  https://github.com/cubiq/ComfyUI_IPAdapter_plus
+  Source: imports/ComfyUI_IPAdapter_plus/
+  License: GNU General Public License, version 3
+  See imports/ComfyUI_IPAdapter_plus/LICENSE.
+
+- ComfyUI Frame Interpolation by Fannovel16 and its contributors
+  https://github.com/Fannovel16/ComfyUI-Frame-Interpolation
+  Source: imports/ComfyUI_Frame_Interpolation/
+  License: MIT
+  See imports/ComfyUI_Frame_Interpolation/LICENSE.
+
+This notice does not change the licenses of those components.
