@@ -59,4 +59,14 @@ You're very welcome to drop into our Discord [here](https://discord.com/invite/8
 
 For Animatediff, the code draws heavily from Cubiq's [IPAdapter_plus](https://github.com/cubiq/ComfyUI_IPAdapter_plus), while the workflow uses Kosinkadink's [Animatediff Evolved](https://github.com/Kosinkadink/ComfyUI-AnimateDiff-Evolved) and [ComfyUI-Advanced-ControlNet](https://github.com/Kosinkadink/ComfyUI-Advanced-ControlNet), Fizzledorf's [Fizznodes](https://github.com/FizzleDorf/ComfyUI_FizzNodes), Fannovel16's [Frame Interpolation](https://github.com/Fannovel16/ComfyUI-Frame-Interpolation) and more. 
 
-For Wan, it's built on top of the work of Kijai's wonderful [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper) and of course the VACE and Wan teams. 
+For Wan, it's built on top of the work of Kijai's wonderful [ComfyUI-WanVideoWrapper](https://github.com/kijai/ComfyUI-WanVideoWrapper) and of course the VACE and Wan teams.
+
+## License
+
+Steerable Motion's first-party code is licensed under the [Apache License 2.0](LICENSE.txt).
+Third-party code retains its existing licenses, including the bundled
+[ComfyUI IPAdapter Plus (GPLv3)](imports/ComfyUI_IPAdapter_plus/LICENSE) and
+[ComfyUI Frame Interpolation (MIT)](imports/ComfyUI_Frame_Interpolation/LICENSE).
+The Apache license does not replace those terms; redistribution of a combined work
+that includes GPL-covered code must also comply with the applicable GPL requirements.
+See [NOTICE](NOTICE) for component attribution.
